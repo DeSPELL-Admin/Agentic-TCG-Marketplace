@@ -1,0 +1,18 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "name": "@tcg/valuation",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tcg/contracts": "workspace:*",
+    "fastify": "5.12.8"
+  }
+}

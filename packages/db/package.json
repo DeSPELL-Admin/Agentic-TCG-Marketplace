@@ -1,0 +1,27 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "name": "@tcg/db",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:dev": "prisma migrate dev",
+    "db:check": "tsx scripts/check.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "7.10.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "prisma": "7.10.1",
+    "tsx": "^4.21.0"
+  }
+}

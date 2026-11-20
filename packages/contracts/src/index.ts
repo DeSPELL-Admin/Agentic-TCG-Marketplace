@@ -1,0 +1,76 @@
+import { z } from 'zod';
+
+export const idSchema = z.uuid();
+export const amountSchema = z.string().regex(/^(0|[1-9]\d*)$/, 'USDC 최소 단위의 정수 문자열이어야 합니다.');
+export const timestampSchema = z.iso.datetime();
+export const cardVariantSchema = z.object({
+  id: idSchema,
+  game: z.literal('POKEMON'),
+  name: z.string().min(1),
+  setCode: z.string().min(1),
+  cardNumber: z.string().min(1),
+  language: z.string().min(1),
+  edition: z.string().min(1),
+  condition: z.string().min(1),
+  imageUrl: z.url().optional(),
+});
+export type CardVariant = z.infer<typeof cardVariantSchema>;
+
+// v2.0에서 미정이던 가격 부재 및 Mock 구분의 초기 제안. 팀 합의 전 거래 판단에 사용하지 않는다.
+const valuationBaseSchema = z.object({
+  cardVariantId: idSchema,
+  currency: z.literal('USDC'),
+  sampleSize: z.number().int().nonnegative(),
+  confidence: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  evaluatedAt: timestampSchema,
+  sourceSummary: z.array(z.string()).optional(),
+  dataSource: z.enum(['MOCK', 'MARKET']),
+});
+export const valuationSchema = z.discriminatedUnion('status', [
+  valuationBaseSchema.extend({ status: z.literal('AVAILABLE'), estimatedPrice: amountSchema }),
+  valuationBaseSchema.extend({ status: z.literal('INSUFFICIENT_DATA'), estimatedPrice: z.null(), confidence: z.literal('LOW') }),
+]);
+export type Valuation = z.infer<typeof valuationSchema>;
+
+export const cardSearchQuerySchema = z.object({
+  q: z.string().trim().max(200).default(''),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export const cardParamsSchema = z.object({ id: idSchema });
+export const cardSearchResponseSchema = z.object({ items: z.array(cardVariantSchema), nextCursor: z.null() });
+export const errorCodeSchema = z.enum([
+  'VALIDATION_ERROR', 'UNAUTHORIZED', 'FORBIDDEN', 'CARD_NOT_FOUND',
+  'LISTING_UNAVAILABLE', 'PRICE_LIMIT_EXCEEDED', 'ORDER_NOT_ACTIVE',
+  'INVENTORY_CONFLICT', 'BUDGET_EXCEEDED', 'POLICY_VIOLATION',
+  'PAYMENT_REQUIRED', 'PAYMENT_FAILED', 'PAYMENT_UNKNOWN', 'QUOTE_EXPIRED', 'INTERNAL_ERROR',
+]);
+export type ErrorCode = z.infer<typeof errorCodeSchema>;
+export const errorResponseSchema = z.object({
+  error: z.object({ code: errorCodeSchema, message: z.string(), retryable: z.boolean() }),
+  requestId: z.string(),
+});
+export class AppError extends Error {
+  constructor(public readonly code: ErrorCode, message: string, public readonly statusCode = 400, public readonly retryable = false) {
+    super(message);
+  }
+}
+
+export interface AuthContext { userId: string; agentId?: string }
+export interface AggregatorService {
+  searchCards(input: { query: string; limit: number }): Promise<CardVariant[]>;
+  getCardVariant(id: string): Promise<CardVariant | null>;
+}
+export interface ValuationService { getValuation(cardVariantId: string): Promise<Valuation> }
+
+export const inventoryItemSchema = z.object({ id: idSchema, cardVariantId: idSchema, ownerId: idSchema, status: z.enum(['AVAILABLE', 'LISTED', 'RESERVED', 'TRANSFERRED']) });
+export const listingSchema = z.object({ id: idSchema, inventoryItemId: idSchema, cardVariantId: idSchema, sellerId: idSchema, price: amountSchema, status: z.enum(['ACTIVE', 'RESERVED', 'SOLD', 'CANCELLED']), createdAt: timestampSchema });
+export const buyOrderSchema = z.object({ id: idSchema, agentId: idSchema, cardVariantId: idSchema, maxPrice: amountSchema, status: z.enum(['ACTIVE', 'PAUSED', 'MATCH_PENDING', 'FILLED', 'CANCELLED', 'EXPIRED']), expiresAt: timestampSchema, createdAt: timestampSchema });
+export const matchQuoteSchema = z.object({ id: idSchema, listingId: idSchema, inventoryItemId: idSchema, buyerAgentId: idSchema, buyOrderId: idSchema.optional(), amount: amountSchema, currency: z.literal('USDC'), status: z.enum(['RESERVED', 'PAYMENT_PENDING', 'SETTLED', 'COMPLETED', 'RELEASED', 'RECONCILING']), expiresAt: timestampSchema });
+export const tradeSchema = z.object({ id: idSchema, matchQuoteId: idSchema, buyerId: idSchema, sellerId: idSchema, inventoryItemId: idSchema, price: amountSchema, paymentAttemptId: idSchema, status: z.literal('COMPLETED'), completedAt: timestampSchema });
+export const spendingPolicySchema = z.object({ agentId: idSchema, enabled: z.boolean(), totalBudget: amountSchema, maxPerTrade: amountSchema, allowedCardVariantIds: z.array(idSchema).optional(), minDiscountPercent: z.number().min(0).max(100).optional(), validUntil: timestampSchema });
+export type InventoryItem = z.infer<typeof inventoryItemSchema>;
+export type Listing = z.infer<typeof listingSchema>;
+export type BuyOrder = z.infer<typeof buyOrderSchema>;
+export type MatchQuote = z.infer<typeof matchQuoteSchema>;
+export type Trade = z.infer<typeof tradeSchema>;
+export type SpendingPolicy = z.infer<typeof spendingPolicySchema>;

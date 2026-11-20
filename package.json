@@ -1,0 +1,26 @@
+{
+  "name": "agentic-tcg-marketplace",
+  "private": true,
+  "packageManager": "pnpm@12.9.1",
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "postinstall": "pnpm db:generate",
+    "dev": "pnpm --parallel --filter @tcg/web --filter @tcg/api run dev",
+    "build": "pnpm -r --if-present run build",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "pnpm -r --if-present run test",
+    "turbo:dev": "turbo run dev --filter=@tcg/web --filter=@tcg/api",
+    "turbo:build": "turbo run build",
+    "db:generate": "pnpm --filter @tcg/db db:generate",
+    "db:migrate": "pnpm --filter @tcg/db db:migrate",
+    "db:check": "pnpm --filter @tcg/db db:check",
+    "infra:up": "docker compose -f infra/compose.yaml up -d --wait",
+    "infra:down": "docker compose -f infra/compose.yaml down"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "~5.9.3",
+    "turbo": "2.11.13",
+    "vitest": "4.1.12"
+  }
+}
