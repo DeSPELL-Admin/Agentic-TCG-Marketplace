@@ -92,6 +92,6 @@ pnpm --filter @tcg/aggregator test
 
 ## 현재 범위
 
-카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. [Agent Runtime](apps/agent/README.md)은 카드 검색과 적정가를 한 턴에 조회합니다. 실제 TCG 데이터 제공자, 상용 인증, 매물·주문·정책 API, MCP, Agent 세션 API, x402 결제 및 전체 거래 E2E는 아직 구현하지 않았습니다. 실제 데이터 어댑터는 공개 인터페이스를 구현해 주입하며, 미구현 live 모드로 조용히 대체하지 않습니다.
+카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. [Agent Runtime](apps/agent/README.md)은 카드 검색과 적정가를 조회하며, MCP 연결과 세션 HTTP/SSE 플러그인을 제공합니다. 후속 작업에는 실제 TCG 데이터 제공자, 상용 인증, 매물·주문·정책 API, 팀 MCP 서버, 세션 영속화, x402 결제 및 전체 거래 E2E가 포함됩니다. 실제 데이터 어댑터는 공개 인터페이스를 구현해 주입하며, 미구현 live 모드로 조용히 대체하지 않습니다.
 
 가격은 USDC 최소 단위 정수 문자열입니다. UUID 및 UTC ISO 8601을 사용합니다. Mock 가격은 `dataSource: "MOCK"`로 구분하고, 표본이 없으면 `status: "INSUFFICIENT_DATA"`, `estimatedPrice: null`을 반환합니다. 이 확장은 초안 계약의 미정 부분을 구체화한 **팀 검토 대상**입니다. [계약 결정 사항](docs/contracts.md), [통합 가이드](docs/integration.md)를 확인하세요.

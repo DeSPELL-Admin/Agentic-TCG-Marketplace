@@ -117,7 +117,7 @@ it('검색 경로는 모델에 원문과 검색 도구만 전달한다', async (
   });
 
   await expect(runtime.runAgentTurn(message)).resolves.toBe('검색 응답');
-  expect(classify).toHaveBeenCalledExactlyOnceWith(message);
+  expect(classify).toHaveBeenCalledExactlyOnceWith(message, undefined);
   expect(getValuation).not.toHaveBeenCalled();
 });
 

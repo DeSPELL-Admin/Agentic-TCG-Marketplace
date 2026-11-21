@@ -50,4 +50,26 @@ pnpm --filter @tcg/agent demo "피카츄 적정가 알려줘"
 
 호스트 코드에서는 `await connectMcpCardServices({ url, headers })`의 반환값을 기존 `createAgentRuntime()`에 전달하고, 사용이 끝나면 `close()`를 호출합니다. 에이전트의 의도별 도구 제한과 현재 턴의 카드 ID 검증은 MCP를 사용할 때도 적용됩니다.
 
-후속 통합 범위에는 x402 Client와 세션 HTTP/SSE API가 포함됩니다.
+## 세션 HTTP/SSE
+
+Core API에서 검증된 `resolveAuth`를 주입하고 `createIntegrationPlugins`에서 Agent 세션 플러그인을 등록합니다. `requireAuth`는 `@tcg/api`가 제공하는 함수를 전달합니다.
+
+```typescript
+const app = await buildApp({
+  resolveAuth,
+  createIntegrationPlugins: async deps => [async host => {
+    const runtime = createAgentRuntime(deps);
+    await host.register(createAgentSessionPlugin({ runtime, requireAuth }), { prefix: '/api' });
+  }],
+});
+```
+
+| 요청 | 응답 |
+| --- | --- |
+| `POST /api/agent/sessions` | `201`과 세션 ID 및 빈 메시지 목록 |
+| `GET /api/agent/sessions/:sessionId` | 세션 ID 및 최근 메시지 목록 |
+| `POST /api/agent/sessions/:sessionId/messages` | `{ message }`를 받아 SSE로 `started`와 `completed` 또는 `error` 발행 |
+
+`completed`의 `message`에 최종 답변이 담깁니다. 브라우저에서는 POST 응답의 스트림을 `fetch()`로 읽습니다. 요청은 인증 컨텍스트의 사용자와 Agent가 일치하는 세션에만 접근할 수 있습니다. 같은 세션은 한 번에 한 턴을 처리합니다.
+
+세션은 프로세스 메모리에 저장하며, 최근 24개 메시지를 다음 턴에 전달합니다. 세션은 마지막 성공 턴 이후 1시간 동안 유지되고, 서버를 재시작하면 초기화됩니다. Core API의 인증 제공자 연결, 세션 영속화 및 x402 Client는 후속 통합 범위입니다.

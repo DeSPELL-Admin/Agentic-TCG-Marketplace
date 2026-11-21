@@ -6,9 +6,12 @@ import {
   type DecisionApi,
 } from './decision.js';
 import { createCardTools, type CardToolDependencies } from './tools.js';
+import { toAgentInput, type AgentTurnOptions } from './turn.js';
 
 export { createOpenAIDecisionApi, type DecisionApi, type IntentDecision } from './decision.js';
 export { connectMcpCardServices, type McpCardConnectionOptions } from './mcp.js';
+export { createAgentSessionPlugin, type AgentSessionPluginOptions } from './sessions.js';
+export type { AgentMessage, AgentTurnOptions } from './turn.js';
 
 export interface AgentRuntimeOptions extends CardToolDependencies {
   model?: string | Model;
@@ -17,7 +20,8 @@ export interface AgentRuntimeOptions extends CardToolDependencies {
 
 const instructions = `
 당신은 포켓몬 TCG 카드와 적정가를 조회하는 읽기 전용 도우미입니다.
-사용자의 언어로 답하고, 카드 정보와 가격은 도구 응답을 근거로만 안내하세요.
+사용자의 언어로 답하고, 카드 정보와 가격은 이번 턴의 도구 응답을 근거로만 안내하세요.
+"그 카드" 같은 참조는 이전 대화에서 대상을 하나로 특정할 수 있을 때만 사용하세요.
 search_cards의 query에는 카드 이름만 넣으세요. 예를 들어 "이브이 SV 133 한국판"은
 "Eevee"로 검색한 뒤 반환된 세트, 카드 번호와 언어로 필터링하세요.
 한국어 카드명을 대응하는 영문 이름으로 알고 있다면 영문 이름으로 검색하세요.
@@ -51,11 +55,14 @@ export function createAgentRuntime({
   const runner = new Runner({ tracingDisabled: true });
 
   return {
-    async runAgentTurn(input: string): Promise<string> {
+    async runAgentTurn(input: string, options?: AgentTurnOptions): Promise<string> {
       const message = input.trim();
       if (!message) throw new TypeError('메시지를 입력해 주세요.');
 
-      const { route, language } = intentDecisionSchema.parse(await decisionApi.classify(message));
+      options?.signal?.throwIfAborted();
+      const decision = await decisionApi.classify(message, options);
+      options?.signal?.throwIfAborted();
+      const { route, language } = intentDecisionSchema.parse(decision);
       if (route === 'needs_clarification' || route === 'unsupported') {
         return directReplies[route][language];
       }
@@ -67,7 +74,7 @@ export function createAgentRuntime({
         modelSettings: { store: false, parallelToolCalls: false },
         tools: createCardTools(dependencies, route),
       });
-      const result = await runner.run(agent, message, { maxTurns: 6 });
+      const result = await runner.run(agent, toAgentInput(message, options?.history), { maxTurns: 6, signal: options?.signal });
       const output = result.finalOutput?.trim();
       if (!output) throw new Error('에이전트 응답이 비어 있습니다.');
       return output;
