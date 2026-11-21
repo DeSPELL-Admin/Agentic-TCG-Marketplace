@@ -14,7 +14,7 @@ pnpm --filter @tcg/agent test
 pnpm --filter @tcg/agent build
 ```
 
-실제 모델로 확인하려면 셸 환경에 `OPENAI_API_KEY`를 설정합니다. 필요하면 `OPENAI_MODEL`로 모델을 지정합니다. 카드·가격 데이터는 Mock 서비스에서 조회합니다.
+실제 모델로 확인하려면 저장소 루트의 `.env` 또는 셸 환경에 `OPENAI_API_KEY`를 설정합니다. 필요하면 `OPENAI_MODEL`로 모델을 지정합니다. 카드·가격 데이터는 Mock 서비스에서 조회합니다.
 
 ```sh
 pnpm --filter @tcg/agent demo "피카츄 적정가 알려줘"
