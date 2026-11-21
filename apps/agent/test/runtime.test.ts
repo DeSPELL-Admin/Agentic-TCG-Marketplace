@@ -2,7 +2,7 @@ import { Usage, type Model, type ModelRequest, type ModelResponse } from '@opena
 import { createAggregatorService, createMockCardAdapter, mockCards } from '@tcg/aggregator';
 import { createMockPriceAdapter, createValuationService } from '@tcg/valuation';
 import { expect, it, vi } from 'vitest';
-import { createAgentRuntime } from '../src/index.js';
+import { createAgentRuntime, type IntentDecision } from '../src/index.js';
 
 type ModelOutput = ModelResponse['output'][number];
 
@@ -14,7 +14,7 @@ function reply(text: string): ModelOutput {
   return { type: 'message', role: 'assistant', status: 'completed', content: [{ type: 'output_text', text }] };
 }
 
-function setup(...steps: ((request: ModelRequest) => ModelOutput)[]) {
+function setup(route: IntentDecision['route'], ...steps: ((request: ModelRequest) => ModelOutput)[]) {
   const model: Model = {
     getResponse: vi.fn(async (request) => {
       const next = steps.shift();
@@ -29,8 +29,9 @@ function setup(...steps: ((request: ModelRequest) => ModelOutput)[]) {
   const valuationService = createValuationService({ aggregatorService, adapter: createMockPriceAdapter() });
   const searchCards = vi.spyOn(aggregatorService, 'searchCards');
   const getValuation = vi.spyOn(valuationService, 'getValuation');
-  const runtime = createAgentRuntime({ aggregatorService, valuationService, model });
-  return { runtime, model, searchCards, getValuation };
+  const classify = vi.fn(async (): Promise<IntentDecision> => ({ route, language: 'ko' }));
+  const runtime = createAgentRuntime({ aggregatorService, valuationService, model, decisionApi: { classify } });
+  return { runtime, model, classify, searchCards, getValuation };
 }
 
 function toolResult(request: ModelRequest, callId: string) {
@@ -48,7 +49,7 @@ function toolResult(request: ModelRequest, callId: string) {
 it('빈 한국어 검색 후 영문 이름으로 찾은 카드의 Mock 적정가를 모델에 전달한다', async () => {
   const pikachu = mockCards[0]!;
   const answer = 'Pikachu SV 025 EN NORMAL NM의 시연용 Mock 적정가는 12 USDC입니다.';
-  const { runtime, searchCards, getValuation } = setup(
+  const { runtime, searchCards, getValuation } = setup('get_valuation',
     request => {
       expect(request.tools.map(tool => tool.name)).toEqual(['search_cards', 'get_valuation']);
       return toolCall('search_cards', { query: '피카츄' }, 'ko');
@@ -83,7 +84,7 @@ it('빈 한국어 검색 후 영문 이름으로 찾은 카드의 Mock 적정가
 it('표본 부족 상태와 null 가격을 모델에 전달한다', async () => {
   const eevee = mockCards[2]!;
   const answer = 'Eevee SV 133은 시연용 데이터의 표본이 부족해 적정가를 확인할 수 없습니다.';
-  const { runtime } = setup(
+  const { runtime } = setup('get_valuation',
     () => toolCall('search_cards', { query: 'Eevee' }, 'search'),
     () => toolCall('get_valuation', { cardVariantId: eevee.id }, 'price'),
     request => {
@@ -101,7 +102,61 @@ it('표본 부족 상태와 null 가격을 모델에 전달한다', async () => 
 });
 
 it('빈 입력을 모델 호출 전에 거부한다', async () => {
-  const { runtime, model } = setup();
+  const { runtime, model, classify } = setup('get_valuation');
   await expect(runtime.runAgentTurn('   ')).rejects.toThrow('메시지를 입력해 주세요.');
+  expect(classify).not.toHaveBeenCalled();
   expect(model.getResponse).not.toHaveBeenCalled();
+});
+
+it('검색 경로는 모델에 원문과 검색 도구만 전달한다', async () => {
+  const message = 'Pikachu SV 025 영문판만 찾아줘';
+  const { runtime, classify, getValuation } = setup('search_cards', request => {
+    expect(request.tools.map(tool => tool.name)).toEqual(['search_cards']);
+    expect(JSON.stringify(request.input)).toContain(message);
+    return reply('검색 응답');
+  });
+
+  await expect(runtime.runAgentTurn(message)).resolves.toBe('검색 응답');
+  expect(classify).toHaveBeenCalledExactlyOnceWith(message);
+  expect(getValuation).not.toHaveBeenCalled();
+});
+
+it.each([
+  ['needs_clarification', '그 카드 얼마야?', '어떤 포켓몬 카드인지'],
+  ['unsupported', '피카츄 구매해줘', '포켓몬 카드 검색과 적정가 조회'],
+] as const)('%s 경로는 메인 모델 없이 응답한다', async (route, message, expected) => {
+  const { runtime, model, searchCards, getValuation } = setup(route);
+
+  await expect(runtime.runAgentTurn(message)).resolves.toContain(expected);
+  expect(model.getResponse).not.toHaveBeenCalled();
+  expect(searchCards).not.toHaveBeenCalled();
+  expect(getValuation).not.toHaveBeenCalled();
+});
+
+it('현재 턴의 검색 결과에 없는 variant ID를 가격 서비스에 넘기지 않는다', async () => {
+  const pikachu = mockCards[0]!;
+  const eevee = mockCards[2]!;
+  const { runtime, getValuation } = setup('get_valuation',
+    () => toolCall('get_valuation', { cardVariantId: pikachu.id }, 'before-search'),
+    () => toolCall('search_cards', { query: 'Pikachu' }, 'search'),
+    () => toolCall('get_valuation', { cardVariantId: eevee.id }, 'wrong-id'),
+    () => toolCall('get_valuation', { cardVariantId: pikachu.id }, 'known-id'),
+    () => reply('첫 번째 턴'),
+    () => toolCall('get_valuation', { cardVariantId: pikachu.id }, 'another-turn'),
+    () => reply('두 번째 턴'),
+  );
+
+  await expect(runtime.runAgentTurn('피카츄 적정가 알려줘')).resolves.toBe('첫 번째 턴');
+  await expect(runtime.runAgentTurn('피카츄 적정가 다시 알려줘')).resolves.toBe('두 번째 턴');
+  expect(getValuation).toHaveBeenCalledExactlyOnceWith(pikachu.id);
+});
+
+it('분류 실패 시 메인 모델과 도구를 호출하지 않는다', async () => {
+  const { runtime, classify, model, searchCards, getValuation } = setup('get_valuation');
+  classify.mockRejectedValueOnce(new Error('분류 호출 실패'));
+
+  await expect(runtime.runAgentTurn('피카츄 적정가 알려줘')).rejects.toThrow('분류 호출 실패');
+  expect(model.getResponse).not.toHaveBeenCalled();
+  expect(searchCards).not.toHaveBeenCalled();
+  expect(getValuation).not.toHaveBeenCalled();
 });

@@ -10,7 +10,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "demo": "tsx scripts/demo.ts"
+    "demo": "tsx scripts/demo.ts",
+    "eval:intents": "tsx scripts/eval-intents.ts"
   },
   "dependencies": {
     "@openai/agents": "0.22.0",
