@@ -4,6 +4,6 @@
 
 블루·화이트 팔레트, 로컬 기본 폰트, 카드 비율의 미리보기를 사용합니다. 모바일 한 열 배치, 입력 라벨, 키보드 포커스, 빈 결과·연결 오류·로딩 상태를 제공합니다.
 
-매물·Agent·정책·거래 UI와 HTTP/SSE BFF는 후속 범위입니다. 포트는 3000이며 Core API를 함께 실행해야 합니다.
+매물·Agent·정책·거래 UI와 HTTP/SSE BFF는 후속 범위입니다. 개발·시작 명령은 루트 `.env`를 로드하고 `PORT`를 사용합니다. 미설정 시 Next.js 기본 포트인 3000을 사용하며 Core API를 함께 실행해야 합니다.
 
 루트에서 `pnpm --filter @tcg/web test`와 `pnpm --filter @tcg/web typecheck`로 검증합니다.

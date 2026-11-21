@@ -5,6 +5,7 @@
   "engines": { "node": ">=24 <25" },
   "scripts": {
     "postinstall": "pnpm db:generate",
+    "env:init": "node scripts/init-env.mjs",
     "dev": "pnpm --parallel --filter @tcg/web --filter @tcg/api run dev",
     "build": "pnpm -r --if-present run build",
     "typecheck": "pnpm -r --if-present run typecheck",
@@ -14,8 +15,8 @@
     "db:generate": "pnpm --filter @tcg/db db:generate",
     "db:migrate": "pnpm --filter @tcg/db db:migrate",
     "db:check": "pnpm --filter @tcg/db db:check",
-    "infra:up": "docker compose -f infra/compose.yaml up -d --wait",
-    "infra:down": "docker compose -f infra/compose.yaml down"
+    "infra:up": "docker compose --env-file .env -f infra/compose.yaml up -d --wait",
+    "infra:down": "docker compose --env-file .env -f infra/compose.yaml down"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

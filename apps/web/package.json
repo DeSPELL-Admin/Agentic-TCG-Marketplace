@@ -4,9 +4,9 @@
   "type": "module",
   "name": "@tcg/web",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "node scripts/next.mjs dev --hostname 127.0.0.1",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "node scripts/next.mjs start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

@@ -8,15 +8,17 @@ AI Agent × MCP × x402 기반 TCG 거래 PoC의 개발 시작용 모노레포�
 Node.js 24 LTS, pnpm 12.9.1이 필요합니다. 아래 명령은 저장소 루트에서 실행합니다.
 
 ```powershell
-Copy-Item .env.example .env
+pnpm env:init
 pnpm install
 pnpm dev
 ```
 
-- Web: http://localhost:3000
-- Core API: http://127.0.0.1:4000/health
-- 검색: http://127.0.0.1:4000/api/cards?q=pika&limit=10
-- 적정가: http://127.0.0.1:4000/api/cards/00000000-0000-4000-8000-000000000001/valuation
+- Web: `http://127.0.0.1:<PORT>`
+- Core API: `http://127.0.0.1:<API_PORT>/health`
+- 검색: `<CORE_API_URL>/api/cards?q=pika&limit=10`
+- 적정가: `<CORE_API_URL>/api/cards/00000000-0000-4000-8000-000000000001/valuation`
+
+`pnpm env:init`은 루트 `.env`에 암호학적 난수 기반 DB 비밀번호와 계정·DB 이름, 사용 가능한 서로 다른 임의 포트를 생성합니다. 생성 결과에는 접속 포트만 표시하며 비밀값은 표시하지 않습니다. 기존 `.env`는 덮어쓰지 않습니다. 이미 생성한 경우 이 단계는 생략하세요. 수동 구성은 `.env.example`을 참고합니다. Web은 `PORT`, API는 `API_PORT`, Compose의 DB 공개 포트는 `POSTGRES_PORT`를 사용하며 `CORE_API_URL`과 `DATABASE_URL`도 일치해야 합니다.
 
 Mock 모드는 외부 API 키·PostgreSQL·체인 연결 없이 실행됩니다. `pnpm install`의 postinstall이 Prisma Client를 생성합니다. `.env`는 커밋하지 않습니다.
 
