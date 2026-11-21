@@ -8,6 +8,7 @@ import {
 import { createCardTools, type CardToolDependencies } from './tools.js';
 
 export { createOpenAIDecisionApi, type DecisionApi, type IntentDecision } from './decision.js';
+export { connectMcpCardServices, type McpCardConnectionOptions } from './mcp.js';
 
 export interface AgentRuntimeOptions extends CardToolDependencies {
   model?: string | Model;

@@ -32,4 +32,22 @@ pnpm --filter @tcg/agent eval:intents
 
 `eval:intents`는 [테스트셋](test/fixtures/intents.ts)의 한국어·영어 요청으로 실제 분류 모델을 호출해 경로와 언어를 비교합니다. 불일치하거나 API 호출에 실패하면 종료 코드 1을 반환합니다.
 
-후속 통합 범위에는 MCP Client, x402 Client, 세션 HTTP/SSE API가 포함됩니다.
+## MCP 연결
+
+카드 조회용 Streamable HTTP 서버를 사용할 때는 루트 `.env`에 `AGENT_MCP_URL`을 설정합니다. 서버가 Bearer 인증을 요구하면 `AGENT_MCP_TOKEN`도 설정합니다.
+
+```dotenv
+AGENT_MCP_URL=http://127.0.0.1:4000/mcp
+```
+
+이 주소는 서버가 `/mcp`를 제공할 때의 예시입니다. 데모 명령은 동일하며, `AGENT_MCP_URL`을 비워두면 기존 로컬 Mock 서비스를 사용합니다.
+
+```sh
+pnpm --filter @tcg/agent demo "피카츄 적정가 알려줘"
+```
+
+서버는 `search_cards({ query, limit })`와 `get_valuation({ cardVariantId })`를 제공해야 합니다. 성공 응답은 `{ ok: true, data }`를 `structuredContent` 또는 단일 JSON 텍스트 블록으로 전달합니다. 검색의 `data`는 `{ items, nextCursor: null }`이며, 적정가는 공통 `Valuation` DTO입니다.
+
+호스트 코드에서는 `await connectMcpCardServices({ url, headers })`의 반환값을 기존 `createAgentRuntime()`에 전달하고, 사용이 끝나면 `close()`를 호출합니다. 에이전트의 의도별 도구 제한과 현재 턴의 카드 ID 검증은 MCP를 사용할 때도 적용됩니다.
+
+후속 통합 범위에는 x402 Client와 세션 HTTP/SSE API가 포함됩니다.
