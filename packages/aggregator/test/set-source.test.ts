@@ -12,6 +12,18 @@ function source(set: unknown) {
   return { service, calls };
 }
 const set = { id: 'base1', name: 'Base Set', serie: { id: 'base' }, cards: [{ id: 'base1-2' }, { id: 'base1-1' }] };
+it('KO 세트는 제공된 카드 목록만 계획에 넣고 선언된 전체 수록 수를 추측해 채우지 않는다', async () => {
+  const calls: string[] = [];
+  const ko = createTcgdexSetSource({ language: 'ko', identityStore: createInMemoryCardIdentityStore(), fetch: async input => {
+    const path = new URL(String(input)).pathname; calls.push(path);
+    if (path.endsWith('/sets/SV5K')) return Response.json({ id: 'SV5K', name: '와일드포스', serie: { id: 'SV' }, cardCount: { total: 71 }, cards: [{ id: 'SV5K-001' }] });
+    if (path === '/v2/en/series/tcgp') return Response.json({ id: 'tcgp', sets: [] });
+    return Response.json({ id: 'SV5K-001', name: '로젤리아', localId: '001', set: { id: 'SV5K' } });
+  } });
+  expect(await ko.getSet('SV5K')).toEqual({ setId: 'SV5K', setName: '와일드포스', externalIds: ['SV5K-001'] });
+  expect(await ko.getCard('SV5K-001', 'SV5K')).toMatchObject({ language: 'KO', name: '로젤리아' });
+  expect(calls).toContain('/v2/ko/sets/SV5K');
+});
 it('세트의 카드 목록을 고정 순서로 만들고 상세의 실제 이미지와 내부 UUID를 유지한다', async () => {
   const { service } = source(set);
   expect(await service.getSet('base1')).toEqual({ setId: 'base1', setName: 'Base Set', externalIds: ['base1-1', 'base1-2'] });

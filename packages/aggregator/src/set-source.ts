@@ -18,7 +18,7 @@ export function createTcgdexSetSource(options: TcgdexCardAdapterOptions): SetCar
       const setId = externalSetIdSchema.parse(input);
       const signal = AbortSignal.timeout(timeoutMs);
       try {
-        const response = await fetcher(`https://api.tcgdex.net/v2/en/sets/${encodeURIComponent(setId)}`, { signal, redirect: 'error', headers: { accept: 'application/json' } });
+        const response = await fetcher(`https://api.tcgdex.net/v2/${options.language ?? 'en'}/sets/${encodeURIComponent(setId)}`, { signal, redirect: 'error', headers: { accept: 'application/json' } });
         if (!response.ok) {
           await response.body?.cancel();
           throw new TcgdexAdapterError(response.status === 429 ? 'RATE_LIMITED' : 'HTTP_ERROR', response.status === 429 ? 503 : 502, response.status === 429 || response.status >= 500);

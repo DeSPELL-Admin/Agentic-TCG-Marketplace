@@ -68,7 +68,7 @@ API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경�
 
 ## 한국어 이름 채우기
 
-팀원이 외부 API 없이 동일한 데이터로 시작하려면 Migration 후 `pnpm db:seed:collected`를 실행하세요. Git에 포함된 카드 171개·한국어 종명 사전 1,025쌍·표시 이름 136개·참고 가격 1,145개를 원래 UUID와 시각으로 로컬 DB에 넣습니다. 기존 Mock seed는 별도이며 기존 데이터는 덮어쓰지 않습니다. [팀 공통 데이터 가이드](packages/db/fixtures/README.md)에 초기 설정과 갱신 절차를 정리했습니다.
+팀원이 외부 API 없이 동일한 데이터로 시작하려면 Migration 후 `pnpm db:seed:collected`를 실행하세요. Git에 포함된 카드 410개(EN 171개·KO 239개)·한국어 종명 사전 1,025쌍·영어판 표시 이름 136개·영어판 참고 가격 1,145개를 원래 UUID와 시각으로 로컬 DB에 넣습니다. 한국어판은 원문 이름을 보존하며 이미지·가격 자료는 없습니다. 기존 Mock seed는 별도이며 기존 데이터는 덮어쓰지 않습니다. [팀 공통 데이터 가이드](packages/db/fixtures/README.md)에 초기 설정과 갱신 절차를 정리했습니다.
 
 ```powershell
 pnpm cards:localize
@@ -91,6 +91,8 @@ Migration 적용 후 실행합니다. TCGdex 영어 카탈로그에서 최대 5�
 ## 세트 단위 카드 수집
 
 세트 전체를 수집하려면 `pnpm cards:collect:set --set base1` 또는 `--set base2`를 사용합니다. 기본 20장씩 저장하고 중단·실패 시 DB 체크포인트부터 재개합니다. 완료된 세트의 명시적 갱신은 `--refresh`로 실행합니다. Base Set 102장과 Jungle 64장을 수집했으며 [Aggregator 가이드](packages/aggregator/README.md)에 잠금·재시도·진행 상태 규칙을 정리했습니다.
+
+한국어 카탈로그는 `pnpm cards:collect:set --language ko --set SV5K`로 수집합니다. `SV4K`, `SV4M`도 지원하며 현재 제공 목록 기준 각각 49장·95장·95장을 저장했습니다. 실제 세트 전체의 완전성을 보장하지 않으며 한국 국내 시세 수집과는 별개입니다. `pnpm cards:collect --language ko --query 로젤리아 --limit 5`로 원문 검색 수집도 가능합니다. 언어별 UUID·수집 진행 상태는 분리됩니다.
 
 ## 외부 참고 시세 수집
 

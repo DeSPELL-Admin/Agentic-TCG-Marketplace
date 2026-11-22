@@ -7,9 +7,11 @@ async function setup() {
   const base = await readCatalogFixtures(); const id = randomUUID(); const token = `fixture-${id}`; const speciesId = randomInt(1_000_000, 1_000_000_000);
   const name = `Fixture ${id}`; const koreanName = `시험${id}`;
   const sourceUrl = 'https://example.test/names';
+  const template = base.cards.find(card => card.language === 'EN')!;
+  const identity = base.externalIdentities.find(row => row.id === template.externalIdentityId)!;
   const data: CatalogFixtures = {
-    cards: [{ ...base.cards[0]!, id, externalIdentityId: id, name, setCode: token }],
-    externalIdentities: [{ ...base.externalIdentities[0]!, id, externalId: token }],
+    cards: [{ ...template, id, externalIdentityId: id, name, setCode: token }],
+    externalIdentities: [{ ...identity, id, externalId: token }],
     koreanNames: {
       translations: [{ ...base.koreanNames.translations[0]!, speciesId, englishName: name, englishKey: name.toLowerCase(), koreanName, sourceUrl }],
       localizedNames: [{ cardVariantId: id, speciesId, locale: 'ko', name: koreanName, source: 'POKEAPI_SPECIES', sourceUrl }],
@@ -40,6 +42,16 @@ integration('빈 영역에 JSON만으로 FK 순서대로 넣고 반복·동시 s
   expect(card.marketPrices[0]!.observedAt.toISOString()).toBe(c.data.priceSnapshots[0]!.observedAt);
   expect(card.marketPrices[0]!.collectedAt.toISOString()).toBe(c.data.priceSnapshots[0]!.collectedAt);
   expect(await c.prisma.marketPriceAssessment.count({ where: { snapshotId: c.data.priceSnapshots[0]!.id } })).toBe(0);
+}));
+integration('KO 원문과 이미지 부재를 번역 사전이나 영어판 가격 없이 복원한다', async () => fixture(async c => {
+  const data = structuredClone(c.data);
+  data.cards[0] = { ...data.cards[0]!, name: `한국어카드${c.id}`, language: 'KO', imageUrl: null };
+  data.externalIdentities[0]!.language = 'KO'; data.koreanNames.localizedNames = []; data.priceSnapshots = [];
+  await seedCollectedCatalog(c.prisma, data);
+  expect(await seedCollectedCatalog(c.prisma, data)).toMatchObject({ insertedCards: 0, insertedIdentities: 0 });
+  expect(await c.prisma.cardVariant.findUnique({ where: { id: c.id } })).toMatchObject({ language: 'KO', name: `한국어카드${c.id}`, imageUrl: null });
+  expect(await c.prisma.cardLocalizedName.count({ where: { cardVariantId: c.id } })).toBe(0);
+  expect(await c.prisma.marketPriceSnapshot.count({ where: { cardVariantId: c.id } })).toBe(0);
 }));
 integration('기존 최신 카드 메타데이터와 수집 시각은 예전 JSON으로 되돌리지 않는다', async () => fixture(async c => {
   await seedCollectedCatalog(c.prisma, c.data);

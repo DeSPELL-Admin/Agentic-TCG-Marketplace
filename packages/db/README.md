@@ -10,7 +10,7 @@ Prisma 정의는 `prisma/schema/` 디렉터리를 하나의 스키마로 읽습�
 
 `pnpm db:seed`는 공통 시연 fixtures의 카드 3개와 MOCK 가격 표본 6개를 고정 ID로 upsert합니다. `seedDemoCatalog(prisma)`도 공개합니다. `catalog.PriceObservation`에 가격, 데이터 구분, 출처 및 관측 시각을 보존합니다. 전체 DB 통합 검증은 루트 `pnpm test:db`로 실행합니다.
 
-`pnpm db:seed:collected`는 Git의 [수집 데이터 JSON](fixtures/README.md)을 검증해 외부 API 없이 카드 171개·종명 사전 1,025쌍·표시 이름 136개·참고 가격 1,145개를 삽입합니다. `readCatalogFixtures()`와 `seedCollectedCatalog(prisma, data)`를 공개합니다. 고정 UUID와 원본 시각을 유지하고 기존 행은 덮어쓰지 않습니다. 충돌 시 전체 트랜잭션을 롤백하며 Mock 표본·가격 검증 기록은 변경하지 않습니다. `pnpm fixtures:export`는 selection.json에 명시된 카드·세트의 JSON과 해시를 갱신합니다.
+`pnpm db:seed:collected`는 Git의 [수집 데이터 JSON](fixtures/README.md)을 검증해 외부 API 없이 카드 410개(EN 171개·KO 239개)·종명 사전 1,025쌍·영어판 표시 이름 136개·영어판 참고 가격 1,145개를 삽입합니다. 한국어판은 원문 이름을 유지하며 이미지·가격을 임의 보충하지 않습니다. `readCatalogFixtures()`와 `seedCollectedCatalog(prisma, data)`를 공개합니다. 고정 UUID와 원본 시각을 유지하고 기존 행은 덮어쓰지 않습니다. 충돌 시 전체 트랜잭션을 롤백하며 Mock 표본·가격 검증 기록은 변경하지 않습니다. `pnpm fixtures:export`는 selection.json에 명시된 카드·세트·언어의 JSON과 해시를 갱신합니다.
 
 실제 참고 시세는 `catalog.MarketPriceSnapshot`에 별도 저장합니다. 원본 금액·통화, 제공자 변형, 가격 유형, 외부 ID, 출처, 갱신·수집 시각을 보존하고 복합 유일 키로 중복을 막습니다. `catalog.MarketPriceAssessment`는 스냅샷별 판본 확인 속성·근거와 USDC 환율·시각·환산 금액을 보관합니다. 수집은 이 검증 기록을 만들지 않으며 Mock seed·가격과 분리됩니다. 두 테이블의 수집·조회·검증 서비스는 Valuation이 소유합니다.
 

@@ -32,7 +32,7 @@ export function DetailView({ card, valuation, prices, query, related = [], relat
     <SectionNav aria-label="카드 상세 정보"><a href="#market-data">참고 시세</a><a href="#valuation-details">평가 근거</a><a href="#card-notes">카드 정보</a></SectionNav>
     <MarketSection id="market-data">{prices ? <MarketPrices prices={prices} /> : <RequestState compact title="참고 시세를 불러오지 못했습니다." message="가격 자료의 유무를 확인하지 못했습니다. 잠시 후 다시 시도하세요." />}</MarketSection>
     <Evaluation id="valuation-details"><summary>USDC 평가와 근거 확인</summary><EvaluationContent>{valuation ? <ValuationDetails valuation={valuation} /> : <RequestState compact title="평가 정보를 불러오지 못했습니다." message="카드 정보는 확인할 수 있습니다. 잠시 후 다시 시도하세요." />}</EvaluationContent></Evaluation>
-    <CardNotes id="card-notes"><h2>카드 정보</h2><p>한국어 표기는 포켓몬 종명이며 한국어판 카드의 정식 제목과는 다를 수 있습니다. 카드의 인쇄 언어는 별도로 확인하세요.</p><details><summary>카드 식별 정보</summary><code>{card.id}</code></details></CardNotes>
+    <CardNotes id="card-notes"><h2>카드 정보</h2><p>{card.language === 'KO' ? 'TCGdex 한국어 카탈로그의 이름을 표시합니다. 실제 카드의 이름과 세트·번호를 함께 확인해 주세요.' : '한국어 표기는 포켓몬 종명이며 한국어판 카드의 정식 제목과는 다를 수 있습니다. 카드의 인쇄 언어는 별도로 확인하세요.'}</p><details><summary>카드 식별 정보</summary><code>{card.id}</code></details></CardNotes>
   </>;
 }
 

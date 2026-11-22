@@ -10,7 +10,7 @@ Plugin은 호스트에서 `/api` prefix로 등록합니다.
 
 ## TCGdex 외부 어댑터
 
-첫 제공자는 [TCGdex REST API](https://tcgdex.dev/rest)이며 API 키 없이 영어 카탈로그를 조회합니다. 카드 검색은 [검색 API](https://tcgdex.dev/rest/cards)와 [필터·페이지 설정](https://tcgdex.dev/rest/filtering-sorting-pagination)을 사용합니다. 검색 brief에 세트 정보가 없으므로 필요한 상세만 보충해 공통 DTO로 변환합니다. 다른 언어, 시세 수집·환율 변환은 이번 구현 범위에 포함하지 않습니다.
+첫 제공자는 [TCGdex REST API](https://tcgdex.dev/rest)이며 API 키 없이 영어·한국어 카탈로그를 조회합니다. 옵션 `language: 'en' | 'ko'`의 기본값은 `en`입니다. 카드 검색은 [검색 API](https://tcgdex.dev/rest/cards)와 [필터·페이지 설정](https://tcgdex.dev/rest/filtering-sorting-pagination)을 사용합니다. 검색 brief에 세트 정보가 없으므로 필요한 상세만 보충해 공통 DTO로 변환합니다. 시세 수집·환율 변환은 별도 단계입니다.
 
 ```typescript
 import {
@@ -32,9 +32,9 @@ const detail = card ? await service.getCardVariant(card.id) : null;
 - 내부 `id`는 UUID이며 공급자의 `base1-58` 같은 ID를 직접 노출하지 않습니다.
 - `CardIdentityStore.getOrCreateId(reference)`와 `findById(id)`를 필수 의존성으로 주입합니다. reference는 provider, externalId, language, edition, condition을 포함합니다.
 - `createInMemoryCardIdentityStore()`는 동일 인스턴스에서만 UUID를 보존하는 시연용 저장소입니다. 어댑터를 다시 만들어도 같은 저장소를 주입하면 매핑이 유지됩니다. 영구 저장은 아래 Prisma 매핑 저장소를 사용합니다. 매핑이 없는 내부 UUID는 외부 조회 없이 null을 반환합니다.
-- `set.id`는 `setCode`, `localId`는 문자열 `cardNumber`, 언어는 `EN`으로 정규화합니다. 이미지가 있으면 [공식 이미지 규칙](https://tcgdex.dev/assets)에 따라 `/high.webp`를 붙이고, 없으면 URL을 생성하지 않습니다.
+- `set.id`는 `setCode`, `localId`는 문자열 `cardNumber`, 언어는 선택한 카탈로그에 따라 `EN` 또는 `KO`로 정규화합니다. 이미지가 있으면 [공식 이미지 규칙](https://tcgdex.dev/assets)에 따라 `/high.webp`를 붙이고, 없으면 URL을 생성하지 않습니다. 한국어 이미지가 없을 때 영어판 이미지를 대신 연결하지 않습니다.
 - 카탈로그는 개별 카드의 보존 상태를 알려주지 않으며 여러 인쇄 변형의 존재 여부만 제공합니다. `edition`과 `condition`은 `UNSPECIFIED`로 반환합니다. 일반판·홀로·초판이나 NM 상태로 임의 확정하지 않습니다. 이 결과는 검색용이며 거래 가능한 변형·상태를 확정하는 단계는 별도로 필요합니다.
-- [Pocket 전용 `tcgp` 시리즈](https://tcgdex.dev/tcg-pocket)의 세트는 제외합니다. Pocket 카드나 검색 중 삭제된 카드가 섞이면 결과 수가 limit보다 적을 수 있으며 추가 페이지를 자동 순회하지 않습니다.
+- [Pocket 전용 `tcgp` 시리즈](https://tcgdex.dev/tcg-pocket)의 세트는 제외합니다. 한국어 경로에는 이 시리즈 메타데이터가 없어 제외 목록만 영어 경로에서 읽습니다. 카드 본문은 선택한 언어로 조회합니다. Pocket 카드나 검색 중 삭제된 카드가 섞이면 결과 수가 limit보다 적을 수 있으며 추가 페이지를 자동 순회하지 않습니다.
 - 공급자의 `pricing` 등 추가 필드는 공통 DTO에 포함하지 않습니다. 실제 카드 정보를 가져오는 것과 실제 시장가격 평가는 별개입니다.
 
 ### 호출 제한과 실패 처리
@@ -95,7 +95,7 @@ pnpm db:migrate
 pnpm cards:collect --query Pikachu --limit 5
 ```
 
-기본 검색어는 Pikachu, 기본 limit는 5이며 1~100까지 지정할 수 있습니다. 외부 어댑터 자체는 영어 검색어를 사용합니다. CLI는 한국어 사전을 채운 뒤 정확한 한국어 종명을 영어로 대응시켜 수집할 수 있습니다. 공급자의 첫 페이지만 조회하므로 전체 카탈로그 일괄 동기화 기능은 아닙니다. Pocket 제외·삭제 등으로 실제 저장 수는 limit보다 적을 수 있습니다. 루트 `.env`의 `DATABASE_URL`을 사용하며 비밀값을 출력하지 않습니다.
+기본 언어는 `en`, 검색어는 Pikachu, limit는 5이며 1~100까지 지정할 수 있습니다. 영어 모드에서는 한국어 사전을 채운 뒤 정확한 한국어 종명을 영어로 대응시켜 수집할 수 있습니다. 한국어 모드는 `pnpm cards:collect --language ko --query 로젤리아 --limit 5`처럼 원문 검색어를 그대로 전달합니다. 공급자의 첫 페이지만 조회하므로 전체 카탈로그 일괄 동기화 기능은 아닙니다. Pocket 제외·삭제 등으로 실제 저장 수는 limit보다 적을 수 있습니다. 루트 `.env`의 `DATABASE_URL`을 사용하며 비밀값을 출력하지 않습니다.
 
 ```typescript
 import {
@@ -133,7 +133,7 @@ GET /api/cards/<수집된 내부 UUID>/valuation
 
 ## 세트 단위 수집과 재개
 
-Migration을 적용한 뒤 루트에서 실행합니다. [TCGdex 세트 API](https://tcgdex.dev/rest/set)의 영어 카드 목록을 고정하고 최대 20장씩 나누어 저장합니다. 제공자 목록을 재정렬하며 넘기는 페이지 대신, 저장된 ID 목록의 위치를 체크포인트로 사용합니다.
+Migration을 적용한 뒤 루트에서 실행합니다. [TCGdex 세트 API](https://tcgdex.dev/rest/set)의 선택한 언어 카드 목록을 고정하고 최대 20장씩 나누어 저장합니다. 제공자 목록을 재정렬하며 넘기는 페이지 대신, 저장된 ID 목록의 위치를 체크포인트로 사용합니다.
 
 ```powershell
 pnpm db:migrate
@@ -145,17 +145,30 @@ pnpm cards:collect:set --set base1 --batch-size 20 --max-batches 1
 pnpm cards:collect:set --set base1 --refresh
 ```
 
-`createTcgdexSetSource(options)`는 `SetCardSource.getSet(setId)`와 `getCard(externalId, setId)`를 제공합니다. `createTcgdexCardAdapter()`도 `getCardByExternalId()`를 추가로 제공합니다. 기존 카드 검색·상세 인터페이스는 유지합니다. `createSetCollectionService({ prisma, source, writer?, now? }).collectSet({ setId, batchSize?, maxBatches?, refresh?, onProgress? })`는 저장된 진행 지점부터 실행합니다.
+`createTcgdexSetSource(options)`는 `SetCardSource.getSet(setId)`와 `getCard(externalId, setId)`를 제공합니다. `createTcgdexCardAdapter()`도 `getCardByExternalId()`를 추가로 제공합니다. 기존 카드 검색·상세 인터페이스는 유지합니다. `createSetCollectionService({ prisma, source, language?, writer?, now? }).collectSet({ setId, batchSize?, maxBatches?, refresh?, onProgress? })`는 저장된 진행 지점부터 실행합니다. source와 collector에 같은 language를 주입합니다.
 
-- `catalog.CatalogCollectionRun`에 세트·영어 카탈로그·고정 외부 ID 목록·nextIndex·상태·실행 잠금을 저장합니다. 다른 세트는 독립된 작업입니다.
+- `catalog.CatalogCollectionRun`에 세트·카탈로그 언어·고정 외부 ID 목록·nextIndex·상태·실행 잠금을 저장합니다. 다른 세트·언어는 독립된 작업입니다. 같은 외부 ID라도 언어가 다르면 UUID도 분리합니다.
 - `batchSize`는 1~20, 기본 20입니다. `maxBatches`로 한 번에 처리할 배치를 제한할 수 있습니다. 네트워크는 동시에 최대 2건이며 상세 조회가 모두 성공한 후 배치를 DB에 저장합니다. 수집 네트워크 요청은 DB 트랜잭션 밖에서 수행합니다.
 - 배치 저장 후에만 체크포인트를 전진시킵니다. 저장과 진행 기록 사이에 종료되면 같은 배치를 재실행할 수 있지만 영구 UUID와 DB 제약으로 카드가 중복되지는 않습니다.
 - 같은 세트의 동시 실행은 409 오류로 거부합니다. 잠금은 5분이며 배치 전후에 갱신합니다. 정상 실패는 즉시 해제하고 프로세스 강제 종료 시 만료 후 재개할 수 있습니다. 이전 실행은 잠금 토큰이 바뀌면 저장을 중단합니다.
 - 완료 작업의 기본 재실행은 외부 조회 없이 저장 0건을 반환합니다. `--refresh`만 새 목록을 받아 처음부터 갱신합니다. 제공자 목록에서 사라진 카드를 자동 삭제하지 않습니다.
 - Pocket·다른 세트의 상세·중복 ID·빈 목록·상세 누락은 거부합니다. 잘못된 카드를 건너뛰어 전체 세트 수집이 끝난 것처럼 표시하지 않습니다. 외부 API 오류는 그대로 실패하며 재실행으로 복구합니다.
-- 결과의 `storedThisRun`은 이번 실행에서 저장한 카드 수이며 신규 삽입 수와 다릅니다. 한국어 이름은 기존 종명 사전에서 연결하고 에디션·상태는 UNSPECIFIED를 유지합니다. 가격 수집은 별도 명령입니다.
+- 결과의 `storedThisRun`은 이번 실행에서 저장한 카드 수이며 신규 삽입 수와 다릅니다. 영어판의 한국어 표시 이름은 기존 종명 사전에서 연결합니다. 한국어판은 제공자의 원문 이름을 보존하고 종명 번역으로 덮어쓰지 않습니다. 에디션·상태는 UNSPECIFIED를 유지합니다. 가격 수집은 별도 명령입니다.
 
-공유 샘플은 Base Set(`base1`) 102장, Jungle(`base2`) 64장, 기존 프로모 피카츄 5종의 총 171종입니다. 종명 연결은 136종이며 트레이너·에너지·표기가 정확히 대응되지 않는 이름은 영어 원문으로 유지합니다. 이미지 URL이 있는 신규 카드는 166종입니다.
+공유 샘플은 영어 171장과 한국어 239장의 총 410장입니다. 영어 자료는 Base Set(`base1`) 102장, Jungle(`base2`) 64장, 기존 프로모 피카츄 5종이며 종명 연결은 136장, 이미지 URL은 166장입니다.
+
+### 한국어 카탈로그 수집
+
+```powershell
+pnpm cards:collect:set --language ko --set SV5K
+pnpm cards:collect:set --language ko --set SV4K
+pnpm cards:collect:set --language ko --set SV4M
+pnpm fixtures:export
+```
+
+2026-11-22에 제공자 API가 반환한 한국어 카드 목록은 와일드포스(`SV5K`) 49장, 고대의 포효(`SV4K`) 95장, 미래의 일섬(`SV4M`) 95장입니다. 세트 메타데이터 95개 모두에 카드가 있는 것은 아닙니다. `COMPLETED`는 제공된 ID 목록의 처리가 끝났다는 뜻이며 실제 출시 세트 전체의 완전성을 보증하지 않습니다. 특히 SV5K의 선언된 카드 수와 제공 목록이 달라 목록 밖 카드를 추정 생성하지 않습니다.
+
+239장 모두 원문 이름·세트·번호·외부 ID·내부 UUID를 저장했습니다. TCGdex 한국어 카탈로그 기준이며 공식 인쇄본과 모든 항목을 독립 대조한 자료는 아닙니다. 이미지가 제공되지 않아 비워 두었고 한국어판 가격도 가져오지 않았습니다. 공급자의 해외 가격 필드를 한국 국내 시세로 사용하지 않습니다. 가격 자료가 없으면 평가 API는 `INSUFFICIENT_DATA`입니다. 팀원은 `pnpm db:seed:collected`로 네트워크 없이 동일한 자료를 복원할 수 있습니다.
 
 ## 한국어 종명 사전과 카드 표시 이름
 
@@ -172,7 +185,7 @@ pnpm cards:collect --query 피카츄 --limit 5
 - `catalog.CardLocalizedName`: 카드 UUID·표시 locale의 복합 키, 한국어 이름, 종명 FK, 출처.
 - 공통 DTO는 기존 `name`과 인쇄 `language`를 유지하고 optional `localizedNames`를 추가합니다. 저장된 한국어 이름이 없으면 해당 필드는 생략합니다.
 - NFKC·공백·대소문자 정규화 후 **원문 이름 전체가 일치할 때만** 연결합니다. `Pikachu V`, 소유자명·특수 형태·트레이너 이름 등을 추측해 번역하지 않습니다. 종명 표기와 한국어판의 실제 카드명은 다를 수 있습니다.
-- 카드 수집 저장소는 입력 DTO의 임의 한국어 표기를 신뢰하지 않고 DB 사전에서 이름을 연결합니다. 원문명이 바뀌어 대응이 사라지면 이전의 자동 종명 표기도 제거합니다. UUID·원문명·카드 인쇄 언어를 번역 때문에 변경하지 않습니다.
+- 카드 수집 저장소는 입력 DTO의 임의 한국어 표기를 신뢰하지 않고 DB 사전에서 이름을 연결합니다. 원문명이 바뀌어 대응이 사라지면 이전의 자동 종명 표기도 제거합니다. 한국어판은 자동 종명 연결 대상에서 제외하고 원문 이름을 사용합니다. UUID·원문명·카드 인쇄 언어를 번역 때문에 변경하지 않습니다.
 - DB 카드 검색은 원문명과 저장된 한국어 이름을 OR 조건으로 조회하고 나서 limit를 적용합니다. 일반 조회는 외부 이름 API를 호출하지 않습니다.
 - Mock 어댑터도 fixtures에 포함된 피카츄·리자몽·이브이 표기로 검색할 수 있습니다. DB seed는 본문만 저장하므로 새 DB의 권장 순서는 `db:migrate` → `db:seed` → `cards:localize`입니다.
 - Web은 한국어 표기를 우선 보여주고 원문 이름과 인쇄 언어를 함께 유지합니다. 화면 구조는 확장하지 않습니다.

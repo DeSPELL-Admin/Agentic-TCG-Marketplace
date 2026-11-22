@@ -4,13 +4,15 @@
 
 | 파일 | 내용 | 개수 |
 | --- | --- | ---: |
-| catalog/cards.json | 수집 카드, 내부 UUID, 수집 시각 | 171 |
-| catalog/external-identities.json | 외부 카드 ID와 내부 UUID 매핑 | 171 |
+| catalog/cards.json | 수집 카드, 내부 UUID, 수집 시각 | 410 |
+| catalog/external-identities.json | 외부 카드 ID와 내부 UUID 매핑 | 410 |
 | catalog/korean-names.json | 영어·한국어 종명 사전 / 카드 표시 이름 | 1,025 / 136 |
 | market/price-snapshots.json | 카드·제공자·변형·유형별 최신 참고 가격 | 1,145 |
 | manifest.json | 형식 버전·데이터 구분·파일 SHA-256 | 1 |
 
-카드는 Base Set 102장, Jungle 64장과 기존 프로모 피카츄 5종입니다. 한국어 종명은 136종에 연결됐고 트레이너·에너지·정확히 대응되지 않은 이름은 원문으로 유지합니다. 166종에 이미지 URL이 있으며 이미지 파일은 포함하지 않습니다. 종명 사전 1,025개가 카드 1,025개를 뜻하지 않습니다. 가격은 수집 당시 EUR/USD 제공자 집계가·판매 희망가이며 한국어판 실거래가가 아닙니다. 관측 시각은 제공자 갱신 시각입니다.
+영어판 171장은 Base Set 102장, Jungle 64장과 기존 프로모 피카츄 5종입니다. 종명은 영어판 136장에 연결됐고 트레이너·에너지·정확히 대응되지 않은 이름은 원문으로 유지합니다. 영어판 166장에 이미지 URL이 있으며 이미지 파일은 포함하지 않습니다. 종명 사전 1,025개가 카드 1,025개를 뜻하지 않습니다. 가격 1,145개는 영어판의 EUR/USD 제공자 집계가·판매 희망가이며 한국어판 실거래가가 아닙니다. 관측 시각은 제공자 갱신 시각입니다.
+
+한국어판 239장은 와일드포스(`SV5K`) 49장, 고대의 포효(`SV4K`) 95장, 미래의 일섬(`SV4M`) 95장입니다. 2026-11-22 TCGdex 한국어 API의 제공 목록을 수집했으며 실제 출시 세트 전체를 보장하지 않습니다. SV5K는 선언된 카드 수와 제공 목록이 다릅니다. 이름은 제공자의 한국어 원문이며 종명 번역으로 덮어쓰지 않습니다. 공식 인쇄본과 모든 항목을 독립 대조한 자료는 아닙니다. 이미지와 한국어판 가격은 없으며 영어판 자료로 대신 채우지 않습니다.
 
 ## 로컬 DB에 넣기
 
@@ -31,6 +33,8 @@ API에서 확인하려면 루트 `.env`에 `DATABASE_ENABLED=true`, `CARD_DATA_S
 
 ```http
 GET /api/cards?q=피카츄
+GET /api/cards?q=로젤리아
+GET /api/cards/7187e8ab-7f8f-4c50-9cf9-fb20ed2b97cd
 GET /api/cards/044f4a6d-386b-4bbc-9eb1-046266917174
 GET /api/cards/044f4a6d-386b-4bbc-9eb1-046266917174/prices
 ```
@@ -51,12 +55,15 @@ GET /api/cards/044f4a6d-386b-4bbc-9eb1-046266917174/prices
 ```powershell
 pnpm cards:collect:set --set base1 --refresh
 pnpm cards:collect:set --set base2 --refresh
+pnpm cards:collect:set --language ko --set SV5K --refresh
+pnpm cards:collect:set --language ko --set SV4K --refresh
+pnpm cards:collect:set --language ko --set SV4M --refresh
 pnpm prices:collect --limit 200
 pnpm fixtures:export
 git diff -- packages/db/fixtures
 ```
 
-수집 명령은 네트워크를 사용하지만 export와 seed는 사용하지 않습니다. export는 `selection.json`의 기존 카드 UUID와 명시한 세트·예상 카드 수, 고정 PokéAPI revision의 사전만 읽습니다. 세트 카드 수가 부족하면 불완전한 자료를 내보내지 않습니다. 미확정 판본의 영어 TCGdex 카드만 대상이며 사용자 데이터가 섞이지 않도록 전체 DB 자동 덤프를 제공하지 않습니다. 공유 대상을 늘리려면 selection과 데이터 변경을 함께 검토하세요. 수집 진행 상태와 실행 잠금도 JSON에 포함하지 않습니다.
+수집 명령은 네트워크를 사용하지만 export와 seed는 사용하지 않습니다. export는 `selection.json`의 기존 영어 카드 UUID와 명시한 세트·언어·예상 카드 수, 고정 PokéAPI revision의 사전만 읽습니다. 세트의 language는 `EN` 또는 `KO`이며 생략하면 `EN`입니다. 선택한 언어별 카드 수가 예상과 다르면 내보내지 않습니다. 예상 수는 검토한 제공 목록 기준이며 실제 세트 전체 카드 수를 뜻하지 않습니다. 미확정 판본의 TCGdex 카드만 대상이며 사용자 데이터가 섞이지 않도록 전체 DB 자동 덤프를 제공하지 않습니다. 공유 대상을 늘리려면 selection과 데이터 변경을 함께 검토하세요. 수집 진행 상태와 실행 잠금도 JSON에 포함하지 않습니다.
 
 export는 일관된 DB 스냅샷을 읽고 키 순서와 원본 시각을 고정합니다. 같은 DB 상태에서 재실행하면 파일 내용과 해시가 같습니다. 신규 가격은 원래 갱신 시각을 유지하며 제공자·변형·가격 유형별 최신 한 행만 포함합니다. JSON을 직접 고친 뒤 해시만 바꾸는 방식보다 수집·검증 후 다시 내보내는 방식을 권장합니다.
 

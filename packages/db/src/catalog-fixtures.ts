@@ -50,7 +50,7 @@ export function validateCatalogFixtures(input: unknown): CatalogFixtures {
   for (const name of names.values()) if (name.englishKey !== normalizeName(name.englishName)) throw new Error('Fixture dictionary normalization mismatch');
   for (const localized of data.koreanNames.localizedNames) {
     const card = cards.get(localized.cardVariantId); const translation = names.get(localized.speciesId);
-    if (!card || !translation || normalizeName(card.name) !== translation.englishKey || localized.name !== translation.koreanName || localized.sourceUrl !== translation.sourceUrl) throw new Error('Fixture localized name mismatch');
+    if (!card || card.language === 'KO' || !translation || normalizeName(card.name) !== translation.englishKey || localized.name !== translation.koreanName || localized.sourceUrl !== translation.sourceUrl) throw new Error('Fixture localized name mismatch');
   }
   for (const price of data.priceSnapshots) {
     const identity = identities.get(price.cardVariantId);

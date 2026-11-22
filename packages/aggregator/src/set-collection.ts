@@ -6,27 +6,28 @@ import { externalSetIdSchema, setPlanSchema, type SetCardSource, type SetPlan } 
 import { createPrismaCardCatalogWriter } from './prisma-card-catalog.js';
 import { validateCollectionCards, type CardCatalogWriter } from './collection.js';
 
-export interface SetCollectionProgress { runId: string; setId: string; status: string; totalCards: number; nextIndex: number; resumedFrom: number; storedThisRun: number }
-export function createSetCollectionService({ prisma, source, writer = createPrismaCardCatalogWriter(prisma), now = () => new Date() }: { prisma: PrismaClient; source: SetCardSource; writer?: CardCatalogWriter; now?: () => Date }) {
+export interface SetCollectionProgress { runId: string; setId: string; language: string; status: string; totalCards: number; nextIndex: number; resumedFrom: number; storedThisRun: number }
+export function createSetCollectionService({ prisma, source, writer = createPrismaCardCatalogWriter(prisma), now = () => new Date(), language: inputLanguage = 'en' }: { language?: 'en' | 'ko'; prisma: PrismaClient; source: SetCardSource; writer?: CardCatalogWriter; now?: () => Date }) {
+  const language = z.enum(['en', 'ko']).parse(inputLanguage).toUpperCase();
   const leaseMs = 300_000;
   return { async collectSet(input: { setId: string; batchSize?: number; maxBatches?: number; refresh?: boolean; onProgress?: (progress: SetCollectionProgress) => void }) {
     const setId = externalSetIdSchema.parse(input.setId);
     const batchSize = z.number().int().min(1).max(20).parse(input.batchSize ?? 20);
     const maxBatches = z.number().int().min(1).max(2000).parse(input.maxBatches ?? 2000);
-    const where = { collectionTarget: { provider: 'TCGDEX' as const, language: 'EN', setId } };
+    const where = { collectionTarget: { provider: 'TCGDEX' as const, language, setId } };
     let run = await prisma.catalogCollectionRun.findUnique({ where });
     let newPlan: SetPlan | undefined;
     if (!run || input.refresh) {
       newPlan = setPlanSchema.parse(await source.getSet(setId));
       if (newPlan.setId !== setId) throw new AppError('INTERNAL_ERROR', '수집 세트가 요청한 세트와 다릅니다.', 502);
-      await prisma.catalogCollectionRun.createMany({ data: [{ provider: 'TCGDEX', language: 'EN', setId, setName: newPlan.setName, externalIds: newPlan.externalIds }], skipDuplicates: true });
+      await prisma.catalogCollectionRun.createMany({ data: [{ provider: 'TCGDEX', language, setId, setName: newPlan.setName, externalIds: newPlan.externalIds }], skipDuplicates: true });
       run = await prisma.catalogCollectionRun.findUniqueOrThrow({ where });
     }
     const plan = setPlanSchema.parse({ setId, setName: run!.setName, externalIds: run!.externalIds });
     if (run!.nextIndex < 0 || run!.nextIndex > plan.externalIds.length) throw new AppError('INTERNAL_ERROR', '수집 진행 상태가 올바르지 않습니다.', 500);
     const resumedFrom = input.refresh ? 0 : run!.nextIndex;
     let nextIndex = resumedFrom; let storedThisRun = 0;
-    const progress = (status: string): SetCollectionProgress => ({ runId: run!.id, setId, status, totalCards: plan.externalIds.length, nextIndex, resumedFrom, storedThisRun });
+    const progress = (status: string): SetCollectionProgress => ({ runId: run!.id, setId, language, status, totalCards: plan.externalIds.length, nextIndex, resumedFrom, storedThisRun });
     if (run!.status === 'COMPLETED' && !input.refresh) return progress('COMPLETED');
     const token = randomUUID(); const at = now();
     const acquired = await prisma.catalogCollectionRun.updateMany({
@@ -51,7 +52,7 @@ export function createSetCollectionService({ prisma, source, writer = createPris
             const index = next++;
             try {
               const card = await source.getCard(ids[index]!, setId);
-              if (card.setCode !== setId || card.language !== 'EN') throw new AppError('INTERNAL_ERROR', '세트 카드의 식별 속성이 올바르지 않습니다.', 502);
+              if (card.setCode !== setId || card.language !== language) throw new AppError('INTERNAL_ERROR', '세트 카드의 식별 속성이 올바르지 않습니다.', 502);
               cards[index] = card;
             } catch (error) { failed = true; throw error; }
           }

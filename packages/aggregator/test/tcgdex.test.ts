@@ -18,6 +18,28 @@ function fixtureFetch(details = [card]) {
 }
 
 describe('TCGdex 외부 카드 어댑터', () => {
+  it('KO 원문·식별자를 보존하고 같은 외부 ID의 EN 카드와 UUID를 분리한다', async () => {
+    const identityStore = createInMemoryCardIdentityStore();
+    const calls: string[] = [];
+    const fetcher: typeof fetch = async input => {
+      const url = new URL(String(input)); calls.push(url.pathname);
+      if (url.pathname === '/v2/en/series/tcgp') return json({ id: 'tcgp', sets: [] });
+      if (url.pathname.includes('/series/')) return json({}, 404);
+      const detail = { ...card, id: 'SV4K-001', localId: '001', name: url.pathname.includes('/ko/') ? '야나프' : 'Pansage', set: { id: 'SV4K' }, image: undefined };
+      return json(url.pathname.endsWith('/cards') ? [detail] : detail);
+    };
+    const ko = createTcgdexCardAdapter({ language: 'ko', identityStore, fetch: fetcher });
+    const en = createTcgdexCardAdapter({ language: 'en', identityStore, fetch: fetcher });
+    const [korean] = await ko.searchCards({ query: '야나프', limit: 1 });
+    const english = await en.getCardByExternalId('SV4K-001');
+    expect(korean).toMatchObject({ name: '야나프', language: 'KO', setCode: 'SV4K', cardNumber: '001', edition: 'UNSPECIFIED', condition: 'UNSPECIFIED' });
+    expect(korean!.imageUrl).toBeUndefined(); expect(korean).not.toHaveProperty('pricing');
+    expect(korean!.id).not.toBe(english!.id);
+    expect(await ko.getCardVariant(korean!.id)).toEqual(korean);
+    const before = calls.length;
+    expect(await ko.getCardVariant(english!.id)).toBeNull(); expect(calls).toHaveLength(before);
+    expect(calls).toContain('/v2/ko/cards'); expect(calls).not.toContain('/v2/ko/series/tcgp');
+  });
   it('상세 응답을 UUID 기반 공통 DTO로 정규화하고 상태·에디션을 추측하지 않는다', async () => {
     const fetcher = fixtureFetch();
     const service = createAggregatorService({ adapter: createTcgdexCardAdapter({ fetch: fetcher, identityStore: createInMemoryCardIdentityStore() }) });

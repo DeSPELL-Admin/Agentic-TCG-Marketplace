@@ -43,6 +43,19 @@ integration('중단·실패 뒤 저장된 계획과 체크포인트부터 재개
   expect(c.calls).toHaveLength(calls);
   expect(await c.prisma.cardVariant.count({ where: { setCode: c.setId } })).toBe(5);
 }));
+integration('같은 세트의 KO 수집이 EN 체크포인트나 UUID를 덮어쓰지 않는다', async () => fixture(async c => {
+  await c.service.collectSet({ setId: c.setId, batchSize: 1, maxBatches: 1 });
+  const identity = createPrismaCardIdentityStore(c.prisma);
+  const source: SetCardSource = { getSet: c.source.getSet, async getCard(externalId) {
+    return { id: await identity.getOrCreateId({ provider: 'TCGDEX', externalId, language: 'KO', edition: 'UNSPECIFIED', condition: 'UNSPECIFIED' }), game: 'POKEMON', name: '한국어 카드', setCode: c.setId, cardNumber: externalId.split('-').at(-1)!, language: 'KO', edition: 'UNSPECIFIED', condition: 'UNSPECIFIED' };
+  } };
+  const ko = createSetCollectionService({ prisma: c.prisma, source, language: 'ko' });
+  expect(await ko.collectSet({ setId: c.setId })).toMatchObject({ language: 'KO', status: 'COMPLETED', storedThisRun: 5 });
+  expect(await c.prisma.catalogCollectionRun.findUnique({ where: { collectionTarget: { provider: 'TCGDEX', language: 'EN', setId: c.setId } } })).toMatchObject({ nextIndex: 1, status: 'PENDING' });
+  expect(await c.service.collectSet({ setId: c.setId })).toMatchObject({ resumedFrom: 1, storedThisRun: 4 });
+  expect(await c.prisma.cardVariant.count({ where: { setCode: c.setId } })).toBe(10);
+  expect(await ko.collectSet({ setId: c.setId })).toMatchObject({ storedThisRun: 0 });
+}));
 integration('카드 저장 후 진행 기록 실패를 재현해도 UUID와 카드 수가 유지된다', async () => fixture(async c => {
   const writer = createPrismaCardCatalogWriter(c.prisma);
   const broken = createSetCollectionService({ prisma: c.prisma, source: c.source, writer: { async saveCards(input) { await writer.saveCards(input); throw new Error('crash after save'); } } });

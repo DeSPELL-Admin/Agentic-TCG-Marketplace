@@ -8,6 +8,9 @@
   ],
   "sets": [
     { "id": "base1", "expectedCards": 102 },
-    { "id": "base2", "expectedCards": 64 }
+    { "id": "base2", "expectedCards": 64 },
+    { "id": "SV5K", "language": "KO", "expectedCards": 49 },
+    { "id": "SV4K", "language": "KO", "expectedCards": 95 },
+    { "id": "SV4M", "language": "KO", "expectedCards": 95 }
   ]
 }

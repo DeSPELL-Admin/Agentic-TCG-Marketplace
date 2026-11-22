@@ -24,10 +24,12 @@ export class TcgdexAdapterError extends AppError {
   }
 }
 
+export type TcgdexLanguage = 'en' | 'ko';
+
 export interface TcgdexCardAdapterOptions {
   identityStore: CardIdentityStore;
-  /** 첫 구현은 공식 API에서 확인한 영어 카탈로그만 지원한다. */
-  language?: 'en';
+  /** 공급자의 언어별 카탈로그. 한국어 이름 번역으로 영어판을 한국어판으로 바꾸지 않는다. */
+  language?: TcgdexLanguage;
   fetch?: typeof globalThis.fetch;
   requestTimeoutMs?: number;
   operationTimeoutMs?: number;
@@ -42,7 +44,8 @@ const unspecified = 'UNSPECIFIED';
 const notFound = Symbol('TCGDEX_NOT_FOUND');
 
 export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): TcgdexCardAdapter {
-  const language = z.literal('en').parse(options.language ?? 'en');
+  const language = z.enum(['en', 'ko']).parse(options.language ?? 'en');
+  const cardLanguage = language.toUpperCase();
   const fetcher = options.fetch ?? globalThis.fetch;
   const requestTimeoutMs = z.number().int().min(1).max(60_000).parse(options.requestTimeoutMs ?? 5_000);
   const operationTimeoutMs = z.number().int().min(1).max(120_000).parse(options.operationTimeoutMs ?? 15_000);
@@ -51,11 +54,11 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Tcgd
   const cache = new Map<string, { card: CardDetail; expiresAt: number }>();
   let pocketSets: { ids: Set<string>; expiresAt: number } | undefined;
 
-  async function request(path: string, signal: AbortSignal, allowNotFound = false): Promise<unknown | null> {
+  async function request(path: string, signal: AbortSignal, allowNotFound = false, requestLanguage = language): Promise<unknown | null> {
     const requestSignal = AbortSignal.any([signal, AbortSignal.timeout(requestTimeoutMs)]);
     let response: Response;
     try {
-      response = await fetcher(new URL(`https://api.tcgdex.net/v2/${language}/${path}`), {
+      response = await fetcher(new URL(`https://api.tcgdex.net/v2/${requestLanguage}/${path}`), {
         headers: { accept: 'application/json' }, signal: requestSignal, redirect: 'error',
       });
     } catch {
@@ -95,7 +98,8 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Tcgd
 
   async function getPocketSets(signal: AbortSignal): Promise<Set<string>> {
     if (pocketSets && pocketSets.expiresAt > now()) return pocketSets.ids;
-    const result = z.object({ id: z.literal('tcgp'), sets: z.array(z.object({ id: textSchema })) }).safeParse(await request('series/tcgp', signal));
+    // KO에는 tcgp 메타데이터가 없어도 실물 카드가 존재한다. 제외 ID는 공통 EN 시리즈에서 읽는다.
+    const result = z.object({ id: z.literal('tcgp'), sets: z.array(z.object({ id: textSchema })) }).safeParse(await request('series/tcgp', signal, false, 'en'));
     if (!result.success) throw new TcgdexAdapterError('INVALID_RESPONSE', 502, false);
     const ids = new Set(result.data.sets.map(set => set.id));
     pocketSets = { ids, expiresAt: now() + cacheTtlMs };
@@ -103,11 +107,11 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Tcgd
   }
 
   async function normalize(card: CardDetail): Promise<CardVariant> {
-    const id = await options.identityStore.getOrCreateId({ provider: 'TCGDEX', externalId: card.id, language: 'EN', edition: unspecified, condition: unspecified });
+    const id = await options.identityStore.getOrCreateId({ provider: 'TCGDEX', externalId: card.id, language: cardLanguage, edition: unspecified, condition: unspecified });
     if (!idSchema.safeParse(id).success) throw new AppError('INTERNAL_ERROR', '카드 ID 매핑 저장소가 올바른 UUID를 반환하지 않았습니다.', 500);
     return cardVariantSchema.parse({
       id, game: 'POKEMON', name: card.name, setCode: card.set.id, cardNumber: card.localId,
-      language: 'EN', edition: unspecified, condition: unspecified,
+      language: cardLanguage, edition: unspecified, condition: unspecified,
       imageUrl: card.image ? `${card.image}/high.webp` : undefined,
     });
   }
@@ -150,7 +154,7 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Tcgd
     async getCardVariant(id) {
       const internalId = idSchema.parse(id).toLowerCase();
       const reference = await options.identityStore.findById(internalId);
-      if (!reference || reference.provider !== 'TCGDEX' || reference.language !== 'EN' || reference.edition !== unspecified || reference.condition !== unspecified) return null;
+      if (!reference || reference.provider !== 'TCGDEX' || reference.language !== cardLanguage || reference.edition !== unspecified || reference.condition !== unspecified) return null;
       if (!externalIdSchema.safeParse(reference.externalId).success) throw new AppError('INTERNAL_ERROR', '카드 ID 매핑의 외부 식별자가 올바르지 않습니다.', 500);
       const signal = AbortSignal.timeout(operationTimeoutMs);
       const card = await getDetail(reference.externalId, signal);

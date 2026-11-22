@@ -25,7 +25,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <ServiceNav aria-label="서비스 메뉴">{[['/cards', '카드 검색'], ['/marketplace', '매물'], ['/collection', '내 카드'], ['/activity', '거래 관리'], ['/agent', '에이전트 설정'], ['/agent/logs', 'Agent 로그']].map(([href, label]) => <Link key={href} href={href!} aria-current={(pathname === href || href === '/cards' && pathname.startsWith('/cards/')) ? 'page' : undefined}>{label}</Link>)}</ServiceNav>
     <PageFrame id="main-content" tabIndex={-1}>{children}</PageFrame>
     <Footer id="data-guide"><FooterBrand>Agentic TCG</FooterBrand><details><summary>데이터 안내</summary>
-      <p>한국어 이름은 포켓몬 종명 표기이며 카드의 인쇄 언어와는 별개입니다. 해외 참고 시세는 제공자의 집계·판매 희망 가격으로, 한국어판 실거래가와 다를 수 있습니다.</p>
+      <p>영어판의 한국어 이름은 포켓몬 종명 표기이며, 한국어판은 원문 이름을 표시합니다. 해외 참고 시세는 제공자의 집계·판매 희망 가격으로, 한국어판 실거래가와 다를 수 있습니다.</p>
       <p>데모 가격은 합성 데이터로 구분합니다. 매물·내 카드·거래 관리·Agent 설정과 로그는 화면 미리보기이며 실제 주문·결제를 실행하지 않아요.</p>
     </details></Footer></BrowsePane><AgentChat /></Workspace>
   </>;

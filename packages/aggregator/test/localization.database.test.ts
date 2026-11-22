@@ -50,6 +50,18 @@ describe.skipIf(!process.env.DATABASE_TEST_URL)('한국어 이름 DB 연결', ()
     expect(await prisma.cardLocalizedName.count({ where: { cardVariantId: card.id } })).toBe(0);
     expect((await createPrismaCardAdapter(prisma).getCardVariant(card.id))?.name).toBe(card.name + ' V');
   });
+  it('KO 원문에는 영문 종명 사전을 덧씌우지 않고 한국어 제목을 그대로 검색한다', async () => {
+    const { translation, card } = await fixture();
+    await importer(translation).importNames();
+    const externalId = `native-ko-${randomUUID()}`; externalIds.add(externalId);
+    const id = await createPrismaCardIdentityStore(prisma).getOrCreateId({ provider: 'TCGDEX', externalId, language: 'KO', edition: 'UNSPECIFIED', condition: 'UNSPECIFIED' }); cardIds.add(id);
+    const writer = createPrismaCardCatalogWriter(prisma);
+    await writer.saveCards({ cards: [{ ...card, id, language: 'KO' }], collectedAt: '2026-11-22T00:00:00Z' });
+    expect(await prisma.cardLocalizedName.count({ where: { cardVariantId: id } })).toBe(0);
+    await writer.saveCards({ cards: [{ ...card, id, language: 'KO', name: `원문한국어${card.id}` }], collectedAt: '2026-11-22T01:00:00Z' });
+    const reader = createPrismaCardAdapter(prisma);
+    expect((await reader.searchCards({ query: `원문한국어${card.id}`, limit: 1 }))[0]).toMatchObject({ id, language: 'KO', name: `원문한국어${card.id}` });
+  });
 
   it('새 수집 카드에는 검증된 사전을 자동 적용하고 원문이 바뀌면 오래된 표기를 제거한다', async () => {
     const { translation, card } = await fixture();

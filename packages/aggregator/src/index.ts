@@ -6,7 +6,7 @@ import { AppError, cardParamsSchema, cardSearchQuerySchema, cardSearchResponseSc
 
 export type { AggregatorService } from '@tcg/contracts';
 export { createTcgdexCardAdapter, TcgdexAdapterError } from './tcgdex.js';
-export type { TcgdexCardAdapterOptions, TcgdexCardAdapter, TcgdexFailure } from './tcgdex.js';
+export type { TcgdexCardAdapterOptions, TcgdexCardAdapter, TcgdexFailure, TcgdexLanguage } from './tcgdex.js';
 export { createTcgdexSetSource } from './set-source.js';
 export type { SetCardSource, SetPlan } from './set-source.js';
 export { createSetCollectionService } from './set-collection.js';
