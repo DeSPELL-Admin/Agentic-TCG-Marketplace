@@ -34,11 +34,14 @@ export interface TcgdexCardAdapterOptions {
   cacheTtlMs?: number;
   now?: () => number;
 }
+export interface TcgdexCardAdapter extends CardDataAdapter {
+  getCardByExternalId(externalId: string): Promise<CardVariant | null>;
+}
 
 const unspecified = 'UNSPECIFIED';
 const notFound = Symbol('TCGDEX_NOT_FOUND');
 
-export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): CardDataAdapter {
+export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): TcgdexCardAdapter {
   const language = z.literal('en').parse(options.language ?? 'en');
   const fetcher = options.fetch ?? globalThis.fetch;
   const requestTimeoutMs = z.number().int().min(1).max(60_000).parse(options.requestTimeoutMs ?? 5_000);
@@ -110,6 +113,13 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Card
   }
 
   return {
+    async getCardByExternalId(input) {
+      const externalId = externalIdSchema.parse(input);
+      const signal = AbortSignal.timeout(operationTimeoutMs);
+      const card = await getDetail(externalId, signal);
+      if (!card || (await getPocketSets(signal)).has(card.set.id)) return null;
+      return normalize(card);
+    },
     async searchCards(input) {
       const { q, limit } = cardSearchQuerySchema.parse({ q: input.query, limit: input.limit });
       // 공급자 필터 연산자(|, *, :)가 일반 검색어로부터 실행되는 것을 막는다.

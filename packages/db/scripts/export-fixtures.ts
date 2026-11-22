@@ -1,19 +1,23 @@
 import { config } from 'dotenv';
+import { readFile } from 'node:fs/promises';
+import { z } from 'zod';
+import { idSchema } from '@tcg/contracts';
 import { createPrismaClient } from '../src/index.js';
 import { writeCatalogFixtures } from '../src/catalog-fixtures.js';
 
 // 명시적으로 공유할 수집 카드만 내보낸다. 전체 DB 덤프나 사용자 데이터 수집을 하지 않는다.
-const cardIds = ['044f4a6d-386b-4bbc-9eb1-046266917174', '153ce175-5434-4a80-ad9f-a6737e380aa6', '24511913-a201-437a-a7cd-5c73d48ef058', '9257498a-187e-49e1-bb69-84f38d7f2e24', 'af6aca2b-f957-496a-b874-17e980759354'];
 const sourceUrl = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv';
 const compare = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
 config({ path: '../../.env', quiet: true });
 let prisma: ReturnType<typeof createPrismaClient> | undefined;
 try {
+  const selection = z.object({ legacyCardIds: z.array(idSchema).max(100), sets: z.array(z.object({ id: z.string().regex(/^[a-zA-Z0-9._-]{1,128}$/), expectedCards: z.number().int().positive().max(500) }).strict()).max(10) }).strict().parse(JSON.parse(await readFile(new URL('../fixtures/selection.json', import.meta.url), 'utf8')));
   if (!process.env.DATABASE_URL) throw new Error('Missing database URL');
   prisma = createPrismaClient(process.env.DATABASE_URL);
   const data = await prisma.$transaction(async tx => {
-    const cards = await tx.cardVariant.findMany({ where: { id: { in: cardIds } }, orderBy: { id: 'asc' }, select: { id: true, game: true, name: true, setCode: true, cardNumber: true, language: true, edition: true, condition: true, imageUrl: true, externalIdentityId: true, lastCollectedAt: true } });
-    if (cards.length !== cardIds.length) throw new Error('Missing selected cards');
+    const cards = await tx.cardVariant.findMany({ where: { language: 'EN', edition: 'UNSPECIFIED', condition: 'UNSPECIFIED', externalIdentity: { provider: 'TCGDEX', language: 'EN', edition: 'UNSPECIFIED', condition: 'UNSPECIFIED' }, OR: [{ id: { in: selection.legacyCardIds } }, { setCode: { in: selection.sets.map(set => set.id) } }] }, orderBy: { id: 'asc' }, select: { id: true, game: true, name: true, setCode: true, cardNumber: true, language: true, edition: true, condition: true, imageUrl: true, externalIdentityId: true, lastCollectedAt: true } });
+    if (selection.legacyCardIds.some(id => !cards.some(card => card.id === id)) || selection.sets.some(set => cards.filter(card => card.setCode === set.id).length !== set.expectedCards)) throw new Error('Incomplete selected catalog');
+    const cardIds = cards.map(card => card.id);
     const externalIdentities = await tx.externalCardIdentity.findMany({ where: { id: { in: cardIds } }, orderBy: { id: 'asc' }, select: { id: true, provider: true, externalId: true, language: true, edition: true, condition: true, createdAt: true } });
     const translations = await tx.pokemonNameTranslation.findMany({ where: { sourceUrl, speciesId: { lte: 1025 } }, orderBy: { speciesId: 'asc' }, select: { speciesId: true, englishName: true, englishKey: true, koreanName: true, sourceUrl: true, importedAt: true } });
     const localizedNames = await tx.cardLocalizedName.findMany({ where: { cardVariantId: { in: cardIds }, locale: 'ko', source: 'POKEAPI_SPECIES', sourceUrl }, orderBy: { cardVariantId: 'asc' }, select: { cardVariantId: true, locale: true, name: true, source: true, sourceUrl: true, speciesId: true } });

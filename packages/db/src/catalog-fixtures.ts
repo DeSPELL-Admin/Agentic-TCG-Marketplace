@@ -18,9 +18,9 @@ const priceSchema = z.object({
   originalCurrency: z.enum(['EUR', 'USD']), originalAmount: decimal, sourceUrl: https, observedAt: timestampSchema, collectedAt: timestampSchema,
 }).strict();
 const bundleSchema = z.object({
-  cards: z.array(cardSchema).min(1).max(100),
-  externalIdentities: z.array(identitySchema).min(1).max(100),
-  koreanNames: z.object({ translations: z.array(translationSchema).min(1).max(2000), localizedNames: z.array(localizedSchema).max(100) }).strict(),
+  cards: z.array(cardSchema).min(1).max(500),
+  externalIdentities: z.array(identitySchema).min(1).max(500),
+  koreanNames: z.object({ translations: z.array(translationSchema).min(1).max(2000), localizedNames: z.array(localizedSchema).max(500) }).strict(),
   priceSnapshots: z.array(priceSchema).max(5000),
 }).strict();
 export type CatalogFixtures = z.infer<typeof bundleSchema>;

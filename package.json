@@ -20,6 +20,7 @@
     "db:seed:collected": "pnpm --filter @tcg/db db:seed:collected",
     "fixtures:export": "pnpm --filter @tcg/db fixtures:export",
     "cards:collect": "pnpm --filter @tcg/aggregator collect",
+    "cards:collect:set": "pnpm --filter @tcg/aggregator collect:set",
     "cards:localize": "pnpm --filter @tcg/aggregator localize",
     "prices:collect": "pnpm --filter @tcg/valuation prices:collect",
     "prices:assess": "pnpm --filter @tcg/valuation prices:assess",

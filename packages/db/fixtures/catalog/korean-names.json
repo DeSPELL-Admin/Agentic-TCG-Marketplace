@@ -8203,12 +8203,68 @@
   ],
   "localizedNames": [
     {
+      "cardVariantId": "0048bfe8-c52d-4bd7-bc61-37bb4d34a611",
+      "locale": "ko",
+      "name": "잠만보",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 143
+    },
+    {
       "cardVariantId": "044f4a6d-386b-4bbc-9eb1-046266917174",
       "locale": "ko",
       "name": "피카츄",
       "source": "POKEAPI_SPECIES",
       "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
       "speciesId": 25
+    },
+    {
+      "cardVariantId": "08592e15-c5b4-44ee-a9f5-3d667fa40b38",
+      "locale": "ko",
+      "name": "푸크린",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 40
+    },
+    {
+      "cardVariantId": "08bd31e8-2981-46d9-af01-b0538b7cef20",
+      "locale": "ko",
+      "name": "이브이",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 133
+    },
+    {
+      "cardVariantId": "0b76eb1a-85f4-4786-b012-201efc18ab8d",
+      "locale": "ko",
+      "name": "별가사리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 120
+    },
+    {
+      "cardVariantId": "0ca1021b-0889-4e45-8ba6-24b0328aa017",
+      "locale": "ko",
+      "name": "부스터",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 136
+    },
+    {
+      "cardVariantId": "10c88c51-bf58-4e71-bae3-157b9ef56518",
+      "locale": "ko",
+      "name": "쁘사이저",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 127
+    },
+    {
+      "cardVariantId": "14e489b6-8de6-4cc1-8499-eb9e4bfb0fb1",
+      "locale": "ko",
+      "name": "코뿌리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 112
     },
     {
       "cardVariantId": "153ce175-5434-4a80-ad9f-a6737e380aa6",
@@ -8219,12 +8275,532 @@
       "speciesId": 25
     },
     {
+      "cardVariantId": "1852b064-8212-49ba-8d8f-1a1ede9a5f89",
+      "locale": "ko",
+      "name": "라플레시아",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 45
+    },
+    {
+      "cardVariantId": "198b6888-b7b0-414e-99f6-a4610feba8a3",
+      "locale": "ko",
+      "name": "캥카",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 115
+    },
+    {
+      "cardVariantId": "20ae9d84-afd0-437c-8827-b32c3192fa1f",
+      "locale": "ko",
+      "name": "슬리프",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 96
+    },
+    {
+      "cardVariantId": "2146dc0f-4463-4969-a102-e95c20b26cc9",
+      "locale": "ko",
+      "name": "쥬레곤",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 87
+    },
+    {
+      "cardVariantId": "218c1108-0663-44ed-865b-aa7d402e71db",
+      "locale": "ko",
+      "name": "레트라",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 20
+    },
+    {
+      "cardVariantId": "22c98771-8fa0-4ed4-8780-e4b3ab55de89",
+      "locale": "ko",
+      "name": "캐터피",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 10
+    },
+    {
+      "cardVariantId": "234ea4ad-99a7-45e1-8d64-2a0203c2609d",
+      "locale": "ko",
+      "name": "우츠보트",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 71
+    },
+    {
       "cardVariantId": "24511913-a201-437a-a7cd-5c73d48ef058",
       "locale": "ko",
       "name": "피카츄",
       "source": "POKEAPI_SPECIES",
       "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
       "speciesId": 25
+    },
+    {
+      "cardVariantId": "29a941bf-21e2-4945-885f-7d70769f2d39",
+      "locale": "ko",
+      "name": "거북왕",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 9
+    },
+    {
+      "cardVariantId": "2d890991-e94e-4a1e-ab30-326ba2d782d1",
+      "locale": "ko",
+      "name": "페르시온",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 53
+    },
+    {
+      "cardVariantId": "2f5675ec-e374-4f0a-8600-551d3611ffd8",
+      "locale": "ko",
+      "name": "도나리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 49
+    },
+    {
+      "cardVariantId": "2f5aabbc-1734-4aaa-b488-ea7681d44b6b",
+      "locale": "ko",
+      "name": "나시",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 103
+    },
+    {
+      "cardVariantId": "302e6188-a650-4d5f-8a86-7e8fafdce64a",
+      "locale": "ko",
+      "name": "이상해풀",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 2
+    },
+    {
+      "cardVariantId": "33141553-6b0c-4078-a810-9a373d8466bb",
+      "locale": "ko",
+      "name": "붐볼",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 101
+    },
+    {
+      "cardVariantId": "34d5042f-97b5-4bcd-ae09-472a69058410",
+      "locale": "ko",
+      "name": "두두",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 84
+    },
+    {
+      "cardVariantId": "373144a1-e89f-40a8-a02a-567b2da45eae",
+      "locale": "ko",
+      "name": "럭키",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 113
+    },
+    {
+      "cardVariantId": "3c4a1198-f8dc-4b41-99ae-c0d379e2d30d",
+      "locale": "ko",
+      "name": "홍수몬",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 107
+    },
+    {
+      "cardVariantId": "3d24b684-2282-422b-9b16-973feecf4727",
+      "locale": "ko",
+      "name": "뮤츠",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 150
+    },
+    {
+      "cardVariantId": "3d5b96da-d211-4724-962d-51a498a46957",
+      "locale": "ko",
+      "name": "발챙이",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 60
+    },
+    {
+      "cardVariantId": "3f972e7c-977d-4178-9902-43fd986b5ab7",
+      "locale": "ko",
+      "name": "갸라도스",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 130
+    },
+    {
+      "cardVariantId": "41993909-34f8-4a03-b045-b873d86d8cde",
+      "locale": "ko",
+      "name": "피죤",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 17
+    },
+    {
+      "cardVariantId": "419d23fe-4828-485d-b61a-fba8ef1ac13d",
+      "locale": "ko",
+      "name": "붐볼",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 101
+    },
+    {
+      "cardVariantId": "43330c81-ff4d-4b23-a4b7-e62b7685c0d4",
+      "locale": "ko",
+      "name": "윈디",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 59
+    },
+    {
+      "cardVariantId": "4a78f0c6-bed5-4520-9496-09ad78cd9a6b",
+      "locale": "ko",
+      "name": "레어코일",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 82
+    },
+    {
+      "cardVariantId": "4d2cf4a8-6de4-4ca8-8753-66467fe0af19",
+      "locale": "ko",
+      "name": "피카츄",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 25
+    },
+    {
+      "cardVariantId": "4da559ba-eac2-4a37-a01d-65c64a45df88",
+      "locale": "ko",
+      "name": "꼬부기",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 7
+    },
+    {
+      "cardVariantId": "4e08b8ac-dd0e-438e-a0aa-b8a713ab57e6",
+      "locale": "ko",
+      "name": "라이츄",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 26
+    },
+    {
+      "cardVariantId": "4f6056f9-5946-4fcb-96f6-f5a6c98cadee",
+      "locale": "ko",
+      "name": "깨비참",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 21
+    },
+    {
+      "cardVariantId": "50300d4b-cc45-4372-b1a7-22cf82c7624a",
+      "locale": "ko",
+      "name": "부스터",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 136
+    },
+    {
+      "cardVariantId": "52ba9c6c-a729-4aaf-943a-a1ac0659a349",
+      "locale": "ko",
+      "name": "잉어킹",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 129
+    },
+    {
+      "cardVariantId": "53643c0c-5e57-4929-923a-f746658184ad",
+      "locale": "ko",
+      "name": "파라섹트",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 47
+    },
+    {
+      "cardVariantId": "5439d5ad-1cc9-4ac6-a95c-ce7297c9d933",
+      "locale": "ko",
+      "name": "픽시",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 36
+    },
+    {
+      "cardVariantId": "56f950b8-c92f-4fb2-ae42-38897d072846",
+      "locale": "ko",
+      "name": "리자몽",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 6
+    },
+    {
+      "cardVariantId": "570adb42-d1fe-4ebc-a146-eb48276c3cd5",
+      "locale": "ko",
+      "name": "근육몬",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 67
+    },
+    {
+      "cardVariantId": "57afb4ce-b29a-419c-9893-da636a99dc69",
+      "locale": "ko",
+      "name": "딱충이",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 14
+    },
+    {
+      "cardVariantId": "5b5e09de-9b4b-4253-b159-ed81eae74289",
+      "locale": "ko",
+      "name": "슈륙챙이",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 61
+    },
+    {
+      "cardVariantId": "5fb2f816-8dc7-46bc-81f2-8cfc9a937814",
+      "locale": "ko",
+      "name": "아라리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 102
+    },
+    {
+      "cardVariantId": "60a2c349-9812-41d4-bf27-8c35ce670f29",
+      "locale": "ko",
+      "name": "니드킹",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 34
+    },
+    {
+      "cardVariantId": "61fdb412-7873-4009-899b-844567cfeeb1",
+      "locale": "ko",
+      "name": "식스테일",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 37
+    },
+    {
+      "cardVariantId": "621ff216-23fd-47aa-8cc6-81cfac1cc35d",
+      "locale": "ko",
+      "name": "냄새꼬",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 44
+    },
+    {
+      "cardVariantId": "623f5c6b-7b7b-46de-aba1-573566a09eae",
+      "locale": "ko",
+      "name": "잠만보",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 143
+    },
+    {
+      "cardVariantId": "657e174e-d1d6-454a-a4e7-485a14664fdd",
+      "locale": "ko",
+      "name": "콘치",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 118
+    },
+    {
+      "cardVariantId": "659a34f1-8ca2-4199-ba9e-8b250a0a6569",
+      "locale": "ko",
+      "name": "스라크",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 123
+    },
+    {
+      "cardVariantId": "668e067e-ec31-485c-b8be-a61382ffb9a3",
+      "locale": "ko",
+      "name": "켄타로스",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 128
+    },
+    {
+      "cardVariantId": "67a01a16-ba80-4fe3-b969-31c5364121ba",
+      "locale": "ko",
+      "name": "롱스톤",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 95
+    },
+    {
+      "cardVariantId": "693a5171-1de1-43ea-b809-5078c03bfc7c",
+      "locale": "ko",
+      "name": "괴력몬",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 68
+    },
+    {
+      "cardVariantId": "6ac9ff5e-5e6b-4507-b249-739c536541bc",
+      "locale": "ko",
+      "name": "파라스",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 46
+    },
+    {
+      "cardVariantId": "6b7bef14-e7e2-4615-8657-c224c230c19f",
+      "locale": "ko",
+      "name": "고오스",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 92
+    },
+    {
+      "cardVariantId": "7101213c-7216-4570-9ee2-26dd0c9ab910",
+      "locale": "ko",
+      "name": "뚜벅쵸",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 43
+    },
+    {
+      "cardVariantId": "742dfb31-5785-475c-8f5b-b7921c043ee2",
+      "locale": "ko",
+      "name": "코일",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 81
+    },
+    {
+      "cardVariantId": "7499ab97-168a-4efc-afb7-8e9425719308",
+      "locale": "ko",
+      "name": "포니타",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 77
+    },
+    {
+      "cardVariantId": "763d88d2-9afc-469c-a3c7-9d6de7f4520d",
+      "locale": "ko",
+      "name": "폴리곤",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 137
+    },
+    {
+      "cardVariantId": "76b8a93c-e20b-4a9d-a77f-5680051e806a",
+      "locale": "ko",
+      "name": "두트리오",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 85
+    },
+    {
+      "cardVariantId": "78357937-6797-4d0f-acc7-bd632e5acfaf",
+      "locale": "ko",
+      "name": "모다피",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 69
+    },
+    {
+      "cardVariantId": "78620e14-6cce-44ff-b7b0-ba417648f5d5",
+      "locale": "ko",
+      "name": "피카츄",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 25
+    },
+    {
+      "cardVariantId": "7a2ca838-e3af-4c40-83aa-c8edb5eca9bb",
+      "locale": "ko",
+      "name": "내루미",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 108
+    },
+    {
+      "cardVariantId": "7af136b7-1b0b-41a6-b676-c9cd9d1d8ddf",
+      "locale": "ko",
+      "name": "우츠동",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 70
+    },
+    {
+      "cardVariantId": "7eeff480-fd41-472f-8bc3-7dc2c1c48918",
+      "locale": "ko",
+      "name": "마임맨",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 122
+    },
+    {
+      "cardVariantId": "8207e157-d68a-4312-8b98-72058c0b9615",
+      "locale": "ko",
+      "name": "덩쿠리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 114
+    },
+    {
+      "cardVariantId": "83229de8-946d-4c47-939e-b66ca5a7829f",
+      "locale": "ko",
+      "name": "모래두지",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 27
+    },
+    {
+      "cardVariantId": "846db9f6-3d6b-41a6-b736-1806c97c6890",
+      "locale": "ko",
+      "name": "알통몬",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 66
+    },
+    {
+      "cardVariantId": "849a16d9-077a-40aa-b78e-5d9536018963",
+      "locale": "ko",
+      "name": "날쌩마",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 78
+    },
+    {
+      "cardVariantId": "8832e916-aef4-4f65-9195-250cb2351ff0",
+      "locale": "ko",
+      "name": "꼬렛",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 19
+    },
+    {
+      "cardVariantId": "88437b18-2e5b-48ca-82b9-c4d725f70de7",
+      "locale": "ko",
+      "name": "도나리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 49
+    },
+    {
+      "cardVariantId": "8f9b2e55-7810-4fb2-a983-5912d5b9f61b",
+      "locale": "ko",
+      "name": "신뇽",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 148
+    },
+    {
+      "cardVariantId": "90db38c9-2775-478c-b6e6-82c3ba6bca8a",
+      "locale": "ko",
+      "name": "이상해씨",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 1
     },
     {
       "cardVariantId": "9257498a-187e-49e1-bb69-84f38d7f2e24",
@@ -8235,12 +8811,484 @@
       "speciesId": 25
     },
     {
+      "cardVariantId": "944812fc-ef7e-4de7-b9cc-a4a73744343b",
+      "locale": "ko",
+      "name": "고우스트",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 93
+    },
+    {
+      "cardVariantId": "95b76aad-3c4f-425f-9b2a-b780aa9bdb44",
+      "locale": "ko",
+      "name": "니드런♀",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 29
+    },
+    {
+      "cardVariantId": "95d5a971-6fe3-4867-88f7-919ac70a6928",
+      "locale": "ko",
+      "name": "스라크",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 123
+    },
+    {
+      "cardVariantId": "9677c667-e029-48af-a2bd-29d763052ce6",
+      "locale": "ko",
+      "name": "닥트리오",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 51
+    },
+    {
+      "cardVariantId": "96b66f72-f44c-43d9-bb15-26f744a41a52",
+      "locale": "ko",
+      "name": "니드퀸",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 31
+    },
+    {
+      "cardVariantId": "9bcf952c-cfef-4ee2-b441-dde42b9f0357",
+      "locale": "ko",
+      "name": "샤미드",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 134
+    },
+    {
+      "cardVariantId": "9d14d1b2-d190-4b88-9917-dc0357b27039",
+      "locale": "ko",
+      "name": "니드리나",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 30
+    },
+    {
+      "cardVariantId": "9d6f12ec-a41f-4bb7-9b05-bbe3768c9bbe",
+      "locale": "ko",
+      "name": "콘팡",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 48
+    },
+    {
+      "cardVariantId": "a0acdf80-7540-4084-a057-a1aac04f75c9",
+      "locale": "ko",
+      "name": "가디",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 58
+    },
+    {
+      "cardVariantId": "a27ebc7b-b6fa-436f-b865-4fea2a19415c",
+      "locale": "ko",
+      "name": "텅구리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 105
+    },
+    {
+      "cardVariantId": "a346685a-100d-407a-9442-109d2049c626",
+      "locale": "ko",
+      "name": "니드리노",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 33
+    },
+    {
+      "cardVariantId": "a3983d0f-f650-4764-939b-75d2c81ae1dc",
+      "locale": "ko",
+      "name": "마그마",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 126
+    },
+    {
+      "cardVariantId": "a3b4e2f9-ce35-4f83-b9a2-0c1d24d3adb9",
+      "locale": "ko",
+      "name": "우츠보트",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 71
+    },
+    {
+      "cardVariantId": "a3bae565-6324-4ed7-99ee-1b6827c4c0ee",
+      "locale": "ko",
+      "name": "마임맨",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 122
+    },
+    {
+      "cardVariantId": "a4b14dd5-6168-4aad-a48e-6bd43d162ef2",
+      "locale": "ko",
+      "name": "리자드",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 5
+    },
+    {
+      "cardVariantId": "a4b7e4dc-7e7f-45e9-92dc-65c624e38054",
+      "locale": "ko",
+      "name": "또가스",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 109
+    },
+    {
+      "cardVariantId": "a58740bd-b803-44ec-b012-a92c1e65a849",
+      "locale": "ko",
+      "name": "에레브",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 125
+    },
+    {
+      "cardVariantId": "a6c54847-b108-4f89-a4df-60be67d570a2",
+      "locale": "ko",
+      "name": "픽시",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 36
+    },
+    {
+      "cardVariantId": "a9a884c9-8584-48df-aaa8-5b2b11414193",
+      "locale": "ko",
+      "name": "윤겔라",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 64
+    },
+    {
+      "cardVariantId": "ace8aa7a-b1c9-47b3-9bf5-397f23e74189",
+      "locale": "ko",
+      "name": "캥카",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 115
+    },
+    {
+      "cardVariantId": "ad616445-b5bf-4fc4-8341-4d1337274be6",
+      "locale": "ko",
+      "name": "푸린",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 39
+    },
+    {
+      "cardVariantId": "aec84f6a-4de2-4011-b7c5-1a53f2db7de2",
+      "locale": "ko",
+      "name": "단데기",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 11
+    },
+    {
       "cardVariantId": "af6aca2b-f957-496a-b874-17e980759354",
       "locale": "ko",
       "name": "피카츄",
       "source": "POKEAPI_SPECIES",
       "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
       "speciesId": 25
+    },
+    {
+      "cardVariantId": "b19236fe-d6cc-4f60-8cd3-b0e6e0293500",
+      "locale": "ko",
+      "name": "깨비드릴조",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 22
+    },
+    {
+      "cardVariantId": "b2f1a222-2f84-49b3-b14b-33918e7a0535",
+      "locale": "ko",
+      "name": "강챙이",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 62
+    },
+    {
+      "cardVariantId": "b5634b12-7116-4a33-8547-a06dde1e47da",
+      "locale": "ko",
+      "name": "파이리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 4
+    },
+    {
+      "cardVariantId": "b58b4aa8-38f3-4517-adad-3e2302a4fd8b",
+      "locale": "ko",
+      "name": "니드퀸",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 31
+    },
+    {
+      "cardVariantId": "b71187d9-95b4-4c2e-81c7-a4fac4f7556d",
+      "locale": "ko",
+      "name": "독침붕",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 15
+    },
+    {
+      "cardVariantId": "bc321670-053b-433b-8a86-5dcbc9ce2f26",
+      "locale": "ko",
+      "name": "왕콘치",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 119
+    },
+    {
+      "cardVariantId": "bf2b3a9c-067d-420a-8566-c38a3af3c570",
+      "locale": "ko",
+      "name": "샤미드",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 134
+    },
+    {
+      "cardVariantId": "c3768039-2727-49b3-bdd0-0c5699ebbe6c",
+      "locale": "ko",
+      "name": "성원숭",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 57
+    },
+    {
+      "cardVariantId": "c59b6d77-646b-45f1-8a81-93269232de59",
+      "locale": "ko",
+      "name": "쥬쥬",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 86
+    },
+    {
+      "cardVariantId": "ca83eb39-701d-47a2-afc4-2dc6e4c96614",
+      "locale": "ko",
+      "name": "피죤투",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 18
+    },
+    {
+      "cardVariantId": "cc818fc5-acba-4057-b943-fbb992cc5b1e",
+      "locale": "ko",
+      "name": "캐이시",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 63
+    },
+    {
+      "cardVariantId": "cce93078-4dc7-415a-9a1a-e5b3c195c9c8",
+      "locale": "ko",
+      "name": "뿔카노",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 111
+    },
+    {
+      "cardVariantId": "cea46f0e-48b4-47ab-8f76-299b89ac6e3a",
+      "locale": "ko",
+      "name": "뿔충이",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 13
+    },
+    {
+      "cardVariantId": "d40b30ff-303a-4615-ad72-f5987163fa94",
+      "locale": "ko",
+      "name": "찌리리공",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 100
+    },
+    {
+      "cardVariantId": "d54caf2c-7b39-45a5-b407-cdb68fee573d",
+      "locale": "ko",
+      "name": "미뇽",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 147
+    },
+    {
+      "cardVariantId": "d7434f0e-f24e-41ee-beb5-7688f0694ebf",
+      "locale": "ko",
+      "name": "이상해꽃",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 3
+    },
+    {
+      "cardVariantId": "d96dcbb7-88b1-4271-b88e-b39b8115b9fc",
+      "locale": "ko",
+      "name": "니드런♂",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 32
+    },
+    {
+      "cardVariantId": "dd03bf6c-86c9-45ef-940a-5f69ad60f7fb",
+      "locale": "ko",
+      "name": "썬더",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 145
+    },
+    {
+      "cardVariantId": "ddf203a2-cff1-4e4d-b0c2-bf67c23eb6c0",
+      "locale": "ko",
+      "name": "쥬피썬더",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 135
+    },
+    {
+      "cardVariantId": "de73cced-66e1-41fb-9d65-8146c8ad8695",
+      "locale": "ko",
+      "name": "망키",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 56
+    },
+    {
+      "cardVariantId": "e22f52e4-6a79-4e97-a6c8-9ea9c4a091df",
+      "locale": "ko",
+      "name": "후딘",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 65
+    },
+    {
+      "cardVariantId": "e4a9f92a-ed90-448b-be65-d49901165f04",
+      "locale": "ko",
+      "name": "쥬피썬더",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 135
+    },
+    {
+      "cardVariantId": "e95c8e01-b470-4807-9b27-cecf6983b46e",
+      "locale": "ko",
+      "name": "루주라",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 124
+    },
+    {
+      "cardVariantId": "ed0477dc-cafd-4de2-8937-466aacde7bb7",
+      "locale": "ko",
+      "name": "나옹",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 52
+    },
+    {
+      "cardVariantId": "f1b20164-10f1-4a7a-8799-e1986644cad1",
+      "locale": "ko",
+      "name": "라플레시아",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 45
+    },
+    {
+      "cardVariantId": "f264844f-0b99-4c21-a767-f17b4fe986bb",
+      "locale": "ko",
+      "name": "쁘사이저",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 127
+    },
+    {
+      "cardVariantId": "f2da26ff-8ea0-4cc1-8425-20cc20580316",
+      "locale": "ko",
+      "name": "디그다",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 50
+    },
+    {
+      "cardVariantId": "f47c3239-52d3-40c1-a90a-58098250e183",
+      "locale": "ko",
+      "name": "구구",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 16
+    },
+    {
+      "cardVariantId": "f59fd9ec-55a4-4499-8cc5-916cabbe1f2a",
+      "locale": "ko",
+      "name": "아쿠스타",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 121
+    },
+    {
+      "cardVariantId": "f749c855-1079-43a7-bce3-09d987a75a26",
+      "locale": "ko",
+      "name": "어니부기",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 8
+    },
+    {
+      "cardVariantId": "f9d1c8e4-2f69-4a27-90a6-42e688e9c6b9",
+      "locale": "ko",
+      "name": "탕구리",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 104
+    },
+    {
+      "cardVariantId": "fb3db344-4082-4c46-8814-9741954806dd",
+      "locale": "ko",
+      "name": "삐삐",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 35
+    },
+    {
+      "cardVariantId": "fc92d3b5-f73d-4548-8cd8-0eacc9ff2242",
+      "locale": "ko",
+      "name": "피죤투",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 18
+    },
+    {
+      "cardVariantId": "fcb88ef8-b473-46a0-ba8e-519bd95e6fa3",
+      "locale": "ko",
+      "name": "붐볼",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 101
+    },
+    {
+      "cardVariantId": "fdc9f85a-1002-418a-a45e-e857dacc1270",
+      "locale": "ko",
+      "name": "버터플",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 12
+    },
+    {
+      "cardVariantId": "fe4b8256-faa2-40b8-a927-b291fd1475a4",
+      "locale": "ko",
+      "name": "푸크린",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 40
+    },
+    {
+      "cardVariantId": "fe7de332-2187-436f-b531-697a6e6f7840",
+      "locale": "ko",
+      "name": "나인테일",
+      "source": "POKEAPI_SPECIES",
+      "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/pokeapi/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv",
+      "speciesId": 38
     }
   ]
 }

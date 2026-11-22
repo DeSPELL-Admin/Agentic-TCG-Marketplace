@@ -9,7 +9,7 @@ let prisma: PrismaClient | undefined;
 try {
   const { values } = parseArgs({ options: { 'card-id': { type: 'string' }, limit: { type: 'string', default: '20' } } });
   const cardId = values['card-id'] ? idSchema.parse(values['card-id']) : undefined;
-  const limit = z.coerce.number().int().min(1).max(100).parse(values.limit);
+  const limit = z.coerce.number().int().min(1).max(500).parse(values.limit);
   loadEnvFile(new URL('../../../.env', import.meta.url));
   if (!process.env.DATABASE_URL) throw new Error('Missing DATABASE_URL');
   prisma = createPrismaClient(process.env.DATABASE_URL);

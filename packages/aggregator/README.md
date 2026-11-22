@@ -131,6 +131,32 @@ GET /api/cards/<수집된 내부 UUID>/valuation
 
 가격 수집은 별도 단계입니다. 현재 외부 카드에 가격 표본이 없으면 평가 API는 `INSUFFICIENT_DATA`, `estimatedPrice: null`, `sampleSize: 0`을 반환합니다. 기존 시연용 가격 표본과 혼합하지 않습니다. 타 담당 모듈의 코드와 계약은 변경하지 않습니다.
 
+## 세트 단위 수집과 재개
+
+Migration을 적용한 뒤 루트에서 실행합니다. [TCGdex 세트 API](https://tcgdex.dev/rest/set)의 영어 카드 목록을 고정하고 최대 20장씩 나누어 저장합니다. 제공자 목록을 재정렬하며 넘기는 페이지 대신, 저장된 ID 목록의 위치를 체크포인트로 사용합니다.
+
+```powershell
+pnpm db:migrate
+pnpm cards:collect:set --set base1
+pnpm cards:collect:set --set base2
+# 첫 배치까지만 저장한 뒤 다음 실행에서 이어가기
+pnpm cards:collect:set --set base1 --batch-size 20 --max-batches 1
+# 완료한 세트도 목록부터 명시적으로 다시 수집하기
+pnpm cards:collect:set --set base1 --refresh
+```
+
+`createTcgdexSetSource(options)`는 `SetCardSource.getSet(setId)`와 `getCard(externalId, setId)`를 제공합니다. `createTcgdexCardAdapter()`도 `getCardByExternalId()`를 추가로 제공합니다. 기존 카드 검색·상세 인터페이스는 유지합니다. `createSetCollectionService({ prisma, source, writer?, now? }).collectSet({ setId, batchSize?, maxBatches?, refresh?, onProgress? })`는 저장된 진행 지점부터 실행합니다.
+
+- `catalog.CatalogCollectionRun`에 세트·영어 카탈로그·고정 외부 ID 목록·nextIndex·상태·실행 잠금을 저장합니다. 다른 세트는 독립된 작업입니다.
+- `batchSize`는 1~20, 기본 20입니다. `maxBatches`로 한 번에 처리할 배치를 제한할 수 있습니다. 네트워크는 동시에 최대 2건이며 상세 조회가 모두 성공한 후 배치를 DB에 저장합니다. 수집 네트워크 요청은 DB 트랜잭션 밖에서 수행합니다.
+- 배치 저장 후에만 체크포인트를 전진시킵니다. 저장과 진행 기록 사이에 종료되면 같은 배치를 재실행할 수 있지만 영구 UUID와 DB 제약으로 카드가 중복되지는 않습니다.
+- 같은 세트의 동시 실행은 409 오류로 거부합니다. 잠금은 5분이며 배치 전후에 갱신합니다. 정상 실패는 즉시 해제하고 프로세스 강제 종료 시 만료 후 재개할 수 있습니다. 이전 실행은 잠금 토큰이 바뀌면 저장을 중단합니다.
+- 완료 작업의 기본 재실행은 외부 조회 없이 저장 0건을 반환합니다. `--refresh`만 새 목록을 받아 처음부터 갱신합니다. 제공자 목록에서 사라진 카드를 자동 삭제하지 않습니다.
+- Pocket·다른 세트의 상세·중복 ID·빈 목록·상세 누락은 거부합니다. 잘못된 카드를 건너뛰어 전체 세트 수집이 끝난 것처럼 표시하지 않습니다. 외부 API 오류는 그대로 실패하며 재실행으로 복구합니다.
+- 결과의 `storedThisRun`은 이번 실행에서 저장한 카드 수이며 신규 삽입 수와 다릅니다. 한국어 이름은 기존 종명 사전에서 연결하고 에디션·상태는 UNSPECIFIED를 유지합니다. 가격 수집은 별도 명령입니다.
+
+공유 샘플은 Base Set(`base1`) 102장, Jungle(`base2`) 64장, 기존 프로모 피카츄 5종의 총 171종입니다. 종명 연결은 136종이며 트레이너·에너지·표기가 정확히 대응되지 않는 이름은 영어 원문으로 유지합니다. 이미지 URL이 있는 신규 카드는 166종입니다.
+
 ## 한국어 종명 사전과 카드 표시 이름
 
 ```powershell

@@ -68,7 +68,7 @@ API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경�
 
 ## 한국어 이름 채우기
 
-팀원이 외부 API 없이 동일한 데이터로 시작하려면 Migration 후 `pnpm db:seed:collected`를 실행하세요. Git에 포함된 카드 5개·한국어 종명 사전 1,025쌍·참고 가격 30개를 원래 UUID와 시각으로 로컬 DB에 넣습니다. 기존 Mock seed는 별도이며 기존 데이터는 덮어쓰지 않습니다. [팀 공통 데이터 가이드](packages/db/fixtures/README.md)에 초기 설정과 갱신 절차를 정리했습니다.
+팀원이 외부 API 없이 동일한 데이터로 시작하려면 Migration 후 `pnpm db:seed:collected`를 실행하세요. Git에 포함된 카드 171개·한국어 종명 사전 1,025쌍·표시 이름 136개·참고 가격 1,145개를 원래 UUID와 시각으로 로컬 DB에 넣습니다. 기존 Mock seed는 별도이며 기존 데이터는 덮어쓰지 않습니다. [팀 공통 데이터 가이드](packages/db/fixtures/README.md)에 초기 설정과 갱신 절차를 정리했습니다.
 
 ```powershell
 pnpm cards:localize
@@ -87,6 +87,10 @@ pnpm cards:collect --query 피카츄 --limit 5
 ```
 
 Migration 적용 후 실행합니다. TCGdex 영어 카탈로그에서 최대 5개를 조회하고, 영구 매핑된 내부 UUID로 DB에 저장한 뒤 조회까지 확인합니다. 기본 limit는 5, 허용 범위는 1~100이며 첫 페이지만 수집합니다. 재실행해도 중복 카드가 생성되지 않습니다. API가 `CARD_DATA_SOURCE=database`이면 기존 `/api/cards`, `/api/cards/:id`에서 저장된 외부 카드도 조회됩니다. 일반 조회는 외부 API를 호출하지 않습니다. 수집 카드의 상태·에디션은 UNSPECIFIED이며, 가격 표본은 별도로 수집해야 합니다. 상세 규칙은 [Aggregator 가이드](packages/aggregator/README.md)를 확인하세요.
+
+## 세트 단위 카드 수집
+
+세트 전체를 수집하려면 `pnpm cards:collect:set --set base1` 또는 `--set base2`를 사용합니다. 기본 20장씩 저장하고 중단·실패 시 DB 체크포인트부터 재개합니다. 완료된 세트의 명시적 갱신은 `--refresh`로 실행합니다. Base Set 102장과 Jungle 64장을 수집했으며 [Aggregator 가이드](packages/aggregator/README.md)에 잠금·재시도·진행 상태 규칙을 정리했습니다.
 
 ## 외부 참고 시세 수집
 

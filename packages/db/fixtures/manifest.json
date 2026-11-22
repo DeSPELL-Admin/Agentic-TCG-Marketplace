@@ -2,9 +2,9 @@
   "version": 1,
   "dataKind": "COLLECTED_REFERENCE_DATA",
   "sha256": {
-    "cards": "14c978c3d982672c42273a3f6ae59258668f1a791f75b3d3ddec2127107660aa",
-    "externalIdentities": "8e7ff0f7c92aa5df4df08636db411c22a3ff348a521ae2a8af20e0fe032ea8d9",
-    "koreanNames": "bb409459963a3301872f719bf1d8954ca7f256f6d6b3acde4df665e1c3d162a9",
-    "priceSnapshots": "5a8f3de2a8fa154ac498a64f45485061c211dfe262f4617af0eac9a71f467d56"
+    "cards": "373507b4dda01e2d33ebc2c379049bf45b17201b798be3854a7944bc53dbc559",
+    "externalIdentities": "2c5952294055d85095bf32aca60c63ed067582cf1438cd336526ae2fe7ff523a",
+    "koreanNames": "c0954d68e3c913fba98323f946c5333902fa53d664587e3d9b1bff593bbb6124",
+    "priceSnapshots": "cbef68304f324b4fbbe4ccaef8898079afcdb49cec5b5fe39bad6be535b7fc25"
   }
 }

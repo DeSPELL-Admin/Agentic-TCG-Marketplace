@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "collect": "tsx scripts/collect-cards.ts",
+    "collect:set": "tsx scripts/collect-set.ts",
     "localize": "tsx scripts/localize-cards.ts",
     "check:external": "tsx scripts/check-tcgdex.ts",
     "check:external:db": "tsx scripts/check-tcgdex.ts --database"

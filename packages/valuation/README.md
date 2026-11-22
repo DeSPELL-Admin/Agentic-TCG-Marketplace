@@ -17,7 +17,7 @@ pnpm prices:collect --limit 20
 pnpm prices:collect --card-id <내부-카드-UUID>
 ```
 
-`createTcgdexPriceProvider({ fetch?, timeoutMs?, now? })`는 [TCGdex pricing](https://tcgdex.dev/markets-prices)의 Cardmarket(EUR)와 TCGplayer(USD)를 읽습니다. 영어 외부 ID가 연결된 저장 카드만 지원합니다. 카드당 HTTP 한 번, 기본 5초 timeout, 본문 1MB 제한, 자동 재시도 없음. `--limit`는 1~100이며 기본 20개를 UUID 순으로 순차 수집합니다. 전체 카탈로그 동기화 명령이 아닙니다. 카드별 저장은 원자적이며 중간 카드가 실패하면 앞서 완료한 카드의 결과는 유지됩니다.
+`createTcgdexPriceProvider({ fetch?, timeoutMs?, now? })`는 [TCGdex pricing](https://tcgdex.dev/markets-prices)의 Cardmarket(EUR)와 TCGplayer(USD)를 읽습니다. 영어 외부 ID가 연결된 저장 카드만 지원합니다. 카드당 HTTP 한 번, 기본 5초 timeout, 본문 1MB 제한, 자동 재시도 없음. `--limit`는 1~500이며 기본 20개를 UUID 순으로 순차 수집합니다. 현재 공유 카드 171개는 `--limit 200`으로 모두 조회할 수 있습니다. 전체 카탈로그 동기화 명령이 아닙니다. 카드별 저장은 원자적이며 중간 카드가 실패하면 앞서 완료한 카드의 결과는 유지됩니다.
 
 `createMarketPriceServices({ prisma, provider?, now?, maxAgeHours?, fxMaxAgeHours? })`가 `collectPrices(id)`, `assessPrice(input)`, `marketPriceService`, `adapter`를 반환합니다. `adapter`는 기존 `PriceDataAdapter`이며 조회 도중 외부 API를 호출하지 않습니다.
 
