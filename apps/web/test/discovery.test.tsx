@@ -27,14 +27,14 @@ it('주제 검색 일부와 참고 시세가 실패해도 성공한 카드와 �
   expect(data.family).toHaveLength(1);
   expect(data.familyFailed).toBe(true);
   const html = renderUI(<LandingView discovery={data} />);
-  expect(html).toContain('참고 시세 조회 실패');
+  expect(html).toContain('시세를 불러오지 못했어요');
   expect(html).toContain('/cards?q=Pikachu');
-  expect(html).not.toContain('다른 그림.');
+  expect(html).toContain('피카츄 카드를 모아봤어요');
 });
 
 it('주제 검색 실패를 카드가 없는 성공 응답과 구분한다', async () => {
   vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 503 })));
   const data = await getDiscovery();
   expect(data).toMatchObject({ spotlight: [], family: [], spotlightFailed: true, familyFailed: true });
-  expect(renderUI(<LandingView discovery={data} />)).toContain('피카츄 카드를 불러오지 못했습니다.');
+  expect(renderUI(<LandingView discovery={data} />)).toContain('피카츄 카드를 불러오지 못했어요.');
 });

@@ -8,20 +8,19 @@ import type { DiscoveryData } from '../../lib/discovery';
 
 export function LandingView({ discovery }: { discovery: DiscoveryData }) {
   const { spotlight, family, spotlightFailed, familyFailed } = discovery;
-  const differentArt = new Set(spotlight.map(item => item.card.imageUrl).filter(Boolean)).size > 1;
   return <>
     <DiscoveryHero>
-      <Introduction><h1>{differentArt ? '같은 피카츄, 다른 그림.' : '피카츄 카드 살펴보기'}</h1><p>세트와 그림이 다른 카드를 모아보세요. 마음에 드는 카드에서 인쇄 정보와 해외 참고 시세를 확인할 수 있습니다.</p><SearchLink href="/cards?q=Pikachu">피카츄 카드 보기</SearchLink><BrowseLink href="/cards">전체 카드 검색</BrowseLink></Introduction>
+      <Introduction><h1>피카츄 카드를 모아봤어요</h1><p>어떤 피카츄가 마음에 드세요? 카드마다 다른 그림과 세트를 살펴보고, 해외 참고 시세도 확인해 보세요.</p><SearchLink href="/cards?q=Pikachu">피카츄 더 보기</SearchLink><BrowseLink href="/cards">다른 카드 찾기</BrowseLink></Introduction>
       <FeaturedCards aria-label="피카츄 카드 비교">{spotlight.map(({ card, prices, pricesFailed }, index) => {
         const reference = getReferencePrice(prices);
-        return <FeaturedCard key={card.id} data-secondary={index > 0 || undefined}><ArtworkLink href={`/cards/${card.id}?q=Pikachu`} aria-label={`${getCardDisplayName(card)} ${formatSet(card.setCode)} ${card.cardNumber} 상세 보기`}><CardImage card={card} priority /></ArtworkLink><CardCaption><h2>{formatSet(card.setCode)}</h2><span>카드 번호 {card.cardNumber} / {card.language}</span>{reference ? <p>해외 참고 시세 <strong>{reference.originalAmount} {reference.originalCurrency}</strong></p> : <p>{pricesFailed ? '참고 시세 조회 실패' : '대표 참고 시세 없음'}</p>}<PriceDetail href={`/cards/${card.id}?q=Pikachu`}>출처·판본 확인</PriceDetail></CardCaption></FeaturedCard>;
-      })}{!spotlight.length && <Empty role="status">{spotlightFailed ? '피카츄 카드를 불러오지 못했습니다.' : '조회된 피카츄 카드가 없습니다.'}<Link href="/cards?q=Pikachu">검색에서 다시 확인</Link></Empty>}</FeaturedCards>
+        return <FeaturedCard key={card.id} data-secondary={index > 0 || undefined}><ArtworkLink href={`/cards/${card.id}?q=Pikachu`} aria-label={`${getCardDisplayName(card)} ${formatSet(card.setCode)} ${card.cardNumber} 상세 보기`}><CardImage card={card} priority /></ArtworkLink><CardCaption><h2>{formatSet(card.setCode)}</h2><span>카드 번호 {card.cardNumber} / {card.language}</span>{reference ? <p>해외 참고 시세 <strong>{reference.originalAmount} {reference.originalCurrency}</strong></p> : <p>{pricesFailed ? '시세를 불러오지 못했어요' : '확인할 수 있는 시세가 없어요'}</p>}<PriceDetail href={`/cards/${card.id}?q=Pikachu`}>시세 자세히 보기</PriceDetail></CardCaption></FeaturedCard>;
+      })}{!spotlight.length && <Empty role="status">{spotlightFailed ? '피카츄 카드를 불러오지 못했어요.' : '아직 보여드릴 피카츄 카드가 없어요.'}<Link href="/cards?q=Pikachu">피카츄 검색하기</Link></Empty>}</FeaturedCards>
     </DiscoveryHero>
-    <CollectionSection aria-labelledby="family-heading"><SectionHeading><div><h2 id="family-heading">이브이와 진화형</h2><p>그림을 골라 살펴보거나, 이름으로 다른 카드를 찾아보세요.</p></div><Link href="/cards">전체 카드 검색</Link></SectionHeading>
+    <CollectionSection aria-labelledby="family-heading"><SectionHeading><div><h2 id="family-heading">이브이와 진화형도 둘러보세요</h2><p>카드를 누르면 자세히 볼 수 있어요. 이름을 누르면 해당 포켓몬의 카드를 모아서 보여드려요.</p></div><Link href="/cards">다른 카드 찾기</Link></SectionHeading>
       <FamilyGrid>{family.map(card => <FamilyCard key={card.id}><ArtworkLink href={`/cards/${card.id}?${new URLSearchParams({ q: card.name })}`} aria-label={`${getCardDisplayName(card)} ${formatSet(card.setCode)} 상세 보기`}><CardImage card={card} /></ArtworkLink><h3><Link href={`/cards?${new URLSearchParams({ q: card.name })}`}>{getCardDisplayName(card)}</Link></h3><p>{formatSet(card.setCode)} / {card.cardNumber}</p></FamilyCard>)}</FamilyGrid>
-      {familyFailed && <SectionNote role="status">일부 카드를 불러오지 못했습니다. 검색에서 다시 확인할 수 있습니다.</SectionNote>}{!family.length && !familyFailed && <SectionNote>조회된 카드가 없습니다. 이름으로 검색해 보세요.</SectionNote>}
+      {familyFailed && <SectionNote role="status">일부 카드를 불러오지 못했어요. 이름으로 검색해 다시 확인해 주세요.</SectionNote>}{!family.length && !familyFailed && <SectionNote>아직 보여드릴 카드가 없어요. 다른 포켓몬 이름으로 검색해 보세요.</SectionNote>}
     </CollectionSection>
-    <PriceNote><h2>참고 시세를 확인할 때</h2><p>위 EUR/USD 가격은 해외 제공자의 참고 시세입니다. 한국어판 실거래가와 다를 수 있습니다. 카드 상세에서 언어·판본·상태와 출처를 확인하세요.</p></PriceNote>
+    <PriceNote><h2>시세는 이렇게 확인해 주세요</h2><p>표시된 EUR/USD 금액은 해외 사이트의 참고 가격이에요. 한국어판 거래 가격과는 다를 수 있어요. 자세한 가격 출처와 카드의 언어·판본·상태는 상세 화면에서 확인해 주세요.</p></PriceNote>
   </>;
 }
 

@@ -7,8 +7,8 @@ import { CardImage } from './card-image';
 import { getCardDisplayName, formatSet } from '../lib/formatters';
 
 export function RelatedCards({ card, cards, query, failed }: { card: CardVariant; cards: CardVariant[]; query: string; failed: boolean }) {
-  return <Section aria-labelledby="related-heading"><Heading><h2 id="related-heading">같은 이름의 다른 카드</h2><Link href={`/cards?${new URLSearchParams({ q: card.name })}`}>{getCardDisplayName(card)} 카드 검색</Link></Heading>
-    {cards.length > 0 ? <Cards>{cards.map(item => <CardLink key={item.id} href={`/cards/${item.id}${query ? `?${new URLSearchParams({ q: query })}` : ''}`} aria-label={`${getCardDisplayName(item)} ${formatSet(item.setCode)} ${item.cardNumber} 상세 보기`}><Thumbnail><CardImage card={item} variant="thumbnail" /></Thumbnail><div><strong>{formatSet(item.setCode)}</strong><span>카드 번호 {item.cardNumber} / {item.language}</span></div></CardLink>)}</Cards> : <Note>{failed ? '다른 카드 정보를 불러오지 못했습니다. 이름으로 다시 검색할 수 있습니다.' : '조회된 범위에 같은 이름의 다른 카드가 없습니다.'}</Note>}
+  return <Section aria-labelledby="related-heading"><Heading><h2 id="related-heading">{getCardDisplayName(card)} 카드 더 보기</h2><Link href={`/cards?${new URLSearchParams({ q: card.name })}`}>이름으로 검색하기</Link></Heading>
+    {cards.length > 0 ? <Cards>{cards.map(item => <CardLink key={item.id} href={`/cards/${item.id}${query ? `?${new URLSearchParams({ q: query })}` : ''}`} aria-label={`${getCardDisplayName(item)} ${formatSet(item.setCode)} ${item.cardNumber} 상세 보기`}><Thumbnail><CardImage card={item} variant="thumbnail" /></Thumbnail><div><strong>{formatSet(item.setCode)}</strong><span>카드 번호 {item.cardNumber} / {item.language}</span></div></CardLink>)}</Cards> : <Note>{failed ? '다른 카드를 불러오지 못했어요. 이름으로 다시 검색해 주세요.' : '이번 검색에서는 다른 카드를 찾지 못했어요.'}</Note>}
   </Section>;
 }
 
