@@ -24,10 +24,10 @@ export function MarketPrices({ prices }: { prices: MarketPricesResponse }) {
   </Section>;
 }
 
-const Section = styled.section(({ theme }) => ({ marginTop: 40, paddingTop: 28, borderTop: `1px solid ${theme.color.line}` }));
+const Section = styled.section({ marginTop: 0, paddingTop: 0 });
 const Heading = styled.div({ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12, '& h2': { fontSize: 24 } });
 const Description = styled.p(({ theme }) => ({ color: theme.color.muted, fontSize: 14, marginBottom: 20 }));
-const TableWrap = styled.div(({ theme }) => ({ border: `1px solid ${theme.color.line}`, background: theme.color.surface, borderRadius: theme.radius.panel, overflowX: 'auto' }));
+const TableWrap = styled.div(({ theme }) => ({ background: theme.color.surface, overflowX: 'auto', borderTop: `1px solid ${theme.color.line}` }));
 const Table = styled.table(({ theme }) => ({ width: '100%', borderCollapse: 'collapse', fontSize: 14, '& th,& td': { padding: '16px 12px', borderBottom: `1px solid ${theme.color.line}`, textAlign: 'left', verticalAlign: 'top' }, '& th': { background: theme.color.lavenderSoft, color: theme.color.muted, fontWeight: 500 }, '& td': { overflowWrap: 'anywhere' },
   '@media(max-width:767px)': { display: 'block', '& thead': { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clipPath: 'inset(50%)' }, '& tbody,& tr,& td': { display: 'block' }, '& tr': { padding: 16, borderBottom: `1px solid ${theme.color.line}` }, '& td': { padding: '5px 0', border: 0 }, '& td::before': { content: 'attr(data-label)', display: 'inline-block', minWidth: 96, color: theme.color.muted, fontWeight: 400 } },
 }));

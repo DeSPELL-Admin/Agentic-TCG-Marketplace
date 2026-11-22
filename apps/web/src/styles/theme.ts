@@ -1,13 +1,13 @@
 export const theme = {
   color: {
-    canvas: '#F5F5F7', surface: '#FFFFFF', ink: '#302C49', muted: '#665F76',
+    canvas: '#FFFFFF', surface: '#FFFFFF', ink: '#24212D', muted: '#6B6574',
     coral: '#C94F57', primary: '#B6404B', primaryHover: '#9F3440', link: '#8B303E',
-    mat: '#DCD6ED', soft: '#FBE8E9', lavenderSoft: '#F0EDF7', coralSoft: '#F8EEF0',
-    line: '#DED9E5', input: '#897F97', focus: '#51417C',
+    mat: '#FFFFFF', soft: '#FFF3F3', lavenderSoft: '#FFFFFF', coralSoft: '#FFFFFF',
+    line: '#E5E2E8', input: '#897F97', focus: '#B6404B',
     success: '#176B4A', successBg: '#E6F4EB', warning: '#875100', warningBg: '#FFF4CD',
     error: '#9F244A', errorBg: '#FFF0F3', demo: '#545068', demoBg: '#ECEAF2',
   },
-  radius: { badge: 5, control: 10, card: 14, panel: 12, mat: 24 },
+  radius: { badge: 4, control: 6, card: 0, panel: 8, mat: 0 },
   space: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, section: 48 },
   breakpoint: { mobile: 640, tablet: 960 },
 } as const;
