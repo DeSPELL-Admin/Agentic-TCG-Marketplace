@@ -6,7 +6,11 @@
 
 ## 에이전트 대화 UI
 
-공통 `AppShell`은 데스크톱에서 왼쪽 탐색 화면과 오른쪽 360px 대화 영역으로 나뉩니다. 각 영역은 독립적으로 스크롤하며 대화 입력은 패널 하단에 유지합니다. 패널 접기·열기와 대화 비우기를 제공하고, 좁은 화면에서는 팝업 없이 ‘카드 탐색 / 에이전트 대화’로 전환합니다. 본문은 viewport와 함께 `browse` container query로 실제 남은 폭에 맞게 재배치합니다.
+공통 `AppShell`의 에이전트 패널은 기본 닫힘입니다. 상단 ‘에이전트 열기/닫기’ 버튼을 모든 화면 크기에 제공하며 내부 닫기 버튼·Escape로도 닫을 수 있습니다. 명시적으로 열면 입력창으로, 닫으면 상단 열기 버튼으로 포커스를 이동합니다. 데스크톱에서 열면 왼쪽 본문과 오른쪽 360px 대화 영역으로 나뉘고, 모바일에서는 팝업 없이 본문 대신 대화 영역을 표시합니다. 별도 모바일 대화 탭은 없습니다. 각 영역은 독립적으로 스크롤하며 입력은 패널 하단에 유지합니다. 본문은 `browse` container query로 실제 남은 폭에 맞게 재배치합니다.
+
+`stores/agent-panel.ts`의 Zustand `persist`는 localStorage의 `tcg-agent-panel`에 열림 여부만 저장합니다. `skipHydration`으로 서버와 첫 클라이언트 렌더를 닫힘으로 일치시키고 마운트 후 저장값을 복원합니다. 저장값에 임의 필드나 잘못된 값이 있어도 액션을 덮어쓰지 않습니다. 카드·예산·결제·대화 내용은 이 저장소에 넣지 않습니다.
+
+랜딩에서는 서비스 탭 줄을 숨기고 상단 ‘마켓 둘러보기’(모바일 ‘마켓’)와 본문의 구매·판매 진입을 제공합니다. 카드 검색·매물·내 카드·거래 관리·에이전트 설정·로그 메뉴는 서비스 화면의 고정 탐색 영역에서만 표시합니다. 브랜드 링크는 모든 화면에서 홈으로 연결됩니다.
 
 `features/chat/agent-chat.tsx`는 공통 레이아웃에 유지되므로 카드 검색·상세 이동과 패널 접기에도 메시지와 작성 내용이 보존됩니다. 새로고침하면 초기화되며 localStorage나 서버에는 저장하지 않습니다. 예시 문장은 입력창만 채웁니다. Enter는 보내기, Shift+Enter는 줄바꿈이며 한글 조합 중 Enter는 보내지 않습니다. 공백 전송은 막고 입력은 2,000자로 제한합니다.
 
@@ -19,6 +23,8 @@
 파일 상단에 import·타입을 두고, 컴포넌트를 먼저 정의한 다음 **같은 파일 하단에 styled와 css 선언**을 둡니다. 별도 `Component.styles.ts`로 분리하지 않습니다. Theme 토큰은 `styles/theme.ts`, Theme 타입은 `styles/emotion.d.ts`에서 관리합니다. 스타일 전용 props는 DOM으로 전달하지 않습니다.
 
 `app/providers.tsx`는 ThemeProvider와 `EmotionRegistry`를 조립합니다. Registry는 요청마다 cache를 생성하고 `useServerInsertedHTML`로 새 스타일을 head에 주입합니다. 전역 스타일과 일반 스타일을 분리하고 서버 요청 사이에 cache를 공유하지 않습니다. `GlobalStyles`는 reset·글꼴·포커스·reduced-motion을 관리합니다.
+
+같은 공통 Providers의 `QueryClientProvider`가 전체 하위 트리에 TanStack Query를 제공합니다. `lib/query-client.ts`는 서버 렌더마다 새 QueryClient를 만들고 브라우저에서는 같은 인스턴스를 재사용해 요청 간 캐시 공유와 재렌더 시 캐시 초기화를 방지합니다. 캐시 영속화나 Devtools는 연결하지 않았고 기본 옵션을 유지합니다. 기존 Server Component의 카드 조회와 거래 화면의 로컬 미리보기는 그대로이며 실제 API 연동 시 `useQuery`·`useMutation`을 추가합니다.
 
 Next.js 16.4.6 / React 19.3.1 / Emotion react 11.14.0·styled 11.14.1에서 개발 서버와 production 빌드의 직접 진입·목록→상세 클라이언트 이동·스타일 유지 및 hydration 오류 부재를 확인했습니다. 향후 라이브러리 업그레이드 시 다시 확인해야 합니다. 일반적인 App Router 전체 호환성을 보증하는 의미는 아닙니다.
 

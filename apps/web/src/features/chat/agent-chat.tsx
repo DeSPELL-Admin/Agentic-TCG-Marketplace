@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 
 const suggestions = ['피카츄 카드를 찾고 싶어요', '거래 예산을 정하고 싶어요', '참고 시세를 확인하고 싶어요'];
 
-export function AgentChat() {
+export function AgentChat({ onClose }: { onClose: () => void }) {
   const [draft, setDraft] = useState('');
   const [messages, setMessages] = useState<string[]>([]);
   const input = useRef<HTMLTextAreaElement>(null);
@@ -24,8 +24,8 @@ export function AgentChat() {
       event.preventDefault(); event.currentTarget.form?.requestSubmit();
     }
   }
-  return <Panel id="agent-panel" aria-labelledby="agent-heading">
-    <PanelHeader><div><h2 id="agent-heading">거래 에이전트</h2><span>대화 UI 미리보기</span></div><ResetButton type="button" disabled={!messages.length && !draft} onClick={() => { setMessages([]); setDraft(''); input.current?.focus(); }} aria-label="대화 비우기" title="대화 비우기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></ResetButton></PanelHeader>
+  return <Panel id="agent-panel" aria-labelledby="agent-heading" onKeyDown={event => { if (event.key === 'Escape' && !event.nativeEvent.isComposing) { event.stopPropagation(); onClose(); } }}>
+    <PanelHeader><div><h2 id="agent-heading">거래 에이전트</h2><span>대화 UI 미리보기</span></div><PanelActions><ResetButton type="button" disabled={!messages.length && !draft} onClick={() => { setMessages([]); setDraft(''); input.current?.focus(); }} aria-label="대화 비우기" title="대화 비우기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></ResetButton><ResetButton type="button" onClick={onClose} aria-label="에이전트 닫기" title="에이전트 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></ResetButton></PanelActions></PanelHeader>
     <History ref={history} role="log" aria-label="에이전트 대화" aria-live="polite" aria-relevant="additions">
       {!messages.length && <Welcome><h3>어떤 거래를 생각하고 있나요?</h3><p>찾는 카드나 예산을 적어보세요. 거래 조건을 이야기할 수 있는 공간이에요.</p><Suggestions aria-label="대화 예시">{suggestions.map(text => <Suggestion key={text} type="button" onClick={() => { setDraft(text); input.current?.focus(); }}>{text}</Suggestion>)}</Suggestions></Welcome>}
       {messages.map((message, index) => <Message key={index}><span>나</span><p>{message}</p></Message>)}
@@ -36,6 +36,7 @@ export function AgentChat() {
 }
 
 const Panel = styled.aside(({ theme }) => ({ display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0, height: '100%', background: theme.color.surface, borderLeft: `1px solid ${theme.color.line}` }));
+const PanelActions = styled.div({ display: 'flex', gap: 4, alignItems: 'center' });
 const PanelHeader = styled.div(({ theme }) => ({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '20px 24px', borderBottom: `1px solid ${theme.color.line}`, flexShrink: 0, '& h2': { fontSize: 16, fontWeight: 600 }, '& span': { fontSize: 12, color: theme.color.muted, display: 'block', marginTop: 4 }, '@media(max-height:600px)': { padding: '8px 20px' } }));
 const ResetButton = styled.button(({ theme }) => ({ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', minWidth: 44, minHeight: 44, background: theme.color.surface, border: 0, color: theme.color.muted, '&:hover:not(:disabled)': { color: theme.color.ink }, '&:disabled': { opacity: .4 } }));
 const History = styled.div({ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: '28px 24px', overflowWrap: 'anywhere', '@media(max-height:600px)': { padding: '8px 20px' } });
