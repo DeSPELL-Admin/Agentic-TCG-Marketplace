@@ -10,7 +10,7 @@ export function LandingView({ discovery }: { discovery: DiscoveryData }) {
   const { spotlight, family, spotlightFailed, familyFailed } = discovery;
   return <>
     <DiscoveryHero>
-      <Introduction><h1>피카츄 카드를 모아봤어요</h1><p>어떤 피카츄가 마음에 드세요? 카드마다 다른 그림과 세트를 살펴보고, 해외 참고 시세도 확인해 보세요.</p><SearchLink href="/cards?q=Pikachu">피카츄 더 보기</SearchLink><BrowseLink href="/cards">다른 카드 찾기</BrowseLink></Introduction>
+      <Introduction><h1>카드 거래는 AI 에이전트에게</h1><p>원하는 카드와 예산, 거래 조건은 내가 정하고 거래는 에이전트에게 맡기는 TCG 플랫폼이에요. 카드 정보와 참고 시세부터 확인해 보세요.</p><SearchLink href="/cards">거래할 카드 찾기</SearchLink><BrowseLink href="#family-heading">카드 둘러보기</BrowseLink></Introduction>
       <FeaturedCards aria-label="피카츄 카드 비교">{spotlight.map(({ card, prices, pricesFailed }, index) => {
         const reference = getReferencePrice(prices);
         return <FeaturedCard key={card.id} data-secondary={index > 0 || undefined}><ArtworkLink href={`/cards/${card.id}?q=Pikachu`} aria-label={`${getCardDisplayName(card)} ${formatSet(card.setCode)} ${card.cardNumber} 상세 보기`}><CardImage card={card} priority /></ArtworkLink><CardCaption><h2>{formatSet(card.setCode)}</h2><span>카드 번호 {card.cardNumber} / {card.language}</span>{reference ? <p>해외 참고 시세 <strong>{reference.originalAmount} {reference.originalCurrency}</strong></p> : <p>{pricesFailed ? '시세를 불러오지 못했어요' : '확인할 수 있는 시세가 없어요'}</p>}<PriceDetail href={`/cards/${card.id}?q=Pikachu`}>시세 자세히 보기</PriceDetail></CardCaption></FeaturedCard>;

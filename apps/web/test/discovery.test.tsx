@@ -28,8 +28,8 @@ it('주제 검색 일부와 참고 시세가 실패해도 성공한 카드와 �
   expect(data.familyFailed).toBe(true);
   const html = renderUI(<LandingView discovery={data} />);
   expect(html).toContain('시세를 불러오지 못했어요');
-  expect(html).toContain('/cards?q=Pikachu');
-  expect(html).toContain('피카츄 카드를 모아봤어요');
+  expect(html).toContain('href="/cards"');
+  expect(html).toContain('카드 거래는 AI 에이전트에게');
 });
 
 it('주제 검색 실패를 카드가 없는 성공 응답과 구분한다', async () => {
