@@ -4,6 +4,16 @@
 
 [디자인 기준](../../design-system/agentic-tcg/MASTER.md)을 `@emotion/styled`로 구현했습니다. `ui-ux-pro-max`의 E-commerce·제목 균형·정보 위계·색 이외 상태 전달 가이드를 참고했습니다. 배경은 사용자 지정에 따라 `#FFFFFF`로 고정하고 코랄은 검색·링크 등 조작에 사용합니다. [이전 코랄 플레이룸 HTML](../../docs/design/archive/coral-playroom.html)은 비교용 보관본으로 현재 UI와 다릅니다.
 
+## 에이전트 대화 UI
+
+공통 `AppShell`은 데스크톱에서 왼쪽 탐색 화면과 오른쪽 360px 대화 영역으로 나뉩니다. 각 영역은 독립적으로 스크롤하며 대화 입력은 패널 하단에 유지합니다. 패널 접기·열기와 대화 비우기를 제공하고, 좁은 화면에서는 팝업 없이 ‘카드 탐색 / 에이전트 대화’로 전환합니다. 본문은 viewport와 함께 `browse` container query로 실제 남은 폭에 맞게 재배치합니다.
+
+`features/chat/agent-chat.tsx`는 공통 레이아웃에 유지되므로 카드 검색·상세 이동과 패널 접기에도 메시지와 작성 내용이 보존됩니다. 새로고침하면 초기화되며 localStorage나 서버에는 저장하지 않습니다. 예시 문장은 입력창만 채웁니다. Enter는 보내기, Shift+Enter는 줄바꿈이며 한글 조합 중 Enter는 보내지 않습니다. 공백 전송은 막고 입력은 2,000자로 제한합니다.
+
+검색 폼은 `next/form`의 GET 클라이언트 이동을 사용해 검색 제출 시에도 공통 레이아웃과 대화를 유지합니다. 문서 전체를 새로 불러오는 일반 HTML 검색 폼으로 되돌리면 대화가 초기화됩니다.
+
+**현재 Agent 대화 API/SSE는 연결하지 않았습니다.** 입력한 메시지는 로컬 UI에서만 표시하고 실제 AI 답변·주문·결제를 만들지 않습니다. 미리보기와 미전송 상태를 화면에 명시합니다. 대화 API 연결 시 응답과 거래 상태를 이 UI에 연동합니다.
+
 ## Emotion 코드 배치와 SSR
 
 파일 상단에 import·타입을 두고, 컴포넌트를 먼저 정의한 다음 **같은 파일 하단에 styled와 css 선언**을 둡니다. 별도 `Component.styles.ts`로 분리하지 않습니다. Theme 토큰은 `styles/theme.ts`, Theme 타입은 `styles/emotion.d.ts`에서 관리합니다. 스타일 전용 props는 DOM으로 전달하지 않습니다.

@@ -7,10 +7,10 @@ export function GlobalStyles() { return <Global styles={globalStyles} />; }
 
 const globalStyles = css`
   * { box-sizing: border-box; }
-  html { scroll-padding-top: 96px; }
+  html { height: 100%; overflow: hidden; scroll-padding-top: 96px; }
   body { margin: 0; background: ${theme.color.canvas}; color: ${theme.color.ink};
     font-family: var(--font-pretendard), 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    font-size: 16px; line-height: 1.6; word-break: keep-all; }
+    font-size: 16px; line-height: 1.6; word-break: keep-all; height: 100dvh; overflow: hidden; }
   button, input, select { font: inherit; }
   button, a { touch-action: manipulation; }
   button { cursor: pointer; }

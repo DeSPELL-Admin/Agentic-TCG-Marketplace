@@ -24,7 +24,7 @@ export function LandingView({ discovery }: { discovery: DiscoveryData }) {
   </>;
 }
 
-const DiscoveryHero = styled.section({ display: 'grid', gridTemplateColumns: 'minmax(0,.8fr) minmax(0,1.4fr)', alignItems: 'center', gap: 64, padding: '16px 0 64px', '@media(max-width:1023px)': { gap: 32 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 32, padding: '8px 0 48px' } });
+const DiscoveryHero = styled.section({ display: 'grid', gridTemplateColumns: 'minmax(0,.8fr) minmax(0,1.4fr)', alignItems: 'center', gap: 64, padding: '16px 0 64px', '@media(max-width:1023px)': { gap: 32 }, '@container browse (max-width:1000px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 32 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 32, padding: '8px 0 48px' } });
 const Introduction = styled.div(({ theme }) => ({ minWidth: 0, '& h1': { maxWidth: 360, fontSize: 'clamp(36px,4.2vw,56px)', fontWeight: 600, letterSpacing: '-.045em', textWrap: 'balance' }, '& p': { maxWidth: 330, color: theme.color.muted, fontSize: 15, margin: '24px 0 28px', lineHeight: 1.9 }, '@media(max-width:767px)': { '& h1': { maxWidth: 'none', fontSize: 34 }, '& p': { maxWidth: 440, margin: '16px 0 20px' } } }));
 const SearchLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 48, padding: '10px 24px', borderRadius: 6, color: theme.color.surface, background: theme.color.primary, textDecoration: 'none', fontSize: 14, fontWeight: 600, '&:hover': { background: theme.color.primaryHover } }));
 const BrowseLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 48, marginLeft: 20, fontSize: 14, color: theme.color.ink }));

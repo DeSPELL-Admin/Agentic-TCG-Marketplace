@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Form from 'next/form';
 import styled from '@emotion/styled';
 import { CardImage } from '../../components/card-image';
 import { getCardDisplayName, formatSet, formatUsdc, getReferencePrice, eligibilityLabels, type CatalogItem } from '../../lib/formatters';
@@ -8,7 +9,7 @@ import { getCardDisplayName, formatSet, formatUsdc, getReferencePrice, eligibili
 export function CatalogView({ items, query }: { items: CatalogItem[]; query: string }) {
   return <CatalogLayout>
     <SearchHeader><Title>카드 검색</Title>
-      <SearchForm action="/cards" method="get" role="search"><label htmlFor="query">카드 이름</label><SearchBox><SearchInput key={query} id="query" name="q" defaultValue={query} maxLength={200} placeholder="한국어 또는 영문" /><SearchButton type="submit" aria-label="카드 검색"><SearchIcon viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="1.7" /><path d="m16 16 4.5 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></SearchIcon></SearchButton></SearchBox></SearchForm>
+      <SearchForm action="/cards" role="search"><label htmlFor="query">카드 이름</label><SearchBox><SearchInput key={query} id="query" name="q" defaultValue={query} maxLength={200} placeholder="한국어 또는 영문" /><SearchButton type="submit" aria-label="카드 검색"><SearchIcon viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="1.7" /><path d="m16 16 4.5 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></SearchIcon></SearchButton></SearchBox></SearchForm>
       {query && <ClearLink href="/cards">검색 초기화</ClearLink>}
       <PriceGuide><summary>가격 표시 안내</summary><p>EUR/USD는 해외 참고 시세입니다. 판본·환율을 확인하지 않은 가격은 USDC로 환산하지 않습니다. 데모 가격은 합성 데이터입니다. 출처와 검증 상태는 카드 상세에서 확인하세요.</p></PriceGuide>
     </SearchHeader>
@@ -37,11 +38,11 @@ function CardTile({ item, query, priority }: { item: CatalogItem; query: string;
   </Tile>;
 }
 
-const CatalogLayout = styled.div({ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr)', gap: 56, paddingTop: 12, '@media(max-width:1023px)': { gap: 36 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 28, paddingTop: 0 } });
+const CatalogLayout = styled.div({ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr)', gap: 56, paddingTop: 12, '@container browse (max-width:720px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 28 }, '@media(max-width:1023px)': { gap: 36 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 28, paddingTop: 0 } });
 const Results = styled.div({ minWidth: 0 });
-const SearchHeader = styled.aside({ position: 'sticky', top: 112, alignSelf: 'start', minWidth: 0, '@media(max-width:767px)': { position: 'static' } });
+const SearchHeader = styled.aside({ position: 'sticky', top: 24, alignSelf: 'start', minWidth: 0, '@container browse (max-width:720px)': { position: 'static' }, '@media(max-width:767px)': { position: 'static' } });
 const Title = styled.h1({ fontSize: 26, fontWeight: 600, letterSpacing: '-.035em', marginBottom: 32, '@media(max-width:767px)': { marginBottom: 20 } });
-const SearchForm = styled.form({ '& label': { display: 'block', fontSize: 13, marginBottom: 8 } });
+const SearchForm = styled(Form)({ '& label': { display: 'block', fontSize: 13, marginBottom: 8 } });
 const SearchBox = styled.div(({ theme }) => ({ display: 'flex', alignItems: 'center', gap: 4, borderBottom: `1px solid ${theme.color.input}`, '&:focus-within': { borderBottomColor: theme.color.focus } }));
 const SearchIcon = styled.svg({ width: 20, height: 20 });
 const SearchInput = styled.input(({ theme }) => ({ width: '100%', minWidth: 0, flex: 1, height: 48, padding: '8px 0', border: 0, fontSize: 14, color: theme.color.ink, background: theme.color.surface, '&::placeholder': { color: theme.color.muted } }));
@@ -50,8 +51,8 @@ const ResultBar = styled.div(({ theme }) => ({ display: 'flex', flexWrap: 'wrap'
 const ResultCount = styled.span(({ theme }) => ({ fontSize: 13, color: theme.color.muted }));
 const ClearLink = styled(Link)({ display: 'inline-flex', alignItems: 'center', fontSize: 13, minHeight: 44, marginTop: 8 });
 const PriceGuide = styled.details(({ theme }) => ({ marginTop: 28, fontSize: 13, color: theme.color.muted, '& summary': { minHeight: 44, paddingBlock: 10, cursor: 'pointer' }, '& p': { marginTop: 8, lineHeight: 1.8 }, '@media(max-width:767px)': { marginTop: 8 } }));
-const Grid = styled.div({ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: '40px 32px', '@media(max-width:1099px)': { gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: '36px 24px' }, '@media(max-width:767px)': { gap: '32px 20px' }, '@media(max-width:359px)': { gap: '28px 12px' } });
-const Tile = styled(Link)(({ theme }) => ({ display: 'block', minWidth: 0, width: '100%', maxWidth: 240, marginInline: 'auto', color: theme.color.ink, textDecoration: 'none', '&:hover h3,&:focus-visible h3': { color: theme.color.link, textDecoration: 'underline' }, '&:focus-visible': { outlineOffset: 6 } }));
+const Grid = styled.div({ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: '40px 32px', '@container browse (max-width:1100px)': { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' }, '@media(max-width:1099px)': { gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: '36px 24px' }, '@media(max-width:767px)': { gap: '32px 20px' }, '@media(max-width:359px)': { gap: '28px 12px' } });
+const Tile = styled(Link)(({ theme }) => ({ position: 'relative', display: 'block', minWidth: 0, width: '100%', maxWidth: 240, marginInline: 'auto', color: theme.color.ink, textDecoration: 'none', '&:hover h3,&:focus-visible h3': { color: theme.color.link, textDecoration: 'underline' }, '&:focus-visible': { outlineOffset: 6 } }));
 const TileText = styled.div({ paddingTop: 20, '& h3': { fontSize: 19, fontWeight: 550, overflowWrap: 'anywhere' }, '@media(max-width:639px)': { paddingTop: 14, '& h3': { fontSize: 16 } } });
 const CardMeta = styled.p(({ theme }) => ({ display: 'flex', justifyContent: 'space-between', gap: 8, color: theme.color.muted, fontSize: 12, marginTop: 4, '& > span': { flexShrink: 0 } }));
 const PriceLine = styled.p(({ theme }) => ({ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', gap: '4px 12px', marginTop: 10, fontVariantNumeric: 'tabular-nums', '& > span': { color: theme.color.muted, fontSize: 12 }, '& strong': { fontSize: 16, fontWeight: 650 }, '@media(max-width:639px)': { display: 'block', '& > span': { display: 'block' }, '& strong': { display: 'block', marginTop: 3, fontSize: 15 } } }));
