@@ -13,6 +13,7 @@ const globalStyles = css`
     font-size: 16px; line-height: 1.6; word-break: keep-all; height: 100dvh; overflow: hidden; }
   button, input, select { font: inherit; }
   button, a { touch-action: manipulation; }
+  button, a { transition: color ${theme.motion.fast} ease, background-color ${theme.motion.fast} ease, border-color ${theme.motion.fast} ease; }
   button { cursor: pointer; }
   a { color: ${theme.color.link}; text-underline-offset: 4px; }
   :focus-visible { outline: 3px solid ${theme.color.focus}; outline-offset: 4px; }

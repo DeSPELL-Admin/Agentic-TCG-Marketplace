@@ -10,5 +10,6 @@ export const theme = {
   radius: { badge: 4, control: 6, card: 0, panel: 8, mat: 0 },
   space: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, section: 48 },
   breakpoint: { mobile: 640, tablet: 960 },
+  motion: { fast: '150ms', standard: '220ms', panel: '280ms', ease: 'cubic-bezier(0.22, 1, 0.36, 1)' },
 } as const;
 export type AppTheme = typeof theme;

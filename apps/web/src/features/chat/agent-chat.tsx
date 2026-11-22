@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
 
 const suggestions = ['피카츄 카드를 찾고 싶어요', '거래 예산을 정하고 싶어요', '참고 시세를 확인하고 싶어요'];
 
@@ -36,6 +37,7 @@ export function AgentChat({ onClose }: { onClose: () => void }) {
 }
 
 const Panel = styled.aside(({ theme }) => ({ display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0, height: '100%', background: theme.color.surface, borderLeft: `1px solid ${theme.color.line}` }));
+const messageEnter = keyframes({ from: { opacity: 0, transform: 'translateY(6px)' }, to: { opacity: 1, transform: 'translateY(0)' } });
 const PanelActions = styled.div({ display: 'flex', gap: 4, alignItems: 'center' });
 const PanelHeader = styled.div(({ theme }) => ({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '20px 24px', borderBottom: `1px solid ${theme.color.line}`, flexShrink: 0, '& h2': { fontSize: 16, fontWeight: 600 }, '& span': { fontSize: 12, color: theme.color.muted, display: 'block', marginTop: 4 }, '@media(max-height:600px)': { padding: '8px 20px' } }));
 const ResetButton = styled.button(({ theme }) => ({ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', minWidth: 44, minHeight: 44, background: theme.color.surface, border: 0, color: theme.color.muted, '&:hover:not(:disabled)': { color: theme.color.ink }, '&:disabled': { opacity: .4 } }));
@@ -43,7 +45,7 @@ const History = styled.div({ flex: 1, minHeight: 0, overflowY: 'auto', overscrol
 const Welcome = styled.div(({ theme }) => ({ paddingTop: 32, '& h3': { fontSize: 23, fontWeight: 550, letterSpacing: '-.025em', textWrap: 'balance' }, '& p': { marginTop: 16, fontSize: 14, color: theme.color.muted, lineHeight: 1.8 } }));
 const Suggestions = styled.div({ display: 'grid', gap: 10, marginTop: 28 });
 const Suggestion = styled.button(({ theme }) => ({ textAlign: 'left', background: theme.color.surface, border: `1px solid ${theme.color.line}`, borderRadius: 6, minHeight: 48, padding: '12px 14px', color: theme.color.ink, fontSize: 13, '&:hover': { borderColor: theme.color.input } }));
-const Message = styled.div(({ theme }) => ({ marginBottom: 24, '& > span': { display: 'block', color: theme.color.muted, fontSize: 12, marginBottom: 8 }, '& p': { whiteSpace: 'pre-wrap', padding: '12px 14px', border: `1px solid ${theme.color.line}`, borderRadius: 8, fontSize: 14, lineHeight: 1.8 } }));
+const Message = styled.div(({ theme }) => ({ marginBottom: 24, animation: `${messageEnter} ${theme.motion.standard} ${theme.motion.ease} both`, '@media(prefers-reduced-motion:reduce)': { animation: 'none' }, '& > span': { display: 'block', color: theme.color.muted, fontSize: 12, marginBottom: 8 }, '& p': { whiteSpace: 'pre-wrap', padding: '12px 14px', border: `1px solid ${theme.color.line}`, borderRadius: 8, fontSize: 14, lineHeight: 1.8 } }));
 const Waiting = styled.p(({ theme }) => ({ color: theme.color.muted, fontSize: 13, lineHeight: 1.8, paddingBottom: 8 }));
 const Composer = styled.form({ padding: '16px 24px max(20px, env(safe-area-inset-bottom))', flexShrink: 0, '& > label': { display: 'block', fontSize: 12, marginBottom: 8 }, '@media(max-height:600px)': { padding: '8px 20px max(8px, env(safe-area-inset-bottom))', '& > label': { marginBottom: 4 } } });
 const InputBox = styled.div(({ theme }) => ({ border: `1px solid ${theme.color.input}`, borderRadius: 8, padding: '12px 12px 8px', '&:focus-within': { borderColor: theme.color.focus }, '@media(max-height:600px)': { padding: 8 } }));

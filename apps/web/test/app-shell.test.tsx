@@ -12,6 +12,7 @@ it('랜딩에는 서비스 탭을 표시하지 않고 마켓 진입과 닫힌 �
   expect(html).toContain('href="/cards"');
   expect(html).toContain('data-chat-open="false"');
   expect(html).toContain('aria-expanded="false"');
+  expect(html).toContain('inert="" aria-hidden="true"');
   expect(html).toContain('랜딩 콘텐츠');
 });
 

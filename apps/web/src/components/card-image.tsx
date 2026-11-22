@@ -23,6 +23,11 @@ export function CardImage({ card, variant = 'tile', priority = false }: { card: 
 
 const ImageSlot = styled.div(({ theme }) => ({
   position: 'relative', width: '100%', height: 'auto', aspectRatio: '63 / 88', background: theme.color.surface,
+  transition: `transform ${theme.motion.standard} ${theme.motion.ease}`,
+  'a:focus-visible &:not([data-variant=detail]):not([data-variant=thumbnail])': { transform: 'translateY(-4px) scale(1.015)' },
+  '@media(hover:hover) and (pointer:fine)': { 'a:hover &:not([data-variant=detail]):not([data-variant=thumbnail])': { transform: 'translateY(-4px) scale(1.015)' } },
+  'a:active &:not([data-variant=detail]):not([data-variant=thumbnail])': { transform: 'scale(.99)' },
+  '@media(prefers-reduced-motion:reduce)': { transform: 'none !important' },
   '&[data-variant=detail]': { height: 'auto', aspectRatio: '63 / 88', maxWidth: 380, margin: '0 auto' },
   '&[data-variant=landing]': { height: 'auto', aspectRatio: '63 / 88', maxWidth: 400, margin: '0 auto' },
   '&[data-variant=thumbnail]': { height: 'auto', aspectRatio: '63 / 88' },
