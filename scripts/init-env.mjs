@@ -32,6 +32,7 @@ try {
     `API_PORT=${apiPort}`,
     `CORE_API_URL=http://127.0.0.1:${apiPort}`,
     'DATA_MODE=mock',
+    'CARD_DATA_SOURCE=mock',
     'DATABASE_ENABLED=false',
     `POSTGRES_USER=${user}`,
     `POSTGRES_PASSWORD=${password}`,

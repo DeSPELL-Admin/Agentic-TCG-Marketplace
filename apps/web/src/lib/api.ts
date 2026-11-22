@@ -1,10 +1,17 @@
-import { cardSearchResponseSchema, valuationSchema } from '@tcg/contracts';
+import { cardSearchResponseSchema, cardVariantSchema, valuationSchema } from '@tcg/contracts';
+
+export class CoreApiError extends Error {
+  constructor(public readonly status: number) { super(`Core API 요청 실패 (${status})`); }
+}
 
 const coreApiUrl = process.env.CORE_API_URL ?? 'http://127.0.0.1:4000';
 async function get(path: string): Promise<unknown> {
   const response = await fetch(new URL(path, coreApiUrl), { cache: 'no-store', signal: AbortSignal.timeout(5000) });
-  if (!response.ok) throw new Error(`Core API 요청 실패 (${response.status})`);
+  if (!response.ok) throw new CoreApiError(response.status);
   return response.json();
+}
+export async function getCardVariant(id: string) {
+  return cardVariantSchema.parse(await get(`/api/cards/${encodeURIComponent(id)}`));
 }
 export async function searchCards(query: string) {
   return cardSearchResponseSchema.parse(await get(`/api/cards?${new URLSearchParams({ q: query, limit: '20' })}`));

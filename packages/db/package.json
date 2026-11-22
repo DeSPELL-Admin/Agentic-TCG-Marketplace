@@ -13,9 +13,11 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:dev": "prisma migrate dev",
-    "db:check": "tsx scripts/check.ts"
+    "db:check": "tsx scripts/check.ts",
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
+    "@tcg/contracts": "workspace:*",
     "@prisma/client": "7.10.1",
     "@prisma/adapter-pg": "7.10.1",
     "dotenv": "^17.2.3"

@@ -1,8 +1,10 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { AppError, cardParamsSchema, valuationSchema, type AggregatorService, type ValuationService } from '@tcg/contracts';
+import type { PrismaClient } from '@tcg/db';
+import { demoPriceObservations, demoPriceSource } from '@tcg/contracts/fixtures';
+import { AppError, cardParamsSchema, priceObservationSchema, valuationSchema, type AggregatorService, type ValuationService, type PriceObservation } from '@tcg/contracts';
 
 export type { ValuationService } from '@tcg/contracts';
-export interface PriceObservation { amount: string }
+export type { PriceObservation } from '@tcg/contracts';
 export interface PriceDataAdapter {
   dataSource: 'MOCK' | 'MARKET';
   sourceSummary: string[];
@@ -17,8 +19,16 @@ export function createValuationService({ aggregatorService, adapter, now = () =>
   return {
     async getValuation(cardVariantId) {
       if (!await aggregatorService.getCardVariant(cardVariantId)) throw new AppError('CARD_NOT_FOUND', '카드를 찾을 수 없습니다.', 404);
-      const samples = await adapter.getObservations(cardVariantId);
-      const base = { cardVariantId, currency: 'USDC' as const, sampleSize: samples.length, confidence: 'LOW' as const, evaluatedAt: now().toISOString(), dataSource: adapter.dataSource, sourceSummary: adapter.sourceSummary };
+      const evaluatedAt = now().toISOString();
+      const samples = (await adapter.getObservations(cardVariantId)).map(sample => {
+        const result = priceObservationSchema.safeParse(sample);
+        if (!result.success || Date.parse(result.data.observedAt) > Date.parse(evaluatedAt)) {
+          throw new AppError('INTERNAL_ERROR', '가격 제공자의 표본 형식이나 관측 시각이 올바르지 않습니다.', 500);
+        }
+        return result.data;
+      });
+      const sourceSummary = [...new Set([...adapter.sourceSummary, ...samples.map(sample => sample.source)])];
+      const base = { cardVariantId, currency: 'USDC' as const, sampleSize: samples.length, confidence: 'LOW' as const, evaluatedAt, dataSource: adapter.dataSource, sourceSummary };
       if (samples.length === 0) return valuationSchema.parse({ ...base, status: 'INSUFFICIENT_DATA', estimatedPrice: null });
       // 초기 추정기는 정수 단위 중앙값만 사용한다. 통계적 신뢰 수준은 후속 평가 모델에서 확정.
       const amounts = samples.map(sample => BigInt(sample.amount)).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
@@ -31,13 +41,22 @@ export function createValuationService({ aggregatorService, adapter, now = () =>
 export function createMockPriceAdapter(): PriceDataAdapter {
   return {
     dataSource: 'MOCK',
-    sourceSummary: ['시연용 합성 가격. 실제 시장가격이 아닙니다.'],
+    sourceSummary: [demoPriceSource],
     async getObservations(id) {
-      const prices: Record<string, string[]> = {
-        '00000000-0000-4000-8000-000000000001': ['10000000', '12000000', '14000000'],
-        '00000000-0000-4000-8000-000000000002': ['25000000', '30000000', '35000000'],
-      };
-      return (prices[id] ?? []).map(amount => ({ amount }));
+      return demoPriceObservations.filter(sample => sample.cardVariantId === id).map(sample => ({ amount: sample.amount, source: sample.source, observedAt: sample.observedAt }));
+    },
+  };
+}
+/** 시연용 DB 표본만 조회한다. 실제 시세 어댑터와 혼합하지 않는다. */
+export function createPrismaMockPriceAdapter(prisma: PrismaClient): PriceDataAdapter {
+  return {
+    dataSource: 'MOCK', sourceSummary: [demoPriceSource],
+    async getObservations(cardVariantId) {
+      const rows = await prisma.priceObservation.findMany({
+        where: { cardVariantId, dataSource: 'MOCK' },
+        orderBy: [{ observedAt: 'desc' }, { id: 'asc' }], take: 100,
+      });
+      return rows.map(row => ({ amount: row.amount, source: row.source, observedAt: row.observedAt.toISOString() }));
     },
   };
 }

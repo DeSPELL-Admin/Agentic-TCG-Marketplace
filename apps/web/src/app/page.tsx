@@ -1,4 +1,5 @@
 import { formatUsdc, getValuation, searchCards } from '../lib/api';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 export default async function Home({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
@@ -18,7 +19,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
     <section aria-labelledby="results"><h2 id="results">카드 목록 <span>{results.length}개</span></h2>
       {results.length === 0 ? <p>검색 결과가 없습니다. 다른 카드 이름으로 검색하세요.</p> : <div className="cards">{results.map(({ card, valuation }) => <article key={card.id}>
         <div className="card-face" aria-hidden="true"><span>{card.game}</span><strong>{card.name.slice(0, 1)}</strong><span>{card.setCode} / {card.cardNumber}</span></div>
-        <h3>{card.name}</h3><p>{card.language} · {card.edition} · {card.condition}</p>
+        <h3><Link href={`/cards/${card.id}`}>{card.name}</Link></h3><p>{card.language} · {card.edition} · {card.condition}</p>
         <dl><dt>Mock 적정가</dt><dd>{valuation.status === 'AVAILABLE' ? formatUsdc(valuation.estimatedPrice) : '가격 데이터 부족'}</dd><dt>표본 / 신뢰 수준</dt><dd>{valuation.sampleSize}개 / {valuation.confidence}</dd></dl>
       </article>)}</div>}
     </section>

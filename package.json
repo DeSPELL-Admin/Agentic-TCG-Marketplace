@@ -10,11 +10,13 @@
     "build": "pnpm -r --if-present run build",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
+    "test:db": "node scripts/test-db.mjs",
     "turbo:dev": "turbo run dev --filter=@tcg/web --filter=@tcg/api",
     "turbo:build": "turbo run build",
     "db:generate": "pnpm --filter @tcg/db db:generate",
     "db:migrate": "pnpm --filter @tcg/db db:migrate",
     "db:check": "pnpm --filter @tcg/db db:check",
+    "db:seed": "pnpm --filter @tcg/db db:seed",
     "infra:up": "docker compose --env-file .env -f infra/compose.yaml up -d --wait",
     "infra:down": "docker compose --env-file .env -f infra/compose.yaml down"
   },

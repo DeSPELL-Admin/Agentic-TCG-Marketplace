@@ -15,6 +15,8 @@ await app.register(createValuationPlugin({ valuationService }), { prefix: '/api'
 
 Service는 Fastify에 의존하지 않습니다. Plugin은 라우트 등록만 담당하며 `listen()`을 호출하지 않습니다. 독립 Fastify 호스트에서 사용하는 경우 공통 AppError·ZodError 처리를 호스트에 등록하세요.
 
+DB 조회는 `createPrismaCardAdapter(prisma)`와 `createPrismaMockPriceAdapter(prisma)`로 교체합니다. 두 어댑터 모두 호스트가 관리하는 공통 Prisma Client를 주입받으며 직접 연결을 생성하거나 종료하지 않습니다. API는 `CARD_DATA_SOURCE=database`일 때 두 DB 어댑터를 함께 선택합니다.
+
 ## Core API 조립
 
 `apps/api/src/app.ts`의 `buildApp()`에서 다음 순서로 초기화합니다.
@@ -47,3 +49,5 @@ Web은 Server Component를 통해 Core API를 호출하므로 API 주소·비밀
 | payment | 최승원: 결제·예산·정산 증빙 |
 
 초기 Migration은 6개 논리 스키마와 catalog.CardVariant만 생성합니다. 타 담당 모델·예약 유일성 제약은 아직 확정하지 않았습니다. 공통 `packages/db/prisma/schema.prisma` 변경 후 `pnpm --filter @tcg/db db:dev --name <변경명>`으로 Migration을 추가하고 검토합니다. 기존 Migration을 덮어쓰지 않습니다.
+
+두 번째 Migration은 `catalog.PriceObservation`과 `PriceDataSource`를 추가합니다. 가격은 정수 문자열로 저장하며 Mock/시장 구분, 출처, 관측 시각과 카드 FK를 보존합니다. `pnpm db:seed`는 시연 데이터만 upsert합니다. 다른 모듈이 참조할 카드 UUID는 DB 모드와 Mock 모드에서 동일합니다.

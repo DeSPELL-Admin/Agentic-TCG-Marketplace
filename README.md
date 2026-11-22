@@ -54,10 +54,17 @@ Docker Engine을 실행한 뒤 다음 명령을 사용합니다.
 ```powershell
 pnpm infra:up
 pnpm db:migrate
+pnpm db:seed
 pnpm db:check
 ```
 
-API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경하고 서버를 재시작합니다. 활성화 시 연결 실패는 서버 부팅 실패로 처리합니다. `DATA_MODE=mock`은 계속 Mock 카드·가격을 반환합니다. DB 연결 여부와 데이터 제공 모드는 별개입니다. DB에는 기본 catalog 모델만 생성되며 Mock 데이터는 저장하지 않습니다.
+API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경하고 서버를 재시작합니다. 활성화 시 연결 실패는 서버 부팅 실패로 처리합니다.
+
+카드·가격 표본의 저장 위치는 `CARD_DATA_SOURCE=mock|database`로 선택합니다. `mock`은 메모리 어댑터이며 DB가 필요 없습니다. `database`는 DB 연결을 요구하며 PostgreSQL에서 검색·상세·가격 표본을 조회합니다. DB 장애 시 메모리 Mock으로 조용히 대체하지 않습니다. `/health`의 `cardDataSource`로 활성 어댑터를 확인할 수 있습니다.
+
+`pnpm db:seed`는 고정 UUID의 시연 카드 3개와 `MOCK` 가격 표본 6개를 트랜잭션으로 upsert합니다. 반복 실행해도 중복되지 않으며 다른 ID의 데이터는 삭제하지 않습니다. `DATA_MODE=mock`은 두 저장 방식 모두 합성 가격을 사용한다는 의미입니다. DB에서 읽었다고 실제 시장가격이 되지 않습니다. 실제 외부 카드·시세 수집은 후속 범위입니다.
+
+목록에서 카드 이름을 선택하면 `/cards/:id` 상세 화면으로 이동합니다. 카드 속성과 가격·표본 수·신뢰 수준·출처·평가 시각을 확인할 수 있습니다.
 
 ```powershell
 pnpm infra:down
@@ -70,13 +77,14 @@ pnpm infra:down
 ```powershell
 pnpm typecheck
 pnpm test
+pnpm test:db
 pnpm build
 pnpm --filter @tcg/api dev
 pnpm --filter @tcg/web dev
 pnpm --filter @tcg/aggregator test
 ```
 
-모든 구현 패키지는 독립 `test` 스크립트를 제공합니다. DB 기본 테스트는 외부 연결 없이 실행되며, 실제 DB 통합 테스트는 마이그레이션 후 `DATABASE_TEST_URL`을 설정하면 실행됩니다. `pnpm db:check`로 실제 연결과 테이블 존재도 확인할 수 있습니다.
+모든 구현 패키지는 독립 `test` 스크립트를 제공합니다. `pnpm test`는 외부 DB 없이 실행할 수 있으며 DB 통합 테스트는 건너뜁니다. `pnpm test:db`는 루트 `.env`를 읽고 실제 PostgreSQL 통합 테스트까지 실행합니다. 마이그레이션을 먼저 적용하세요. 테스트 전용 DB가 있다면 `DATABASE_TEST_URL`로 지정할 수 있고 미지정 시 `DATABASE_URL`을 사용합니다. 통합 테스트는 시연 seed를 upsert하고 직접 생성한 임시 카드·표본만 정리합니다. `pnpm db:check`로 실제 연결과 테이블 존재도 확인할 수 있습니다.
 
 내부 패키지는 개발 편의를 위해 소스(`src/index.ts`)를 공개합니다. Next.js는 `transpilePackages`, API는 `tsx`로 이를 실행합니다. 라이브러리 build는 `dist`를 생성하며 npm 배포·독립 Docker 이미지 패키징은 후속 작업입니다. 루트 `dev`는 Web/API만 실행합니다.
 
@@ -84,6 +92,6 @@ pnpm --filter @tcg/aggregator test
 
 ## 현재 범위
 
-카드 검색·상세·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 연결 기반을 구현했습니다. 실제 TCG 데이터 제공자, 상용 인증, 매물·주문·정책 API, MCP, Agent Runtime, x402 결제 및 전체 E2E는 아직 구현하지 않았습니다. 실제 데이터 어댑터는 공개 인터페이스를 구현해 주입하며, 미구현 live 모드로 조용히 대체하지 않습니다.
+카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. 실제 TCG 데이터 제공자, 상용 인증, 매물·주문·정책 API, MCP, Agent Runtime, x402 결제 및 전체 거래 E2E는 아직 구현하지 않았습니다. 실제 데이터 어댑터는 공개 인터페이스를 구현해 주입하며, 미구현 live 모드로 조용히 대체하지 않습니다.
 
 가격은 USDC 최소 단위 정수 문자열입니다. UUID 및 UTC ISO 8601을 사용합니다. Mock 가격은 `dataSource: "MOCK"`로 구분하고, 표본이 없으면 `status: "INSUFFICIENT_DATA"`, `estimatedPrice: null`을 반환합니다. 이 확장은 초안 계약의 미정 부분을 구체화한 **팀 검토 대상**입니다. [계약 결정 사항](docs/contracts.md), [통합 가이드](docs/integration.md)를 확인하세요.

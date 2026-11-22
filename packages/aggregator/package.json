@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@tcg/db": "workspace:*",
     "@tcg/contracts": "workspace:*",
     "fastify": "5.12.8"
   }

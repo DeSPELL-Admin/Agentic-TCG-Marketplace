@@ -1,4 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
+import type { PrismaClient } from '@tcg/db';
+import { demoCards } from '@tcg/contracts/fixtures';
 import { AppError, cardParamsSchema, cardSearchQuerySchema, cardSearchResponseSchema, cardVariantSchema, type AggregatorService, type CardVariant } from '@tcg/contracts';
 
 export type { AggregatorService } from '@tcg/contracts';
@@ -13,15 +15,27 @@ export function createAggregatorService({ adapter }: AggregatorDependencies): Ag
     async getCardVariant(id) { const card = await adapter.getCardVariant(id); return card === null ? null : cardVariantSchema.parse(card); },
   };
 }
-export const mockCards: readonly CardVariant[] = [
-  { id: '00000000-0000-4000-8000-000000000001', game: 'POKEMON', name: 'Pikachu', setCode: 'SV', cardNumber: '025', language: 'EN', edition: 'NORMAL', condition: 'NM' },
-  { id: '00000000-0000-4000-8000-000000000002', game: 'POKEMON', name: 'Charizard', setCode: 'SV', cardNumber: '006', language: 'EN', edition: 'HOLO', condition: 'NM' },
-  { id: '00000000-0000-4000-8000-000000000003', game: 'POKEMON', name: 'Eevee', setCode: 'SV', cardNumber: '133', language: 'KO', edition: 'NORMAL', condition: 'NM' },
-];
+export const mockCards = demoCards;
 export function createMockCardAdapter(cards: readonly CardVariant[] = mockCards): CardDataAdapter {
   return {
     async searchCards({ query, limit }) { return cards.filter(card => card.name.toLowerCase().includes(query.toLowerCase())).slice(0, limit).map(card => ({ ...card })); },
     async getCardVariant(id) { const card = cards.find(card => card.id === id); return card ? { ...card } : null; },
+  };
+}
+export function createPrismaCardAdapter(prisma: PrismaClient): CardDataAdapter {
+  const toCard = (row: Awaited<ReturnType<typeof prisma.cardVariant.findUnique>>): CardVariant | null => {
+    if (!row) return null;
+    return cardVariantSchema.parse({ ...row, imageUrl: row.imageUrl ?? undefined });
+  };
+  return {
+    async searchCards({ query, limit }) {
+      const rows = await prisma.cardVariant.findMany({
+        where: { name: { contains: query.replace(/[\\%_]/g, character => `\\${character}`), mode: 'insensitive' } },
+        orderBy: { id: 'asc' }, take: limit,
+      });
+      return rows.map(row => toCard(row)!);
+    },
+    async getCardVariant(id) { return toCard(await prisma.cardVariant.findUnique({ where: { id } })); },
   };
 }
 export interface AggregatorPluginDependencies { aggregatorService: AggregatorService }

@@ -19,8 +19,29 @@ model CardVariant {
   edition    String
   condition  String
   imageUrl   String?
+  priceObservations PriceObservation[]
 
   @@unique([game, setCode, cardNumber, language, edition, condition])
   @@index([name])
+  @@schema("catalog")
+}
+
+enum PriceDataSource {
+  MOCK
+  MARKET
+
+  @@schema("catalog")
+}
+
+model PriceObservation {
+  id            String          @id @default(uuid()) @db.Uuid
+  cardVariantId String          @db.Uuid
+  cardVariant   CardVariant     @relation(fields: [cardVariantId], references: [id], onDelete: Restrict)
+  amount        String
+  dataSource    PriceDataSource
+  source        String
+  observedAt    DateTime        @db.Timestamptz(3)
+
+  @@index([cardVariantId, dataSource, observedAt])
   @@schema("catalog")
 }

@@ -16,6 +16,13 @@ export const cardVariantSchema = z.object({
 });
 export type CardVariant = z.infer<typeof cardVariantSchema>;
 
+export const priceObservationSchema = z.object({
+  amount: amountSchema.refine(amount => /^(0|[1-9]\d*)$/.test(amount) && BigInt(amount) > 0n, '가격 표본은 양수여야 합니다.'),
+  source: z.string().trim().min(1),
+  observedAt: timestampSchema,
+});
+export type PriceObservation = z.infer<typeof priceObservationSchema>;
+
 // v2.0에서 미정이던 가격 부재 및 Mock 구분의 초기 제안. 팀 합의 전 거래 판단에 사용하지 않는다.
 const valuationBaseSchema = z.object({
   cardVariantId: idSchema,
@@ -27,8 +34,8 @@ const valuationBaseSchema = z.object({
   dataSource: z.enum(['MOCK', 'MARKET']),
 });
 export const valuationSchema = z.discriminatedUnion('status', [
-  valuationBaseSchema.extend({ status: z.literal('AVAILABLE'), estimatedPrice: amountSchema }),
-  valuationBaseSchema.extend({ status: z.literal('INSUFFICIENT_DATA'), estimatedPrice: z.null(), confidence: z.literal('LOW') }),
+  valuationBaseSchema.extend({ status: z.literal('AVAILABLE'), estimatedPrice: amountSchema, sampleSize: z.number().int().positive(), sourceSummary: z.array(z.string().trim().min(1)).min(1) }),
+  valuationBaseSchema.extend({ status: z.literal('INSUFFICIENT_DATA'), estimatedPrice: z.null(), confidence: z.literal('LOW'), sampleSize: z.literal(0) }),
 ]);
 export type Valuation = z.infer<typeof valuationSchema>;
 

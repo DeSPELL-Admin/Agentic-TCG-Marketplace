@@ -23,12 +23,23 @@ type Valuation = {
   sourceSummary?: string[];
   dataSource: 'MOCK' | 'MARKET';
 } & (
-  | { status: 'AVAILABLE'; estimatedPrice: string }
-  | { status: 'INSUFFICIENT_DATA'; estimatedPrice: null }
+  | { status: 'AVAILABLE'; estimatedPrice: string; sourceSummary: string[] }
+  | { status: 'INSUFFICIENT_DATA'; estimatedPrice: null; sampleSize: 0; confidence: 'LOW' }
 );
 ```
 
 가격 부재 시 confidence는 LOW만 허용합니다. 초기 평가는 중앙값이며 짝수 표본은 정수 평균의 소수 최소 단위를 버립니다. 현재 신뢰 수준은 항상 LOW이며 표본 수만으로 HIGH를 만들어 내지 않습니다. 합성 가격은 실제 거래 판단에 사용하면 안 됩니다.
+
+### 구현 계약의 세부 검증 규칙
+
+- `AVAILABLE`은 `sampleSize >= 1`과 비어 있지 않은 `sourceSummary`를 요구합니다.
+- `INSUFFICIENT_DATA`는 `sampleSize: 0`, `estimatedPrice: null`, `confidence: LOW`를 요구합니다.
+- 제공자 가격 표본은 `amount`(양의 USDC 최소 단위 정수 문자열), `source`(빈 문자열 불가), `observedAt`(UTC ISO 8601)을 제공합니다. 미래 관측 시각이나 잘못된 표본은 서버의 제공자 오류(HTTP 500)로 처리하며 입력 오류로 돌리거나 임의 가격으로 대체하지 않습니다.
+- `evaluatedAt`은 표본 조회를 시작한 계산 시점이며, 표본의 최신성을 보장하지 않습니다. 가격 관측 시각은 DB에 별도로 보존합니다. 최신성·신뢰 수준 산정 모델은 후속 범위입니다.
+- DB 어댑터도 `MOCK` 표본만 최대 100개(관측 시각 내림차순, 동일 시각은 ID 순) 읽습니다. `MARKET` 표본을 합성 평가에 섞지 않습니다.
+- 메모리 Mock과 DB seed는 `@tcg/contracts/fixtures`의 동일 카드 UUID와 가격 표본을 사용합니다. fixtures는 시연용이며 실제 카드·시세 자료가 아닙니다.
+
+위 규칙은 이번 구현에서 코드·테스트로 고정한 계약안입니다. 팀 합의가 완료되었다는 의미는 아니며 MCP·Trading·Payment 담당자와 공유·검토해야 합니다.
 
 Aggregator의 `CardDataAdapter`, Valuation의 `PriceDataAdapter`는 실제 제공자 구현을 위한 교체 경계입니다. 실제 외부 API 어댑터 및 시세 정규화는 미구현입니다.
 
