@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import type { CardVariant } from '@tcg/contracts';
 import { getCardDisplayName, formatSet } from '../lib/formatters';
 
-export function CardImage({ card, variant = 'tile', priority = false }: { card: CardVariant; variant?: 'tile' | 'detail' | 'spotlight'; priority?: boolean }) {
+export function CardImage({ card, variant = 'tile', priority = false }: { card: CardVariant; variant?: 'tile' | 'detail' | 'landing'; priority?: boolean }) {
   const detail = variant === 'detail';
   const [failedSource, setFailedSource] = useState<string | null>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -24,9 +24,9 @@ export function CardImage({ card, variant = 'tile', priority = false }: { card: 
 const ImageSlot = styled.div(({ theme }) => ({
   position: 'relative', width: '100%', height: 286, background: theme.color.surface,
   '&[data-variant=detail]': { height: 'auto', aspectRatio: '63 / 88', maxWidth: 350, margin: '0 auto' },
-  '&[data-variant=spotlight]': { height: 214, width: 154, flexShrink: 0 },
+  '&[data-variant=landing]': { height: 'auto', aspectRatio: '63 / 88', maxWidth: 280, margin: '0 auto' },
   '@media(max-width:959px)': { height: 250 },
-  '@media(max-width:639px)': { height: 218, '&[data-variant=detail]': { maxWidth: 252 }, '&[data-variant=spotlight]': { height: 170, width: 122 } },
+  '@media(max-width:639px)': { height: 218, '&[data-variant=detail]': { maxWidth: 252 } },
 }));
 const Artwork = styled.img({ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 3px 5px #24212D18)' });
 const Fallback = styled.div(({ theme }) => ({ position: 'absolute', inset: 16, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', textAlign: 'center', gap: 12, border: `1px dashed ${theme.color.input}`, borderRadius: 8, color: theme.color.muted, fontSize: 12, '& strong': { fontSize: 'clamp(16px, 2vw, 24px)', color: theme.color.ink, overflowWrap: 'anywhere' }, '@media(max-width:639px)': { inset: 8, padding: 10 } }));
