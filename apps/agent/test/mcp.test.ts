@@ -1,12 +1,13 @@
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { mockCards } from '@tcg/aggregator';
+import type { Valuation } from '@tcg/contracts';
 import { expect, it } from 'vitest';
 import { connectMcpCardServices } from '../src/index.js';
 
 it('Streamable HTTP로 세션을 연결하고 카드 도구를 호출한 뒤 세션을 종료한다', async () => {
   const pikachu = mockCards[0]!;
-  const valuation = {
+  const valuation: Valuation = {
     cardVariantId: pikachu.id,
     status: 'AVAILABLE',
     currency: 'USDC',
@@ -14,6 +15,7 @@ it('Streamable HTTP로 세션을 연결하고 카드 도구를 호출한 뒤 세
     confidence: 'LOW',
     sampleSize: 3,
     dataSource: 'MOCK',
+    sourceSummary: ['테스트용 시세'],
     evaluatedAt: '2026-01-01T00:00:00Z',
   };
   const calls: Array<{ name: string; arguments: Record<string, unknown> }> = [];
