@@ -1,4 +1,8 @@
-import { cardSearchResponseSchema, cardVariantSchema, valuationSchema } from '@tcg/contracts';
+import { cardSearchResponseSchema, cardVariantSchema, valuationSchema, type CardVariant } from '@tcg/contracts';
+
+export function getCardDisplayName(card: CardVariant): string {
+  return card.localizedNames?.find(name => name.locale === 'ko')?.name ?? card.name;
+}
 
 export class CoreApiError extends Error {
   constructor(public readonly status: number) { super(`Core API 요청 실패 (${status})`); }

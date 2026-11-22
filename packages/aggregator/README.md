@@ -95,7 +95,7 @@ pnpm db:migrate
 pnpm cards:collect --query Pikachu --limit 5
 ```
 
-기본 검색어는 Pikachu, 기본 limit는 5이며 1~100까지 지정할 수 있습니다. 영어 검색어를 사용합니다. 공급자의 첫 페이지만 조회하므로 전체 카탈로그 일괄 동기화 기능은 아닙니다. Pocket 제외·삭제 등으로 실제 저장 수는 limit보다 적을 수 있습니다. 루트 `.env`의 `DATABASE_URL`을 사용하며 비밀값을 출력하지 않습니다.
+기본 검색어는 Pikachu, 기본 limit는 5이며 1~100까지 지정할 수 있습니다. 외부 어댑터 자체는 영어 검색어를 사용합니다. CLI는 한국어 사전을 채운 뒤 정확한 한국어 종명을 영어로 대응시켜 수집할 수 있습니다. 공급자의 첫 페이지만 조회하므로 전체 카탈로그 일괄 동기화 기능은 아닙니다. Pocket 제외·삭제 등으로 실제 저장 수는 limit보다 적을 수 있습니다. 루트 `.env`의 `DATABASE_URL`을 사용하며 비밀값을 출력하지 않습니다.
 
 ```typescript
 import {
@@ -129,4 +129,26 @@ GET /api/cards/<수집된 내부 UUID>
 GET /api/cards/<수집된 내부 UUID>/valuation
 ```
 
-가격 수집은 별도 단계입니다. 현재 외부 카드에 가격 표본이 없으면 평가 API는 `INSUFFICIENT_DATA`, `estimatedPrice: null`, `sampleSize: 0`을 반환합니다. 기존 시연용 가격 표본과 혼합하지 않습니다. FE와 다른 담당자의 모듈·계약은 변경하지 않습니다.
+가격 수집은 별도 단계입니다. 현재 외부 카드에 가격 표본이 없으면 평가 API는 `INSUFFICIENT_DATA`, `estimatedPrice: null`, `sampleSize: 0`을 반환합니다. 기존 시연용 가격 표본과 혼합하지 않습니다. 타 담당 모듈의 코드와 계약은 변경하지 않습니다.
+
+## 한국어 종명 사전과 카드 표시 이름
+
+```powershell
+pnpm cards:localize
+pnpm cards:collect --query 피카츄 --limit 5
+```
+
+`createPokeApiNameProvider()`는 [PokéAPI의 언어별 종명 데이터](https://github.com/PokeAPI/pokeapi/blob/cd5f6c6232f23430aa6089896d96230f5f7ecef4/data/v2/csv/pokemon_species_names.csv)와 같은 버전의 `languages.csv`를 읽습니다. revision은 `cd5f6c6232f23430aa6089896d96230f5f7ecef4`로 고정했습니다. 영어와 한국어가 모두 있는 1,025종의 이름을 연결하며 카드별·종별 개별 HTTP 요청을 반복하지 않습니다. 출처는 카드의 `localizedNames[].sourceUrl`에 보존합니다. 출처는 공개 PokéAPI 데이터이며 한국어판 카드 제목을 검증하는 공식 TCG 카드 DB는 아닙니다.
+
+`createPokemonLocalizationService({ prisma, provider, now? }).importNames()`는 네트워크 검증 후 사전과 표시 이름을 DB 트랜잭션으로 저장합니다. 잘못된 CSV, 중복·모호한 종명, 누락된 언어 정의는 실패 처리하며 기존 자료를 삭제하거나 추정 번역으로 대체하지 않습니다. 사전은 반복 실행해도 중복되지 않으며 같은 버전·내용이면 importedAt도 유지합니다.
+
+- `catalog.PokemonNameTranslation`: speciesId, 원문 영어 이름, 정규화 키, 한국어 종명, 출처, 가져온 시각.
+- `catalog.CardLocalizedName`: 카드 UUID·표시 locale의 복합 키, 한국어 이름, 종명 FK, 출처.
+- 공통 DTO는 기존 `name`과 인쇄 `language`를 유지하고 optional `localizedNames`를 추가합니다. 저장된 한국어 이름이 없으면 해당 필드는 생략합니다.
+- NFKC·공백·대소문자 정규화 후 **원문 이름 전체가 일치할 때만** 연결합니다. `Pikachu V`, 소유자명·특수 형태·트레이너 이름 등을 추측해 번역하지 않습니다. 종명 표기와 한국어판의 실제 카드명은 다를 수 있습니다.
+- 카드 수집 저장소는 입력 DTO의 임의 한국어 표기를 신뢰하지 않고 DB 사전에서 이름을 연결합니다. 원문명이 바뀌어 대응이 사라지면 이전의 자동 종명 표기도 제거합니다. UUID·원문명·카드 인쇄 언어를 번역 때문에 변경하지 않습니다.
+- DB 카드 검색은 원문명과 저장된 한국어 이름을 OR 조건으로 조회하고 나서 limit를 적용합니다. 일반 조회는 외부 이름 API를 호출하지 않습니다.
+- Mock 어댑터도 fixtures에 포함된 피카츄·리자몽·이브이 표기로 검색할 수 있습니다. DB seed는 본문만 저장하므로 새 DB의 권장 순서는 `db:migrate` → `db:seed` → `cards:localize`입니다.
+- Web은 한국어 표기를 우선 보여주고 원문 이름과 인쇄 언어를 함께 유지합니다. 화면 구조는 확장하지 않습니다.
+
+사전 업데이트는 revision을 검토해 변경한 뒤 명령을 다시 실행합니다. 입력 스냅샷에 없는 기존 사전 행을 일괄 삭제하지 않습니다. 가격·거래·Agent 데이터는 변경하지 않습니다.

@@ -18,7 +18,7 @@ describe.skipIf(!process.env.DATABASE_TEST_URL)('카드 수집 PostgreSQL 저장
   });
   afterAll(async () => { await prisma.$disconnect(); });
 
-  async function card(): Promise<CardVariant> {
+  async function card(): Promise<Omit<CardVariant, 'localizedNames'>> {
     const token = randomUUID();
     const externalId = `collection-test-${token}`;
     externalIds.add(externalId);

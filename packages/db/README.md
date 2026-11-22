@@ -13,3 +13,5 @@ Prisma 정의는 `prisma/schema/` 디렉터리를 하나의 스키마로 읽습�
 `catalog.ExternalCardIdentity`는 외부 카드 참조와 내부 UUID를 영구 매핑합니다. 제공자·외부 ID·언어·에디션·상태의 복합 유일성 제약을 둡니다. 해당 모델도 `catalog.prisma`에서 관리하며, 현재 제공자는 TCGDEX입니다. 매핑 저장소 팩토리는 `@tcg/aggregator`의 `createPrismaCardIdentityStore(prisma)`입니다. 매핑만 생성하면 `CardVariant` 행이 자동 생성되지는 않습니다.
 
 `pnpm cards:collect --query Pikachu --limit 5`는 외부 어댑터와 `createPrismaCardCatalogWriter(prisma)`를 연결해 카드 본문도 저장합니다. `CardVariant.externalIdentityId`는 매핑 테이블 FK이며 DB CHECK 제약으로 카드의 내부 UUID와 동일하게 유지합니다. `lastCollectedAt`은 수집 완료 시각입니다. 기존 시연 카드는 두 필드가 null이며 유지됩니다. 수집은 배치 단위 트랜잭션이며 조회는 기존 `createPrismaCardAdapter(prisma)`와 REST API를 사용합니다.
+
+`pnpm cards:localize`는 `catalog.PokemonNameTranslation`에 PokéAPI의 영어·한국어 종명 사전을 저장하고 `catalog.CardLocalizedName`에 카드 표시 이름을 연결합니다. 카드 UUID와 locale이 복합 키이며, 카드 삭제 시 표시 이름만 함께 정리되고 종명 사전은 보존됩니다. 기존 카드의 원문명·인쇄 언어·UUID는 변경하지 않습니다. 새 DB는 `db:migrate` → `db:seed` → `cards:localize` 순서로 준비하세요. 실제 한국어판 TCG 카드 카탈로그와는 별개입니다.

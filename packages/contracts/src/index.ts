@@ -3,6 +3,12 @@ import { z } from 'zod';
 export const idSchema = z.uuid();
 export const amountSchema = z.string().regex(/^(0|[1-9]\d*)$/, 'USDC 최소 단위의 정수 문자열이어야 합니다.');
 export const timestampSchema = z.iso.datetime();
+export const localizedCardNameSchema = z.object({
+  locale: z.literal('ko'),
+  name: z.string().trim().min(1),
+  source: z.literal('POKEAPI_SPECIES'),
+  sourceUrl: z.url(),
+});
 export const cardVariantSchema = z.object({
   id: idSchema,
   game: z.literal('POKEMON'),
@@ -13,6 +19,7 @@ export const cardVariantSchema = z.object({
   edition: z.string().min(1),
   condition: z.string().min(1),
   imageUrl: z.url().optional(),
+  localizedNames: z.array(localizedCardNameSchema).optional(),
 });
 export type CardVariant = z.infer<typeof cardVariantSchema>;
 

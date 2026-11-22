@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { idSchema } from '@tcg/contracts';
-import { CoreApiError, getCardVariant, getValuation } from '../../../lib/api';
+import { CoreApiError, getCardDisplayName, getCardVariant, getValuation } from '../../../lib/api';
 import { ValuationDetails } from '../../../components/valuation-details';
 
 export const dynamic = 'force-dynamic';
@@ -20,10 +20,11 @@ export default async function CardDetail({ params }: { params: Promise<{ id: str
     <div className="detail-layout">
       <section aria-labelledby="card-heading">
         <div className="card-face detail-face" aria-hidden="true"><span>{card.game}</span><strong>{card.name.slice(0, 1)}</strong><span>{card.setCode} / {card.cardNumber}</span></div>
-        <h1 id="card-heading">{card.name}</h1>
+        <h1 id="card-heading">{getCardDisplayName(card)}</h1>
+        {getCardDisplayName(card) !== card.name && <p>원문명: {card.name} / 한국어 종명 표기이며 한국어판 카드명과는 다를 수 있습니다.</p>}
         <dl className="card-attributes">
           <dt>게임</dt><dd>{card.game}</dd><dt>세트</dt><dd>{card.setCode}</dd>
-          <dt>카드 번호</dt><dd>{card.cardNumber}</dd><dt>언어</dt><dd>{card.language}</dd>
+          <dt>카드 번호</dt><dd>{card.cardNumber}</dd><dt>인쇄 언어</dt><dd>{card.language}</dd>
           <dt>에디션</dt><dd>{card.edition}</dd><dt>보존 상태</dt><dd>{card.condition}</dd>
           <dt>카드 ID</dt><dd>{card.id}</dd>
         </dl>

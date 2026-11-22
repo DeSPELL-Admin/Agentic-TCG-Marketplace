@@ -13,6 +13,7 @@ model CardVariant {
   externalIdentity ExternalCardIdentity? @relation(fields: [externalIdentityId], references: [id], onDelete: Restrict)
   lastCollectedAt DateTime? @db.Timestamptz(3)
   priceObservations PriceObservation[]
+  localizedNames CardLocalizedName[]
 
   @@unique([game, setCode, cardNumber, language, edition, condition])
   @@index([name])
@@ -57,5 +58,39 @@ model PriceObservation {
   observedAt    DateTime        @db.Timestamptz(3)
 
   @@index([cardVariantId, dataSource, observedAt])
+  @@schema("catalog")
+}
+
+enum CardNameSource {
+  POKEAPI_SPECIES
+
+  @@schema("catalog")
+}
+
+model PokemonNameTranslation {
+  speciesId   Int      @id
+  englishName String
+  englishKey  String   @unique
+  koreanName  String
+  sourceUrl   String
+  importedAt  DateTime @db.Timestamptz(3)
+  cardNames   CardLocalizedName[]
+
+  @@index([koreanName])
+  @@schema("catalog")
+}
+
+model CardLocalizedName {
+  cardVariantId String @db.Uuid
+  cardVariant CardVariant @relation(fields: [cardVariantId], references: [id], onDelete: Cascade)
+  locale      String @db.VarChar(16)
+  name        String
+  source      CardNameSource
+  sourceUrl   String
+  speciesId   Int
+  species     PokemonNameTranslation @relation(fields: [speciesId], references: [speciesId], onDelete: Restrict)
+
+  @@id([cardVariantId, locale])
+  @@index([locale, name])
   @@schema("catalog")
 }

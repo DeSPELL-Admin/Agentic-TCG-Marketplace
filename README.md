@@ -66,10 +66,22 @@ API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경�
 
 목록에서 카드 이름을 선택하면 `/cards/:id` 상세 화면으로 이동합니다. 카드 속성과 가격·표본 수·신뢰 수준·출처·평가 시각을 확인할 수 있습니다.
 
+## 한국어 이름 채우기
+
+```powershell
+pnpm cards:localize
+```
+
+Migration과 seed 적용 후 실행합니다. PokéAPI의 버전 고정 데이터에서 영어·한국어 종명 1,025쌍을 가져와 사전에 저장하고, 기존 카드의 원문명과 정확히 대응하는 한국어 표시 이름을 연결합니다. 재실행해도 중복되지 않습니다. 카드 인쇄 언어·UUID·원문명은 유지하며, 검색 API는 한국어와 영어 이름을 모두 지원합니다. 예: `/api/cards?q=피카츄&limit=20`.
+
+이는 포켓몬 **종명** 번역입니다. 한국어판 카드별 정식 제목이나 한국어 인쇄 카드 전체를 수집하는 기능은 아닙니다. 장식명·트레이너 카드·불명확한 대응은 원문명으로 표시합니다. DB 없이 실행하는 Mock 데모에도 피카츄·리자몽·이브이 표기를 제공합니다.
+
 ## 외부 카드 수집
 
 ```powershell
 pnpm cards:collect --query Pikachu --limit 5
+# 한국어 사전을 채운 뒤에는 정확한 한국어 종명도 사용 가능합니다.
+pnpm cards:collect --query 피카츄 --limit 5
 ```
 
 Migration 적용 후 실행합니다. TCGdex 영어 카탈로그에서 최대 5개를 조회하고, 영구 매핑된 내부 UUID로 DB에 저장한 뒤 조회까지 확인합니다. 기본 limit는 5, 허용 범위는 1~100이며 첫 페이지만 수집합니다. 재실행해도 중복 카드가 생성되지 않습니다. API가 `CARD_DATA_SOURCE=database`이면 기존 `/api/cards`, `/api/cards/:id`에서 저장된 외부 카드도 조회됩니다. 일반 조회는 외부 API를 호출하지 않습니다. 수집 카드의 상태·에디션은 UNSPECIFIED이며, 가격 표본은 별도로 수집해야 합니다. 상세 규칙은 [Aggregator 가이드](packages/aggregator/README.md)를 확인하세요.

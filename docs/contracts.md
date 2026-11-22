@@ -9,6 +9,21 @@
 - REST 성공: 계약서의 직접 DTO 응답 형식을 따릅니다. MCP의 `{ ok, data }` 래퍼를 REST에 적용하지 않습니다.
 - REST 오류: `{ error: { code, message, retryable }, requestId }`.
 
+## 카드의 원문명·표시 이름·인쇄 언어
+
+`CardVariant.name`은 수집한 원문 이름이며 `language`는 카드 인쇄 언어입니다. 한국어 UI를 제공하기 위해 인쇄 언어를 KO로 바꾸거나 name을 덮어쓰지 않습니다. optional 표시 이름 필드를 추가했습니다.
+
+```typescript
+localizedNames?: {
+  locale: 'ko';
+  name: string;
+  source: 'POKEAPI_SPECIES';
+  sourceUrl: string;
+}[];
+```
+
+예를 들어 `name: "Pikachu"`, `language: "EN"`인 카드에 `localizedNames[0].name: "피카츄"`를 제공할 수 있습니다. source는 종명 대응을 뜻하며 한국어판 카드별 정식 제목을 보증하지 않습니다. 대응되지 않는 이름은 추가하지 않고 원문으로 표시합니다. 기존 필드·UUID·거래 식별 속성은 유지합니다. DB 검색은 원문명과 한국어 이름을 모두 지원합니다.
+
 ## 팀 검토가 필요한 Valuation 확장
 
 초안의 '가격 부재를 표현하는 별도 상태' 요구를 다음처럼 구체화했습니다.

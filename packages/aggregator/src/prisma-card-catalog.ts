@@ -1,5 +1,7 @@
 import type { PrismaClient } from '@tcg/db';
-import { cardVariantSchema, timestampSchema, type CardVariant } from '@tcg/contracts';
+import { timestampSchema } from '@tcg/contracts';
+import { toCardVariant } from './card-dto.js';
+import { syncKoreanCardNames } from './prisma-localization.js';
 import { CardCollectionError, validateCollectionCards, type CardCatalogWriter } from './collection.js';
 
 const variantFields = ['game', 'setCode', 'cardNumber', 'language', 'edition', 'condition'] as const;
@@ -19,7 +21,7 @@ export function createPrismaCardCatalogWriter(prisma: PrismaClient): CardCatalog
           if (identity.language !== card.language || identity.edition !== card.edition || identity.condition !== card.condition) {
             throw new CardCollectionError('IDENTITY_MISMATCH');
           }
-          const { id, ...attributes } = card;
+          const { id, localizedNames: _untrustedNames, ...attributes } = card;
           const data = { ...attributes, imageUrl: card.imageUrl ?? null, externalIdentityId: id, lastCollectedAt: collectedAt };
           // 동시 수집과 기존 변형의 충돌은 DB 제약으로 감지하며 UUID를 재할당하지 않는다.
           await tx.cardVariant.createMany({ data: [{ id, ...data }], skipDuplicates: true });
@@ -35,11 +37,10 @@ export function createPrismaCardCatalogWriter(prisma: PrismaClient): CardCatalog
           });
         }
         const rows = await tx.cardVariant.findMany({ where: { id: { in: cards.map(card => card.id) } } });
-        const byId = new Map(rows.map(row => [row.id, row]));
-        return cards.map(card => {
-          const row = byId.get(card.id)!;
-          return cardVariantSchema.parse({ ...row, imageUrl: row.imageUrl ?? undefined });
-        });
+        await syncKoreanCardNames(tx, rows);
+        const localized = await tx.cardVariant.findMany({ where: { id: { in: cards.map(card => card.id) } }, include: { localizedNames: { orderBy: { locale: 'asc' } } } });
+        const byId = new Map(localized.map(row => [row.id, row]));
+        return cards.map(card => toCardVariant(byId.get(card.id)!));
       }, { timeout: 15_000 });
     },
   };
