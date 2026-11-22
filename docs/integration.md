@@ -48,6 +48,6 @@ Web은 Server Component를 통해 Core API를 호출하므로 API 주소·비밀
 | trading | 이채영: 주문·예약·체결 |
 | payment | 최승원: 결제·예산·정산 증빙 |
 
-초기 Migration은 6개 논리 스키마와 catalog.CardVariant만 생성합니다. 타 담당 모델·예약 유일성 제약은 아직 확정하지 않았습니다. 공통 `packages/db/prisma/schema.prisma` 변경 후 `pnpm --filter @tcg/db db:dev --name <변경명>`으로 Migration을 추가하고 검토합니다. 기존 Migration을 덮어쓰지 않습니다.
+초기 Migration은 6개 논리 스키마와 catalog.CardVariant만 생성합니다. 타 담당 모델·예약 유일성 제약은 아직 확정하지 않았습니다. Prisma 정의는 `packages/db/prisma/schema/`에서 관리하며 `base.prisma`는 공통 설정, `catalog.prisma`는 정연한 담당 모델입니다. 다른 담당자의 모델 파일은 해당 담당자가 구현할 때 추가합니다. 모델 변경 후 `pnpm --filter @tcg/db db:dev --name <변경명>`으로 Migration을 추가하고 검토합니다. 기존 Migration을 덮어쓰지 않습니다. 파일 분리만 수행한 경우에는 DB 변경이나 신규 Migration이 필요하지 않습니다.
 
 두 번째 Migration은 `catalog.PriceObservation`과 `PriceDataSource`를 추가합니다. 가격은 정수 문자열로 저장하며 Mock/시장 구분, 출처, 관측 시각과 카드 FK를 보존합니다. `pnpm db:seed`는 시연 데이터만 upsert합니다. 다른 모듈이 참조할 카드 UUID는 DB 모드와 Mock 모드에서 동일합니다.

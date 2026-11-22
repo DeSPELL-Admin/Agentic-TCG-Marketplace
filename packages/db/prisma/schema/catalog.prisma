@@ -1,14 +1,4 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-  schemas  = ["auth", "catalog", "market", "agent", "trading", "payment"]
-}
-
-// 나머지 모델은 담당자 합의 후 추가한다. 거래·결제 모델을 임의로 확정하지 않는다.
+// 정연한 담당: 카드 카탈로그와 가격 표본.
 model CardVariant {
   id         String  @id @default(uuid()) @db.Uuid
   game       String  @default("POKEMON")
