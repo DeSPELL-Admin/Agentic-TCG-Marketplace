@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import { CardImage } from '../../components/card-image';
 import { getCardDisplayName, formatSet } from '../../lib/formatters';
 import type { DiscoveryData } from '../../lib/discovery';
+import { SellerGuide } from '../trading/seller-guide';
 
 const exampleSteps = [
   { label: '조건 확인', title: '맡길 범위를 먼저 정해요', description: '영문판 피카츄 한 장, 최대 10 USDC. 에이전트는 허용한 카드와 거래 한도 안에서만 구매를 검토해요.', rows: [['찾는 카드', '피카츄 · 영문판'], ['구매 수량', '1장'], ['1회 구매 한도', '10 USDC']], note: '예산과 거래 허용 범위는 에이전트 설정에서 직접 정해요.' },
@@ -21,14 +22,15 @@ export function LandingView({ discovery }: { discovery: DiscoveryData }) {
     .filter((card, index, all) => all.findIndex(item => item.id === card.id) === index).slice(0, 4);
   return <>
     <Hero>
-      <Introduction><h1>카드 거래는<br />AI 에이전트에게</h1><p>원하는 카드와 예산을 정해 주세요.<br />조건에 맞는 매물을 살피고 구매하는 일은 에이전트에게 맡겨요.</p><HeroActions><PrimaryLink href="/agent">거래 조건 정하기</PrimaryLink><TextLink href="/cards">카드 먼저 찾아보기</TextLink></HeroActions><Availability>현재는 카드 검색과 거래 화면 미리보기를 이용할 수 있어요.</Availability></Introduction>
+      <Introduction><h1>카드 구매는<br />AI 에이전트에게</h1><p>원하는 카드와 예산을 정해 구매를 맡겨요. 보유 카드는 내가 정한 가격으로 직접 판매 등록할 수 있어요.</p><HeroActions><PrimaryLink href="/agent">구매 조건 정하기</PrimaryLink><SellerLink href="/collection#owned-cards">보유 카드 판매하기</SellerLink></HeroActions><TextLink href="/cards">카드 먼저 찾아보기</TextLink><Availability>현재는 카드 검색과 구매·판매 화면 미리보기를 이용할 수 있어요.</Availability></Introduction>
       <Example aria-labelledby="example-heading">
-        <ExampleHeading><h2 id="example-heading">이렇게 거래를 맡겨요</h2><span>설명용 예시</span></ExampleHeading>
+        <ExampleHeading><h2 id="example-heading">에이전트에게 구매를 맡기면</h2><span>설명용 예시</span></ExampleHeading>
         <Request><span>내가 원하는 거래</span><p>“영문 피카츄 한 장을<br /><strong>10 USDC 이하</strong>로 구해줘.”</p></Request>
         <StepButtons aria-label="거래 과정 살펴보기">{exampleSteps.map((item, index) => <StepButton key={item.label} type="button" aria-pressed={step === index} aria-controls="trade-example-detail" onClick={() => setStep(index)}><span aria-hidden="true">{index + 1}</span>{item.label}</StepButton>)}</StepButtons>
         <StepDetail id="trade-example-detail" aria-live="polite" aria-atomic="true"><h3>{current.title}</h3><p>{current.description}</p><Facts>{current.rows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</Facts><ExampleNote>{current.note}</ExampleNote></StepDetail>
       </Example>
     </Hero>
+    <SellerGuide />
     <ControlSection aria-labelledby="control-heading"><SectionIntro><h2 id="control-heading">맡겨도, 기준은 내가 정해요</h2><p>구매 조건부터 거래 결과까지 직접 확인할 수 있어요.</p></SectionIntro><ControlGrid>
       <ControlItem><h3>예산 안에서</h3><p>총예산과 1회 한도, 거래할 카드를 정해 에이전트의 구매 범위를 제한해요.</p><TextLink href="/agent">예산과 정책 설정</TextLink></ControlItem>
       <ControlItem><h3>필요할 때 멈추고</h3><p>실행 상태를 확인하고 신규 거래를 일시중지하거나 중지할 수 있어요.</p><TextLink href="/agent">실행 관리 미리보기</TextLink></ControlItem>
@@ -42,6 +44,7 @@ const Hero = styled.section({ display: 'grid', gridTemplateColumns: 'minmax(0,.9
 const Introduction = styled.div(({ theme }) => ({ minWidth: 0, '& h1': { fontSize: 'clamp(34px,3.5vw,52px)', fontWeight: 600, letterSpacing: '-.045em', lineHeight: 1.22, textWrap: 'balance' }, '& > p': { color: theme.color.muted, fontSize: 16, marginTop: 24, maxWidth: 430, lineHeight: 1.85 } }));
 const HeroActions = styled.div({ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px 20px', marginTop: 28 });
 const PrimaryLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 48, padding: '10px 22px', borderRadius: theme.radius.control, color: theme.color.surface, background: theme.color.primary, textDecoration: 'none', fontSize: 14, fontWeight: 600, '&:hover': { background: theme.color.primaryHover } }));
+const SellerLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 48, padding: '10px 20px', border: `1px solid ${theme.color.input}`, borderRadius: theme.radius.control, color: theme.color.ink, textDecoration: 'none', fontSize: 14, fontWeight: 600, '&:hover': { borderColor: theme.color.primary, color: theme.color.link } }));
 const TextLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 44, fontSize: 14, color: theme.color.ink, textUnderlineOffset: 4 }));
 const Availability = styled.small(({ theme }) => ({ display: 'block', marginTop: 16, color: theme.color.muted, fontSize: 12, lineHeight: 1.7, maxWidth: 380 }));
 const Example = styled.div(({ theme }) => ({ minWidth: 0, border: `1px solid ${theme.color.line}`, borderRadius: theme.radius.panel, overflow: 'hidden', background: theme.color.surface }));

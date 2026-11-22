@@ -31,6 +31,7 @@ it('주제 검색 일부와 참고 시세가 실패해도 성공한 카드와 �
   expect(html).toContain(`/cards/${pikachu.id}`);
   expect(html).toContain('href="/cards"');
   expect(html).toContain('href="/agent"');
+  expect(html).toContain('href="/collection#owned-cards"');
   expect(html).toContain('설명용 예시');
   expect(html).toContain('AI 에이전트에게');
 });
@@ -42,5 +43,5 @@ it('주제 검색 실패를 카드가 없는 성공 응답과 구분한다', asy
   const html = renderUI(<LandingView discovery={data} />);
   expect(html).toContain('일부 카드 정보를 불러오지 못했어요.');
   expect(html).not.toContain('아직 보여드릴 카드가 없어요.');
-  expect(html).toContain('거래 조건 정하기');
+  expect(html).toContain('구매 조건 정하기');
 });
