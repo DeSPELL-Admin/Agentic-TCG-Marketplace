@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { formatUsdc, getCardDisplayName } from '../src/lib/api';
+import { formatUsdc, getCardDisplayName } from '../src/lib/formatters';
 import { demoCards } from '@tcg/contracts/fixtures';
 
 it('USDC 소수 6자리와 큰 값을 손실 없이 표시한다', () => {

@@ -1,6 +1,6 @@
 # Agentic TCG 프론트엔드 디자인 설계 — 코랄 플레이룸
 
-상태: 구현 전 설계안. 현재 Web은 기존 화면이며 Emotion 패키지와 아래 컴포넌트는 아직 적용하지 않았습니다. 검토용 시각 자료는 [HTML 미리보기](../../docs/design/frontend-preview.html)에 있습니다.
+상태: 카드 탐색·상세와 공통 UI에 Emotion 기반 1차 구현을 적용했습니다. 검토용 시각 자료는 [HTML 미리보기](../../docs/design/frontend-preview.html), 실제 파일 구조와 검증 범위는 [Web README](../../apps/web/README.md)에 있습니다. 매물·보유 카드·Agent·거래 내역은 담당 API 연결 후 확장합니다.
 
 ## 제품 방향
 
@@ -48,6 +48,7 @@
 
 - 첫 화면부터 카드와 검색창이 보이도록 합니다. 큰 홍보용 히어로·성과 숫자·캐러셀은 두지 않습니다.
 - 왼쪽 고정 사이드바를 없애고 세트 탐색은 플레이매트 위의 수평 탭, 고급 조건은 필터 패널로 이동합니다. HTML 미리보기의 세트 탭은 예시 6종에만 적용되는 로컬 동작이며 실제 앱의 전체 카탈로그 필터를 구현한 것이 아닙니다.
+- 현재 실행 앱의 수평 탭은 API가 지원하는 둘러보기·카드 이름 빠른 검색입니다. 검색어를 상세와 복귀 링크에 유지하고, 조회된 최대 20종에서 이미지 있는 카드를 먼저 진열합니다. 세트 탭은 후속 API 연결 범위입니다.
 - 한 카드는 이미지 → 한국어 표시 이름 → 원문명 → 세트·번호 → 인쇄 언어 → 가격 상태 순서입니다. 이름·핵심 메타데이터를 좌측 정렬하고 금액은 우측 정렬 가능한 독립 영역으로 둡니다.
 - 카드 아트워크는 `object-fit: contain`으로 전체를 보여주고 폭:높이 약 63:88의 고정 슬롯을 예약합니다. 이미지 없는 카드에는 이름·세트 정보가 있는 차분한 대체 화면을 제공합니다. 이미지 실패 시 자동 대체하고 무한 재시도하지 않습니다.
 - 현재 검색 API는 q·limit만 지원하고 nextCursor는 null입니다. 초기에는 검색만 연결하고 조회된 개수로 표시합니다. 전체 개수·세트/언어 필터·정렬·페이지 이동은 API 계약을 확장한 후 활성화합니다. 받은 20장만 필터링하고 전체 171종 검색인 것처럼 표시하지 않습니다.
@@ -144,19 +145,20 @@ apps/web/src/
     cards/[id]/page.tsx           # Server: 상세·평가·참고 가격 조회
     providers.tsx                # Client: Emotion Registry·ThemeProvider
   styles/
-    tokens.ts                    # 색·간격·폰트·반응형의 기본값
-    theme.ts                     # 의미별 토큰과 컴포넌트 토큰
+    theme.ts                     # 색·간격·반응형·의미별 토큰
     emotion.d.ts                 # Theme 타입 확장
-    EmotionRegistry.tsx          # 요청별 SSR cache/flush 검증 후 채택
-    GlobalStyles.tsx             # reset·기본 글꼴·포커스
+    emotion-registry.tsx         # 요청별 SSR cache/flush
+    global-styles.tsx            # reset·기본 글꼴·포커스
   components/
-    ui/                          # Button, Input, Badge, Dialog, Skeleton
-    layout/                      # AppShell, Header, Container, EmptyState
+    ui.tsx                       # Button, ActionLink, Badge, Notice
+    app-shell.tsx                # Header, main, Footer, skip link
+    card-image.tsx               # 이미지·실패 대체 화면
+    request-state.tsx            # 실패·404·로딩
+    valuation-details.tsx        # 평가·합성 데이터 안내
+    market-prices.tsx            # 원본 시세·검증 근거
   features/
-    catalog/                     # CatalogView, SearchForm, CardTile, CardImage
-    card-detail/                 # DetailView, CardFacts, ValuationPanel
-    market-prices/               # MarketPriceTable, DataSourceBadge
-    agents/                      # 후속 API 연결 시 추가
+    catalog/catalog-view.tsx     # 목록·이름 검색·빠른 검색·CardTile
+    card-detail/detail-view.tsx  # 상세·속성·평가·참고 시세 조립
   server/
     api.ts                       # server-only: Core API URL·조회·Zod 검증
   lib/
@@ -165,17 +167,17 @@ apps/web/src/
 
 페이지는 서버에서 DTO를 받아 클라이언트 표현 컴포넌트로 전달합니다. Emotion을 사용하는 styled 모듈은 Client 경계 안에 둡니다. Client Provider로 감쌌다고 그 아래 서버 데이터 조회 코드까지 브라우저로 옮기지 않습니다. Core API 비밀값은 server-only 모듈에 둡니다. 카탈로그 전체를 클라이언트에서 다시 fetch하는 구조로 바꾸지 않습니다.
 
-작은 컴포넌트는 같은 파일에 styled 정의를 두고, 화면 단위에서 커지면 `Component.styles.ts`로 분리해 `S.Root` 형태로 사용합니다. 스타일 전용 props는 `shouldForwardProp`로 DOM 전달을 차단합니다. styled-components의 `$prop` 자동 필터링 동작을 Emotion에 가정하지 않습니다. 컴포넌트 안의 임의 hex 값과 페이지별 중복 theme 선언을 피합니다.
+파일 상단은 import·타입, 그 다음은 컴포넌트, **파일 하단은 styled·css 선언** 순서를 지킵니다. styled 정의를 별도 파일로 분리하지 않습니다. 스타일 전용 props는 `shouldForwardProp`로 DOM 전달을 차단합니다. styled-components의 `$prop` 자동 필터링 동작을 Emotion에 가정하지 않습니다. 페이지별 중복 theme 선언을 피합니다.
 
-## 구현 전 기술 확인과 순서
+## 적용 검증과 후속 순서
 
 현재 Next.js 16.4.6의 로컬 문서와 [공식 CSS-in-JS 가이드](https://nextjs.org/docs/app/guides/css-in-js)는 Emotion의 App Router 지원을 진행 중으로 안내합니다. Emotion의 [SSR 문서](https://emotion.sh/docs/ssr)는 기본 방식과 스트리밍을 지원하지 않는 고급 extraction 방식을 구분합니다. Pages Router의 `_document` 예제를 그대로 옮기지 않습니다.
 
-1. **Emotion 적용 검증:** 두 경로에 최소 styled 컴포넌트를 적용해 SSR·새로고침·클라이언트 이동·스트리밍 시 스타일 순서, FOUC, hydration 경고를 확인합니다. cache는 서버 요청 간 공유하지 않으며 Registry flush는 실제 검증 후 확정합니다. 이 설계는 호환성 검증 완료 선언이 아닙니다.
+1. **Emotion 적용 검증:** 개발·production 빌드에서 목록·상세 직접 진입, 클라이언트 이동, head 스타일 유지와 hydration 오류 부재를 확인했습니다. cache는 서버 요청 간 공유하지 않으며 전역·일반 스타일을 나누어 flush합니다. 이 확인은 해당 앱·버전 조합의 검증이며 Emotion의 전체 App Router 지원을 보증하지 않습니다.
 2. **공통 기반:** tokens·Theme 타입·GlobalStyles·AppShell·Button/Input/Badge를 구현합니다. 서버 페이지의 데이터 조회를 유지합니다.
 3. **카드 탐색:** 실제 이미지, 한국어명, 메타데이터, 검색·빈 결과·로딩·이미지 실패 상태를 적용합니다. 목록 평가 요청 한 건이 실패해도 전체 카드 목록을 오류 화면으로 바꾸지 않도록 개별 실패를 분리합니다. 현재의 카드별 평가 요청 수를 측정하고 필요하면 별도 API 개선을 계획합니다.
 4. **카드 상세:** 이미지·속성·데모/시장 평가·원본 참고 시세를 일관된 컴포넌트로 정리합니다. 데이터 모드에 따라 가격 제목을 바꾸고 현재 목록의 고정 Mock 제목을 제거합니다.
 5. **검색 기능 확장:** API 계약과 함께 세트·언어 필터, 전체 결과 수와 페이지 이동을 연결합니다. 디자인만으로 지원하지 않는 API 기능을 가정하지 않습니다.
 6. **후속 모듈 연결:** 같은 토큰과 레이아웃으로 매물·보유 카드·Agent 작업대·거래 내역을 추가합니다. 거래·결제 정책은 해당 backend 모듈이 소유합니다.
 
-구현 검증은 360/768/1024/1440px, 키보드 탐색, 확대 200%, 이미지·가격 요청 실패, Mock/시장/자료 부족 상태, 실제 브라우저 hydration·FOUC, typecheck·테스트·production build를 포함합니다. 이번 설계 단계에서는 실행 앱·백엔드 계약을 변경하지 않습니다.
+이번 구현은 실행 Web과 공통 표현 컴포넌트를 변경했습니다. Backend 계약은 유지합니다. 360/390/768/1440px, 키보드 포커스, reduced-motion, 이미지 실패, 가격 API 부분 실패, Mock/시장/자료 부족 구분, 브라우저 hydration과 production build를 확인했습니다. 후속 화면에서도 확대 200%·키보드 전체 흐름·다양한 네트워크 상태를 이어서 검증합니다.
