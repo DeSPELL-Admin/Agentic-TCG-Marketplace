@@ -35,10 +35,10 @@ export function DetailView({ card, valuation, prices, query }: { card: CardVaria
 }
 
 const BackNav = styled.nav(({ theme }) => ({ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 20, marginBottom: 36, fontSize: 13, color: theme.color.muted, '& a': { display: 'inline-flex', minHeight: 44, alignItems: 'center', color: theme.color.ink, textDecoration: 'none', overflowWrap: 'anywhere' }, '& a:hover': { textDecoration: 'underline' } }));
-const DetailLayout = styled.div({ display: 'grid', gridTemplateColumns: 'minmax(240px,1fr) minmax(0,1fr)', gap: 'min(8vw,100px)', alignItems: 'start', maxWidth: 1100, margin: '0 auto', '@media(max-width:899px)': { gap: 40 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 36 } });
+const DetailLayout = styled.div({ display: 'grid', gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,.85fr)', gap: 64, alignItems: 'start', maxWidth: 1120, margin: '0 auto', '@media(max-width:899px)': { gap: 40 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 36 } });
 const ImageColumn = styled.div({ paddingBlock: 8, '@media(min-width:768px)': { position: 'sticky', top: 112 } });
 const Info = styled.section({ minWidth: 0, paddingBlock: 8 });
-const Title = styled.h1({ fontSize: 'clamp(30px,3.2vw,42px)', fontWeight: 700, letterSpacing: '-.035em', overflowWrap: 'anywhere' });
+const Title = styled.h1({ fontSize: 'clamp(30px,3.2vw,42px)', fontWeight: 550, letterSpacing: '-.035em', overflowWrap: 'anywhere' });
 const Original = styled.p(({ theme }) => ({ fontSize: 15, color: theme.color.muted, marginTop: 8 }));
 const PriceOverview = styled.div(({ theme }) => ({ margin: '32px 0 28px', paddingBottom: 28, borderBottom: `1px solid ${theme.color.line}` }));
 const PriceLabel = styled.p(({ theme }) => ({ color: theme.color.muted, fontSize: 13 }));
