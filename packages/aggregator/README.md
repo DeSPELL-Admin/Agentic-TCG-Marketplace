@@ -74,7 +74,7 @@ const adapter = createTcgdexCardAdapter({
 - 생성은 DB의 중복 무시 삽입 후 해당 참조의 UUID를 조회합니다. 두 Client의 동시 요청에서도 DB 유일성 제약을 통해 하나의 UUID로 수렴합니다. 기존 UUID를 갱신하거나 덮어쓰지 않습니다.
 - 언어·에디션·상태가 다른 참조에는 별도 UUID를 발급합니다. 여러 제공자의 동일 실물 카드를 자동 병합하는 기능은 포함하지 않습니다.
 - `findById()`는 저장된 외부 참조를 복원합니다. 없는 UUID 또는 잘못된 UUID는 null이며 새 매핑을 생성하지 않습니다. DB 장애는 메모리 매핑이나 새 UUID로 대체하지 않습니다.
-- 이 단계의 테이블은 내부 UUID를 **예약**합니다. 카드 이름·세트·이미지 본문을 `CardVariant`에 저장하거나 가짜 필수값으로 카드 행을 생성하지 않습니다. 카드 본문 upsert 시 이 UUID를 `CardVariant.id`로 사용하도록 후속 연결이 필요합니다. 현재 `ExternalCardIdentity.id`와 `CardVariant.id` 사이의 FK는 없습니다.
+- 매핑 저장소 자체는 UUID를 **예약**하며 카드 본문을 생성하지 않습니다. 실제 수집은 아래 Collection Service가 수행합니다. 수집된 `CardVariant.id`와 `externalIdentityId`는 같은 UUID이며, 후자는 매핑 테이블을 참조하는 FK입니다. DB CHECK 제약으로 두 UUID의 불일치를 방지합니다. 기존 Mock 카드는 nullable 연결을 통해 그대로 유지합니다.
 - 외부 카드가 조회되지 않더라도 기존 매핑을 삭제하거나 다른 카드에 UUID를 재할당하지 않습니다.
 
 실제 API와 DB 매핑을 확인하려면 Migration을 적용하고 다음 명령을 실행합니다. 루트 `.env`의 `DATABASE_URL`을 사용하며, 매핑 데이터는 DB에 남습니다. 같은 외부 카드가 반환되면 명령을 다시 실행해도 같은 UUID가 출력됩니다.
@@ -86,4 +86,47 @@ pnpm --filter @tcg/aggregator check:external:db
 
 `pnpm test:db`는 외부 네트워크 없이 독립 Client 동시 요청·재연결·역매핑·중복 방지와 외부 어댑터 재생성 시 상세 조회를 검증합니다. 테스트가 생성한 고유 외부 ID의 행만 정리합니다.
 
-현재 Core API의 `CARD_DATA_SOURCE`는 기존 mock/database만 사용합니다. 외부 카드 본문 저장과 REST 연결은 후속 작업이며 FE와 다른 담당자의 모듈·계약은 변경하지 않습니다.
+## 카드 수집·DB 저장·조회
+
+수집은 CLI에서 명시적으로 실행합니다. Core API의 `CARD_DATA_SOURCE=database`는 이미 저장된 카드를 조회하며, 일반 검색·상세 요청 중에 외부 API를 호출하지 않습니다. 수집 쓰기용 공개 REST 엔드포인트는 제공하지 않습니다.
+
+```powershell
+pnpm db:migrate
+pnpm cards:collect --query Pikachu --limit 5
+```
+
+기본 검색어는 Pikachu, 기본 limit는 5이며 1~100까지 지정할 수 있습니다. 영어 검색어를 사용합니다. 공급자의 첫 페이지만 조회하므로 전체 카탈로그 일괄 동기화 기능은 아닙니다. Pocket 제외·삭제 등으로 실제 저장 수는 limit보다 적을 수 있습니다. 루트 `.env`의 `DATABASE_URL`을 사용하며 비밀값을 출력하지 않습니다.
+
+```typescript
+import {
+  createCardCollectionService,
+  createPrismaCardCatalogWriter,
+  createPrismaCardIdentityStore,
+  createTcgdexCardAdapter,
+} from '@tcg/aggregator';
+
+const collector = createCardCollectionService({
+  source: createTcgdexCardAdapter({ identityStore: createPrismaCardIdentityStore(prisma) }),
+  writer: createPrismaCardCatalogWriter(prisma),
+});
+const result = await collector.collectCards({ query: 'Pikachu', limit: 5 });
+// { items: CardVariant[], storedCount: number, collectedAt: UTC ISO 문자열 }
+```
+
+- 네트워크 조회와 정규화를 완료한 뒤 한 배치의 카드 본문을 DB 트랜잭션으로 저장합니다. 카드가 없으면 쓰기를 생략합니다. 유효하지 않거나 중복 UUID가 포함된 결과는 저장하지 않습니다.
+- 매핑 UUID로 `CardVariant`를 생성·갱신하고 `lastCollectedAt`에 수집 완료 시각을 기록합니다. 출처는 `externalIdentity.provider`와 `externalId`로 역조회할 수 있습니다. 공통 DTO에는 내부 수집 메타데이터를 추가하지 않습니다.
+- 같은 카드를 재수집해도 UUID와 카드 수가 바뀌지 않습니다. 이름·이미지는 갱신하며 이전 시각의 배치가 늦게 완료되면 최신 메타데이터를 유지합니다. `storedCount`는 신규 삽입 수가 아니라 배치에서 저장·확인한 카드 수입니다.
+- 게임·세트·번호·언어·에디션·상태가 바뀌거나 같은 변형이 다른 UUID로 존재하면 실패합니다. 기존 UUID를 재할당하거나 거래 대상의 식별 속성을 조용히 바꾸지 않습니다.
+- 동시 수집의 잠금 순서는 UUID 기준으로 맞추며 DB 제약으로 중복을 막습니다. 배치 중 하나라도 실패하면 그 배치의 본문 저장은 전부 롤백합니다. 외부 어댑터가 미리 예약한 UUID 매핑은 남을 수 있으며 다음 수집에서 재사용합니다.
+- 외부 카드를 재수집하지 않았거나 조회에서 빠졌다는 이유로 기존 카드를 삭제하지 않습니다. 가격 표본이나 거래·보유 카드 데이터는 수정하지 않습니다.
+- `CardCollectionError.reason`은 `INVALID_CARD`, `DUPLICATE_CARD`, `IDENTITY_NOT_FOUND`, `IDENTITY_MISMATCH`, `VARIANT_CONFLICT`로 구분합니다. 자동 재시도나 Mock 대체는 하지 않습니다.
+
+수집 이후 API의 `.env`를 `DATABASE_ENABLED=true`, `CARD_DATA_SOURCE=database`로 설정하고 서버를 실행하면 다음 경로로 조회합니다. 주소는 루트 `.env`의 `CORE_API_URL`을 사용합니다.
+
+```http
+GET /api/cards?q=Pikachu&limit=20
+GET /api/cards/<수집된 내부 UUID>
+GET /api/cards/<수집된 내부 UUID>/valuation
+```
+
+가격 수집은 별도 단계입니다. 현재 외부 카드에 가격 표본이 없으면 평가 API는 `INSUFFICIENT_DATA`, `estimatedPrice: null`, `sampleSize: 0`을 반환합니다. 기존 시연용 가격 표본과 혼합하지 않습니다. FE와 다른 담당자의 모듈·계약은 변경하지 않습니다.

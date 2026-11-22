@@ -9,6 +9,9 @@ model CardVariant {
   edition    String
   condition  String
   imageUrl   String?
+  externalIdentityId String? @unique @db.Uuid
+  externalIdentity ExternalCardIdentity? @relation(fields: [externalIdentityId], references: [id], onDelete: Restrict)
+  lastCollectedAt DateTime? @db.Timestamptz(3)
   priceObservations PriceObservation[]
 
   @@unique([game, setCode, cardNumber, language, edition, condition])
@@ -29,7 +32,7 @@ enum CardProvider {
   @@schema("catalog")
 }
 
-// 외부 식별자에 대한 내부 UUID 예약. 카드 본문 저장 시 CardVariant.id로 사용한다.
+// 외부 식별자에 대한 내부 UUID 예약. 수집된 CardVariant.id와 동일한 UUID를 사용한다.
 model ExternalCardIdentity {
   id         String       @id @default(uuid()) @db.Uuid
   provider   CardProvider
@@ -38,6 +41,7 @@ model ExternalCardIdentity {
   edition    String       @db.VarChar(64)
   condition  String       @db.VarChar(64)
   createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+  cardVariant CardVariant?
 
   @@unique([provider, externalId, language, edition, condition], name: "externalCardReference", map: "ExternalCardIdentity_reference_key")
   @@schema("catalog")

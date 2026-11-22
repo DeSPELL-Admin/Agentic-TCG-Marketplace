@@ -66,6 +66,14 @@ API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경�
 
 목록에서 카드 이름을 선택하면 `/cards/:id` 상세 화면으로 이동합니다. 카드 속성과 가격·표본 수·신뢰 수준·출처·평가 시각을 확인할 수 있습니다.
 
+## 외부 카드 수집
+
+```powershell
+pnpm cards:collect --query Pikachu --limit 5
+```
+
+Migration 적용 후 실행합니다. TCGdex 영어 카탈로그에서 최대 5개를 조회하고, 영구 매핑된 내부 UUID로 DB에 저장한 뒤 조회까지 확인합니다. 기본 limit는 5, 허용 범위는 1~100이며 첫 페이지만 수집합니다. 재실행해도 중복 카드가 생성되지 않습니다. API가 `CARD_DATA_SOURCE=database`이면 기존 `/api/cards`, `/api/cards/:id`에서 저장된 외부 카드도 조회됩니다. 일반 조회는 외부 API를 호출하지 않습니다. 수집 카드의 상태·에디션은 UNSPECIFIED이며, 가격 표본은 별도로 수집해야 합니다. 상세 규칙은 [Aggregator 가이드](packages/aggregator/README.md)를 확인하세요.
+
 ```powershell
 pnpm infra:down
 ```
@@ -92,6 +100,6 @@ pnpm --filter @tcg/aggregator test
 
 ## 현재 범위
 
-카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. [Aggregator의 TCGdex 외부 카드 어댑터와 PostgreSQL 영구 UUID 매핑](packages/aggregator/README.md)도 독립적으로 사용할 수 있습니다. 외부 카드 본문의 DB 저장·REST 모드 연결, 실제 시세 수집, 상용 인증, 매물·주문·정책 API, MCP, Agent Runtime, x402 결제 및 전체 거래 E2E는 아직 구현하지 않았습니다. 기존 DB/Mock 모드는 유지합니다.
+카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. [TCGdex 외부 카드 수집·영구 UUID 매핑·DB 저장](packages/aggregator/README.md) 후 기존 REST 경로에서 조회할 수 있습니다. 전체 카탈로그 동기화, 실제 시세 수집, 거래 가능한 카드 변형·상태 확정, 상용 인증, 매물·주문·정책 API, MCP, Agent Runtime, x402 결제 및 전체 거래 E2E는 아직 구현하지 않았습니다. 기존 DB/Mock 모드는 유지합니다.
 
 가격은 USDC 최소 단위 정수 문자열입니다. UUID 및 UTC ISO 8601을 사용합니다. Mock 가격은 `dataSource: "MOCK"`로 구분하고, 표본이 없으면 `status: "INSUFFICIENT_DATA"`, `estimatedPrice: null`을 반환합니다. 이 확장은 초안 계약의 미정 부분을 구체화한 **팀 검토 대상**입니다. [계약 결정 사항](docs/contracts.md), [통합 가이드](docs/integration.md)를 확인하세요.

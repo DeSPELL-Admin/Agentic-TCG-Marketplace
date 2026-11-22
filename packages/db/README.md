@@ -10,4 +10,6 @@ Prisma 정의는 `prisma/schema/` 디렉터리를 하나의 스키마로 읽습�
 
 `pnpm db:seed`는 공통 시연 fixtures의 카드 3개와 MOCK 가격 표본 6개를 고정 ID로 upsert합니다. `seedDemoCatalog(prisma)`도 공개합니다. `catalog.PriceObservation`에 가격, 데이터 구분, 출처 및 관측 시각을 보존합니다. 전체 DB 통합 검증은 루트 `pnpm test:db`로 실행합니다.
 
-`catalog.ExternalCardIdentity`는 외부 카드 참조와 내부 UUID를 영구 매핑합니다. 제공자·외부 ID·언어·에디션·상태의 복합 유일성 제약을 둡니다. 해당 모델도 `catalog.prisma`에서 관리하며, 현재 제공자는 TCGDEX입니다. 매핑 저장소 팩토리는 `@tcg/aggregator`의 `createPrismaCardIdentityStore(prisma)`입니다. 카드 본문 저장은 후속 단계이며 이 테이블만 생성해도 `CardVariant` 행이 자동 생성되는 것은 아닙니다.
+`catalog.ExternalCardIdentity`는 외부 카드 참조와 내부 UUID를 영구 매핑합니다. 제공자·외부 ID·언어·에디션·상태의 복합 유일성 제약을 둡니다. 해당 모델도 `catalog.prisma`에서 관리하며, 현재 제공자는 TCGDEX입니다. 매핑 저장소 팩토리는 `@tcg/aggregator`의 `createPrismaCardIdentityStore(prisma)`입니다. 매핑만 생성하면 `CardVariant` 행이 자동 생성되지는 않습니다.
+
+`pnpm cards:collect --query Pikachu --limit 5`는 외부 어댑터와 `createPrismaCardCatalogWriter(prisma)`를 연결해 카드 본문도 저장합니다. `CardVariant.externalIdentityId`는 매핑 테이블 FK이며 DB CHECK 제약으로 카드의 내부 UUID와 동일하게 유지합니다. `lastCollectedAt`은 수집 완료 시각입니다. 기존 시연 카드는 두 필드가 null이며 유지됩니다. 수집은 배치 단위 트랜잭션이며 조회는 기존 `createPrismaCardAdapter(prisma)`와 REST API를 사용합니다.

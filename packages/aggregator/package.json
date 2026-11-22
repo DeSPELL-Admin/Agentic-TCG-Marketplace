@@ -10,6 +10,7 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "collect": "tsx scripts/collect-cards.ts",
     "check:external": "tsx scripts/check-tcgdex.ts",
     "check:external:db": "tsx scripts/check-tcgdex.ts --database"
   },

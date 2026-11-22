@@ -41,6 +41,6 @@ type Valuation = {
 
 위 규칙은 이번 구현에서 코드·테스트로 고정한 계약안입니다. 팀 합의가 완료되었다는 의미는 아니며 MCP·Trading·Payment 담당자와 공유·검토해야 합니다.
 
-Aggregator의 `CardDataAdapter`, Valuation의 `PriceDataAdapter`는 실제 제공자 구현을 위한 교체 경계입니다. 실제 외부 API 어댑터 및 시세 정규화는 미구현입니다.
+Aggregator의 `CardDataAdapter`, Valuation의 `PriceDataAdapter`는 실제 제공자 구현을 위한 교체 경계입니다. TCGdex 외부 카드 조회·영구 UUID 매핑·카드 본문 수집 및 DB 저장을 구현했으며, 저장된 데이터는 기존 카드 REST 계약으로 조회합니다. 수집 출처 연결과 수집 시각은 DB 내부 메타데이터로 보존하고 공통 CardVariant DTO는 유지합니다. 실제 시세 수집·정규화는 후속 범위입니다.
 
 Inventory·Listing·BuyOrder·MatchQuote·Trade·SpendingPolicy는 초안의 DTO/Zod Schema만 제공합니다. 아직 Trading·Payment Service 입력, 인증 방식, SDK 종속 x402 타입을 임의로 고정하지 않았습니다. 관련 담당자와 합의한 뒤 계약과 테스트를 먼저 변경하세요. 이번 작업에서 다른 담당자에게 메시지를 발송하지 않았으므로 이 문서와 변경 내용을 팀에 공유해야 합니다.

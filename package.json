@@ -17,6 +17,7 @@
     "db:migrate": "pnpm --filter @tcg/db db:migrate",
     "db:check": "pnpm --filter @tcg/db db:check",
     "db:seed": "pnpm --filter @tcg/db db:seed",
+    "cards:collect": "pnpm --filter @tcg/aggregator collect",
     "infra:up": "docker compose --env-file .env -f infra/compose.yaml up -d --wait",
     "infra:down": "docker compose --env-file .env -f infra/compose.yaml down"
   },

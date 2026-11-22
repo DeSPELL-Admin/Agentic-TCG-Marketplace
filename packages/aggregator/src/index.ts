@@ -9,6 +9,9 @@ export type { TcgdexCardAdapterOptions, TcgdexFailure } from './tcgdex.js';
 export { createInMemoryCardIdentityStore } from './card-identity.js';
 export { createPrismaCardIdentityStore } from './prisma-card-identity.js';
 export type { CardIdentityStore, ExternalCardReference } from './card-identity.js';
+export { createCardCollectionService, CardCollectionError } from './collection.js';
+export type { CardCatalogWriter, CardCollectionDependencies, CardCollectionService, CardCollectionResult, CardCollectionFailure } from './collection.js';
+export { createPrismaCardCatalogWriter } from './prisma-card-catalog.js';
 export interface CardDataAdapter {
   searchCards(input: { query: string; limit: number }): Promise<CardVariant[]>;
   getCardVariant(id: string): Promise<CardVariant | null>;
