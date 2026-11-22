@@ -1,4 +1,19 @@
 import { randomUUID } from 'node:crypto';
+import { z } from 'zod';
+import { idSchema } from '@tcg/contracts';
+
+const normalizedLabel = z.string().trim().min(1).transform(value => value.toUpperCase()).pipe(z.string().max(64));
+const referenceSchema = z.object({
+  provider: z.literal('TCGDEX'),
+  externalId: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/),
+  language: z.string().trim().toUpperCase().regex(/^[A-Z]{2}(?:-[A-Z]{2})?$/),
+  edition: normalizedLabel,
+  condition: normalizedLabel,
+});
+
+export function normalizeExternalCardReference(reference: ExternalCardReference): ExternalCardReference {
+  return referenceSchema.parse(reference);
+}
 
 export interface ExternalCardReference {
   provider: 'TCGDEX';
@@ -8,7 +23,7 @@ export interface ExternalCardReference {
   condition: string;
 }
 
-/** 영구 매핑은 후속 DB 구현이 이 인터페이스를 제공한다. */
+/** 같은 외부 참조에는 같은 UUID를 반환한다. 언어·상태 등은 정규화 후 식별한다. */
 export interface CardIdentityStore {
   getOrCreateId(reference: ExternalCardReference): Promise<string>;
   findById(id: string): Promise<ExternalCardReference | null>;
@@ -20,16 +35,18 @@ export function createInMemoryCardIdentityStore(): CardIdentityStore {
   const references = new Map<string, ExternalCardReference>();
   return {
     async getOrCreateId(reference) {
-      const key = JSON.stringify([reference.provider, reference.externalId, reference.language, reference.edition, reference.condition]);
+      const normalized = normalizeExternalCardReference(reference);
+      const key = JSON.stringify([normalized.provider, normalized.externalId, normalized.language, normalized.edition, normalized.condition]);
       const existing = ids.get(key);
       if (existing) return existing;
       const id = randomUUID();
       ids.set(key, id);
-      references.set(id, { ...reference });
+      references.set(id, normalized);
       return id;
     },
     async findById(id) {
-      const reference = references.get(id);
+      if (!idSchema.safeParse(id).success) return null;
+      const reference = references.get(id.toLowerCase());
       return reference ? { ...reference } : null;
     },
   };

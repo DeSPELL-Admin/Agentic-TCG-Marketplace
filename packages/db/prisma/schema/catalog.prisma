@@ -23,6 +23,26 @@ enum PriceDataSource {
   @@schema("catalog")
 }
 
+enum CardProvider {
+  TCGDEX
+
+  @@schema("catalog")
+}
+
+// 외부 식별자에 대한 내부 UUID 예약. 카드 본문 저장 시 CardVariant.id로 사용한다.
+model ExternalCardIdentity {
+  id         String       @id @default(uuid()) @db.Uuid
+  provider   CardProvider
+  externalId String       @db.VarChar(128)
+  language   String       @db.VarChar(16)
+  edition    String       @db.VarChar(64)
+  condition  String       @db.VarChar(64)
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+
+  @@unique([provider, externalId, language, edition, condition], name: "externalCardReference", map: "ExternalCardIdentity_reference_key")
+  @@schema("catalog")
+}
+
 model PriceObservation {
   id            String          @id @default(uuid()) @db.Uuid
   cardVariantId String          @db.Uuid

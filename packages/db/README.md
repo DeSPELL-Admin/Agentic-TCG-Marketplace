@@ -9,3 +9,5 @@ Prisma 정의는 `prisma/schema/` 디렉터리를 하나의 스키마로 읽습�
 루트에서 `pnpm --filter @tcg/db test`와 `pnpm --filter @tcg/db typecheck`로 검증합니다.
 
 `pnpm db:seed`는 공통 시연 fixtures의 카드 3개와 MOCK 가격 표본 6개를 고정 ID로 upsert합니다. `seedDemoCatalog(prisma)`도 공개합니다. `catalog.PriceObservation`에 가격, 데이터 구분, 출처 및 관측 시각을 보존합니다. 전체 DB 통합 검증은 루트 `pnpm test:db`로 실행합니다.
+
+`catalog.ExternalCardIdentity`는 외부 카드 참조와 내부 UUID를 영구 매핑합니다. 제공자·외부 ID·언어·에디션·상태의 복합 유일성 제약을 둡니다. 해당 모델도 `catalog.prisma`에서 관리하며, 현재 제공자는 TCGDEX입니다. 매핑 저장소 팩토리는 `@tcg/aggregator`의 `createPrismaCardIdentityStore(prisma)`입니다. 카드 본문 저장은 후속 단계이며 이 테이블만 생성해도 `CardVariant` 행이 자동 생성되는 것은 아닙니다.

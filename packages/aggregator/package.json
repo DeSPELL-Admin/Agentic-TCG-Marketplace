@@ -10,7 +10,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check:external": "tsx scripts/check-tcgdex.ts"
+    "check:external": "tsx scripts/check-tcgdex.ts",
+    "check:external:db": "tsx scripts/check-tcgdex.ts --database"
   },
   "dependencies": {
     "@tcg/db": "workspace:*",

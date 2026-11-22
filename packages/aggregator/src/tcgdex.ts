@@ -138,8 +138,8 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Card
       } finally { controller.abort(); }
     },
     async getCardVariant(id) {
-      idSchema.parse(id);
-      const reference = await options.identityStore.findById(id);
+      const internalId = idSchema.parse(id).toLowerCase();
+      const reference = await options.identityStore.findById(internalId);
       if (!reference || reference.provider !== 'TCGDEX' || reference.language !== 'EN' || reference.edition !== unspecified || reference.condition !== unspecified) return null;
       if (!externalIdSchema.safeParse(reference.externalId).success) throw new AppError('INTERNAL_ERROR', '카드 ID 매핑의 외부 식별자가 올바르지 않습니다.', 500);
       const signal = AbortSignal.timeout(operationTimeoutMs);
@@ -147,7 +147,7 @@ export function createTcgdexCardAdapter(options: TcgdexCardAdapterOptions): Card
       if (!card) return null;
       if ((await getPocketSets(signal)).has(card.set.id)) return null;
       const normalized = await normalize(card);
-      if (normalized.id !== id) throw new AppError('INTERNAL_ERROR', '카드 ID 매핑이 일치하지 않습니다.', 500);
+      if (normalized.id.toLowerCase() !== internalId) throw new AppError('INTERNAL_ERROR', '카드 ID 매핑이 일치하지 않습니다.', 500);
       return normalized;
     },
   };

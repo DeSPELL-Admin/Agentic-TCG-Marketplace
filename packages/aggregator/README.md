@@ -19,7 +19,7 @@ import {
   createTcgdexCardAdapter,
 } from '@tcg/aggregator';
 
-// 독립 시연용. 운영 연결 시 영구 CardIdentityStore 구현을 주입한다.
+// 독립 시연용. 영구 저장 시 createPrismaCardIdentityStore(prisma)를 사용한다.
 const identityStore = createInMemoryCardIdentityStore();
 const adapter = createTcgdexCardAdapter({ identityStore });
 const service = createAggregatorService({ adapter });
@@ -31,7 +31,7 @@ const detail = card ? await service.getCardVariant(card.id) : null;
 
 - 내부 `id`는 UUID이며 공급자의 `base1-58` 같은 ID를 직접 노출하지 않습니다.
 - `CardIdentityStore.getOrCreateId(reference)`와 `findById(id)`를 필수 의존성으로 주입합니다. reference는 provider, externalId, language, edition, condition을 포함합니다.
-- `createInMemoryCardIdentityStore()`는 동일 인스턴스에서만 UUID를 보존하는 시연용 저장소입니다. 어댑터를 다시 만들어도 같은 저장소를 주입하면 매핑이 유지됩니다. 프로세스 재시작에 견디는 DB 매핑과 카드 upsert는 후속 작업입니다. 매핑이 없는 내부 UUID는 외부 조회 없이 null을 반환합니다.
+- `createInMemoryCardIdentityStore()`는 동일 인스턴스에서만 UUID를 보존하는 시연용 저장소입니다. 어댑터를 다시 만들어도 같은 저장소를 주입하면 매핑이 유지됩니다. 영구 저장은 아래 Prisma 매핑 저장소를 사용합니다. 매핑이 없는 내부 UUID는 외부 조회 없이 null을 반환합니다.
 - `set.id`는 `setCode`, `localId`는 문자열 `cardNumber`, 언어는 `EN`으로 정규화합니다. 이미지가 있으면 [공식 이미지 규칙](https://tcgdex.dev/assets)에 따라 `/high.webp`를 붙이고, 없으면 URL을 생성하지 않습니다.
 - 카탈로그는 개별 카드의 보존 상태를 알려주지 않으며 여러 인쇄 변형의 존재 여부만 제공합니다. `edition`과 `condition`은 `UNSPECIFIED`로 반환합니다. 일반판·홀로·초판이나 NM 상태로 임의 확정하지 않습니다. 이 결과는 검색용이며 거래 가능한 변형·상태를 확정하는 단계는 별도로 필요합니다.
 - [Pocket 전용 `tcgp` 시리즈](https://tcgdex.dev/tcg-pocket)의 세트는 제외합니다. Pocket 카드나 검색 중 삭제된 카드가 섞이면 결과 수가 limit보다 적을 수 있으며 추가 페이지를 자동 순회하지 않습니다.
@@ -56,4 +56,34 @@ pnpm --filter @tcg/aggregator check:external
 
 키·DB 없이 검색 1건과 같은 UUID의 상세 조회를 확인합니다. 이 명령만 외부 네트워크에 의존하고, 기본 `test`는 주입한 fetch 응답으로 독립 실행합니다.
 
-현재 Core API의 `CARD_DATA_SOURCE`는 기존 mock/database만 사용합니다. 영구 ID 매핑과 DB 저장을 구현하기 전에는 외부 어댑터를 기본 REST 경로에 연결하지 않습니다. FE, DB 스키마, 다른 담당자의 모듈·계약은 이번 변경 대상이 아닙니다.
+## PostgreSQL 영구 UUID 매핑
+
+`createPrismaCardIdentityStore(prisma)`를 외부 어댑터에 주입하면 프로세스·Client·어댑터가 바뀌어도 같은 참조의 UUID를 재사용합니다.
+
+```typescript
+import { createPrismaCardIdentityStore, createTcgdexCardAdapter } from '@tcg/aggregator';
+
+// prisma의 생성·연결·종료는 실행 호스트가 담당한다.
+const adapter = createTcgdexCardAdapter({
+  identityStore: createPrismaCardIdentityStore(prisma),
+});
+```
+
+- 저장 테이블은 `catalog.ExternalCardIdentity`입니다. provider는 현재 TCGDEX만 지원합니다.
+- `provider + externalId + language + edition + condition` 복합 유일성 제약으로 중복을 방지합니다. 언어·에디션·상태는 앞뒤 공백 제거와 대문자 변환으로 정규화하고, 외부 ID의 대소문자는 그대로 보존합니다. 메모리 저장소도 동일한 정규화 규칙을 사용합니다.
+- 생성은 DB의 중복 무시 삽입 후 해당 참조의 UUID를 조회합니다. 두 Client의 동시 요청에서도 DB 유일성 제약을 통해 하나의 UUID로 수렴합니다. 기존 UUID를 갱신하거나 덮어쓰지 않습니다.
+- 언어·에디션·상태가 다른 참조에는 별도 UUID를 발급합니다. 여러 제공자의 동일 실물 카드를 자동 병합하는 기능은 포함하지 않습니다.
+- `findById()`는 저장된 외부 참조를 복원합니다. 없는 UUID 또는 잘못된 UUID는 null이며 새 매핑을 생성하지 않습니다. DB 장애는 메모리 매핑이나 새 UUID로 대체하지 않습니다.
+- 이 단계의 테이블은 내부 UUID를 **예약**합니다. 카드 이름·세트·이미지 본문을 `CardVariant`에 저장하거나 가짜 필수값으로 카드 행을 생성하지 않습니다. 카드 본문 upsert 시 이 UUID를 `CardVariant.id`로 사용하도록 후속 연결이 필요합니다. 현재 `ExternalCardIdentity.id`와 `CardVariant.id` 사이의 FK는 없습니다.
+- 외부 카드가 조회되지 않더라도 기존 매핑을 삭제하거나 다른 카드에 UUID를 재할당하지 않습니다.
+
+실제 API와 DB 매핑을 확인하려면 Migration을 적용하고 다음 명령을 실행합니다. 루트 `.env`의 `DATABASE_URL`을 사용하며, 매핑 데이터는 DB에 남습니다. 같은 외부 카드가 반환되면 명령을 다시 실행해도 같은 UUID가 출력됩니다.
+
+```powershell
+pnpm db:migrate
+pnpm --filter @tcg/aggregator check:external:db
+```
+
+`pnpm test:db`는 외부 네트워크 없이 독립 Client 동시 요청·재연결·역매핑·중복 방지와 외부 어댑터 재생성 시 상세 조회를 검증합니다. 테스트가 생성한 고유 외부 ID의 행만 정리합니다.
+
+현재 Core API의 `CARD_DATA_SOURCE`는 기존 mock/database만 사용합니다. 외부 카드 본문 저장과 REST 연결은 후속 작업이며 FE와 다른 담당자의 모듈·계약은 변경하지 않습니다.
