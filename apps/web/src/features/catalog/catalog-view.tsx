@@ -40,7 +40,7 @@ function CardTile({ item, query, priority }: { item: CatalogItem; query: string;
 
 const CatalogLayout = styled.div({ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr)', gap: 56, paddingTop: 12, '@container browse (max-width:720px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 28 }, '@media(max-width:1023px)': { gap: 36 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 28, paddingTop: 0 } });
 const Results = styled.div({ minWidth: 0 });
-const SearchHeader = styled.aside({ position: 'sticky', top: 24, alignSelf: 'start', minWidth: 0, '@container browse (max-width:720px)': { position: 'static' }, '@media(max-width:767px)': { position: 'static' } });
+const SearchHeader = styled.aside({ position: 'sticky', top: 80, alignSelf: 'start', minWidth: 0, '@container browse (max-width:720px)': { position: 'static' }, '@media(max-width:767px)': { position: 'static' } });
 const Title = styled.h1({ fontSize: 26, fontWeight: 600, letterSpacing: '-.035em', marginBottom: 32, '@media(max-width:767px)': { marginBottom: 20 } });
 const SearchForm = styled(Form)({ '& label': { display: 'block', fontSize: 13, marginBottom: 8 } });
 const SearchBox = styled.div(({ theme }) => ({ display: 'flex', alignItems: 'center', gap: 4, borderBottom: `1px solid ${theme.color.input}`, '&:focus-within': { borderBottomColor: theme.color.focus } }));
