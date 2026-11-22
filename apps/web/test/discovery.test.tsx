@@ -27,14 +27,20 @@ it('주제 검색 일부와 참고 시세가 실패해도 성공한 카드와 �
   expect(data.family).toHaveLength(1);
   expect(data.familyFailed).toBe(true);
   const html = renderUI(<LandingView discovery={data} />);
-  expect(html).toContain('시세를 불러오지 못했어요');
+  expect(html).toContain('일부 카드 정보를 불러오지 못했어요');
+  expect(html).toContain(`/cards/${pikachu.id}`);
   expect(html).toContain('href="/cards"');
-  expect(html).toContain('카드 거래는 AI 에이전트에게');
+  expect(html).toContain('href="/agent"');
+  expect(html).toContain('설명용 예시');
+  expect(html).toContain('AI 에이전트에게');
 });
 
 it('주제 검색 실패를 카드가 없는 성공 응답과 구분한다', async () => {
   vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 503 })));
   const data = await getDiscovery();
   expect(data).toMatchObject({ spotlight: [], family: [], spotlightFailed: true, familyFailed: true });
-  expect(renderUI(<LandingView discovery={data} />)).toContain('피카츄 카드를 불러오지 못했어요.');
+  const html = renderUI(<LandingView discovery={data} />);
+  expect(html).toContain('일부 카드 정보를 불러오지 못했어요.');
+  expect(html).not.toContain('아직 보여드릴 카드가 없어요.');
+  expect(html).toContain('거래 조건 정하기');
 });
