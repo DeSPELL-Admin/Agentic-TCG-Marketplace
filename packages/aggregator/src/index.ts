@@ -4,6 +4,10 @@ import { demoCards } from '@tcg/contracts/fixtures';
 import { AppError, cardParamsSchema, cardSearchQuerySchema, cardSearchResponseSchema, cardVariantSchema, type AggregatorService, type CardVariant } from '@tcg/contracts';
 
 export type { AggregatorService } from '@tcg/contracts';
+export { createTcgdexCardAdapter, TcgdexAdapterError } from './tcgdex.js';
+export type { TcgdexCardAdapterOptions, TcgdexFailure } from './tcgdex.js';
+export { createInMemoryCardIdentityStore } from './card-identity.js';
+export type { CardIdentityStore, ExternalCardReference } from './card-identity.js';
 export interface CardDataAdapter {
   searchCards(input: { query: string; limit: number }): Promise<CardVariant[]>;
   getCardVariant(id: string): Promise<CardVariant | null>;
