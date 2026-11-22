@@ -17,6 +17,8 @@
     "db:migrate": "pnpm --filter @tcg/db db:migrate",
     "db:check": "pnpm --filter @tcg/db db:check",
     "db:seed": "pnpm --filter @tcg/db db:seed",
+    "db:seed:collected": "pnpm --filter @tcg/db db:seed:collected",
+    "fixtures:export": "pnpm --filter @tcg/db fixtures:export",
     "cards:collect": "pnpm --filter @tcg/aggregator collect",
     "cards:localize": "pnpm --filter @tcg/aggregator localize",
     "prices:collect": "pnpm --filter @tcg/valuation prices:collect",

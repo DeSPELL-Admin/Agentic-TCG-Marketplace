@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "dataKind": "COLLECTED_REFERENCE_DATA",
+  "sha256": {
+    "cards": "14c978c3d982672c42273a3f6ae59258668f1a791f75b3d3ddec2127107660aa",
+    "externalIdentities": "8e7ff0f7c92aa5df4df08636db411c22a3ff348a521ae2a8af20e0fe032ea8d9",
+    "koreanNames": "bb409459963a3301872f719bf1d8954ca7f256f6d6b3acde4df665e1c3d162a9",
+    "priceSnapshots": "5a8f3de2a8fa154ac498a64f45485061c211dfe262f4617af0eac9a71f467d56"
+  }
+}

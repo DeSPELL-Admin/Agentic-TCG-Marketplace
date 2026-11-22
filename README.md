@@ -68,6 +68,8 @@ API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경�
 
 ## 한국어 이름 채우기
 
+팀원이 외부 API 없이 동일한 데이터로 시작하려면 Migration 후 `pnpm db:seed:collected`를 실행하세요. Git에 포함된 카드 5개·한국어 종명 사전 1,025쌍·참고 가격 30개를 원래 UUID와 시각으로 로컬 DB에 넣습니다. 기존 Mock seed는 별도이며 기존 데이터는 덮어쓰지 않습니다. [팀 공통 데이터 가이드](packages/db/fixtures/README.md)에 초기 설정과 갱신 절차를 정리했습니다.
+
 ```powershell
 pnpm cards:localize
 ```

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "044f4a6d-386b-4bbc-9eb1-046266917174",
+    "provider": "TCGDEX",
+    "externalId": "2014xy-5",
+    "language": "EN",
+    "edition": "UNSPECIFIED",
+    "condition": "UNSPECIFIED",
+    "createdAt": "2026-11-22T01:34:07.267Z"
+  },
+  {
+    "id": "153ce175-5434-4a80-ad9f-a6737e380aa6",
+    "provider": "TCGDEX",
+    "externalId": "2017sm-5",
+    "language": "EN",
+    "edition": "UNSPECIFIED",
+    "condition": "UNSPECIFIED",
+    "createdAt": "2026-11-22T01:45:29.486Z"
+  },
+  {
+    "id": "24511913-a201-437a-a7cd-5c73d48ef058",
+    "provider": "TCGDEX",
+    "externalId": "2016xy-6",
+    "language": "EN",
+    "edition": "UNSPECIFIED",
+    "condition": "UNSPECIFIED",
+    "createdAt": "2026-11-22T01:45:29.486Z"
+  },
+  {
+    "id": "9257498a-187e-49e1-bb69-84f38d7f2e24",
+    "provider": "TCGDEX",
+    "externalId": "2015xy-6",
+    "language": "EN",
+    "edition": "UNSPECIFIED",
+    "condition": "UNSPECIFIED",
+    "createdAt": "2026-11-22T01:45:29.486Z"
+  },
+  {
+    "id": "af6aca2b-f957-496a-b874-17e980759354",
+    "provider": "TCGDEX",
+    "externalId": "2018sm-4",
+    "language": "EN",
+    "edition": "UNSPECIFIED",
+    "condition": "UNSPECIFIED",
+    "createdAt": "2026-11-22T01:45:29.486Z"
+  }
+]
