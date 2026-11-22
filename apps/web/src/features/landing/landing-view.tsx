@@ -1,38 +1,43 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
 import styled from '@emotion/styled';
-import type { CardVariant } from '@tcg/contracts';
 import { CardImage } from '../../components/card-image';
-import { getCardDisplayName, formatSet } from '../../lib/formatters';
+import { getCardDisplayName, formatSet, getReferencePrice } from '../../lib/formatters';
+import type { DiscoveryData } from '../../lib/discovery';
 
-export function LandingView({ cards }: { cards: CardVariant[] }) {
-  const [selectedId, setSelectedId] = useState(cards[0]?.id);
-  const active = cards.find(card => card.id === selectedId) ?? cards[0];
-  if (!active) return <Unavailable><h1>포켓몬 카드</h1><p role="status">카드 미리보기를 불러오지 못했습니다.</p><SearchLink href="/cards">카드 검색</SearchLink></Unavailable>;
-
-  return <Showcase>
-    <CardInfo id="showcase-card" aria-live="polite" aria-atomic="true">
-      <h1>{getCardDisplayName(active)}</h1>{getCardDisplayName(active) !== active.name && <OriginalName>{active.name}</OriginalName>}
-      <CardFacts><div><dt>세트</dt><dd>{formatSet(active.setCode)}</dd></div><div><dt>카드 번호</dt><dd>{active.cardNumber}</dd></div><div><dt>인쇄 언어</dt><dd>{active.language}</dd></div></CardFacts>
-      <Actions><SearchLink href={`/cards/${active.id}`}>상세 보기</SearchLink><BrowseLink href="/cards">모든 카드 검색</BrowseLink></Actions>
-    </CardInfo>
-    <MainArtwork href={`/cards/${active.id}`} aria-label={`${getCardDisplayName(active)} 상세 보기`}><CardImage key={active.id} card={active} variant="landing" priority /></MainArtwork>
-    <CardPicker aria-label="전시 카드 선택">{cards.map(card => <CardChoice key={card.id} type="button" aria-pressed={card.id === active.id} aria-controls="showcase-card" onClick={() => setSelectedId(card.id)}>
-      <CardImage card={card} variant="thumbnail" priority /><span>{getCardDisplayName(card)}</span>
-    </CardChoice>)}</CardPicker>
-  </Showcase>;
+export function LandingView({ discovery }: { discovery: DiscoveryData }) {
+  const { spotlight, family, spotlightFailed, familyFailed } = discovery;
+  const differentArt = new Set(spotlight.map(item => item.card.imageUrl).filter(Boolean)).size > 1;
+  return <>
+    <DiscoveryHero>
+      <Introduction><h1>{differentArt ? '같은 피카츄, 다른 그림.' : '피카츄 카드 살펴보기'}</h1><p>세트와 그림이 다른 카드를 모아보세요. 마음에 드는 카드에서 인쇄 정보와 해외 참고 시세를 확인할 수 있습니다.</p><SearchLink href="/cards?q=Pikachu">피카츄 카드 보기</SearchLink><BrowseLink href="/cards">전체 카드 검색</BrowseLink></Introduction>
+      <FeaturedCards aria-label="피카츄 카드 비교">{spotlight.map(({ card, prices, pricesFailed }, index) => {
+        const reference = getReferencePrice(prices);
+        return <FeaturedCard key={card.id} data-secondary={index > 0 || undefined}><ArtworkLink href={`/cards/${card.id}?q=Pikachu`} aria-label={`${getCardDisplayName(card)} ${formatSet(card.setCode)} ${card.cardNumber} 상세 보기`}><CardImage card={card} priority /></ArtworkLink><CardCaption><h2>{formatSet(card.setCode)}</h2><span>카드 번호 {card.cardNumber} / {card.language}</span>{reference ? <p>해외 참고 시세 <strong>{reference.originalAmount} {reference.originalCurrency}</strong></p> : <p>{pricesFailed ? '참고 시세 조회 실패' : '대표 참고 시세 없음'}</p>}<PriceDetail href={`/cards/${card.id}?q=Pikachu`}>출처·판본 확인</PriceDetail></CardCaption></FeaturedCard>;
+      })}{!spotlight.length && <Empty role="status">{spotlightFailed ? '피카츄 카드를 불러오지 못했습니다.' : '조회된 피카츄 카드가 없습니다.'}<Link href="/cards?q=Pikachu">검색에서 다시 확인</Link></Empty>}</FeaturedCards>
+    </DiscoveryHero>
+    <CollectionSection aria-labelledby="family-heading"><SectionHeading><div><h2 id="family-heading">이브이와 진화형</h2><p>그림을 골라 살펴보거나, 이름으로 다른 카드를 찾아보세요.</p></div><Link href="/cards">전체 카드 검색</Link></SectionHeading>
+      <FamilyGrid>{family.map(card => <FamilyCard key={card.id}><ArtworkLink href={`/cards/${card.id}?${new URLSearchParams({ q: card.name })}`} aria-label={`${getCardDisplayName(card)} ${formatSet(card.setCode)} 상세 보기`}><CardImage card={card} /></ArtworkLink><h3><Link href={`/cards?${new URLSearchParams({ q: card.name })}`}>{getCardDisplayName(card)}</Link></h3><p>{formatSet(card.setCode)} / {card.cardNumber}</p></FamilyCard>)}</FamilyGrid>
+      {familyFailed && <SectionNote role="status">일부 카드를 불러오지 못했습니다. 검색에서 다시 확인할 수 있습니다.</SectionNote>}{!family.length && !familyFailed && <SectionNote>조회된 카드가 없습니다. 이름으로 검색해 보세요.</SectionNote>}
+    </CollectionSection>
+    <PriceNote><h2>참고 시세를 확인할 때</h2><p>위 EUR/USD 가격은 해외 제공자의 참고 시세입니다. 한국어판 실거래가와 다를 수 있습니다. 카드 상세에서 언어·판본·상태와 출처를 확인하세요.</p></PriceNote>
+  </>;
 }
 
-const Showcase = styled.div({ display: 'grid', gridTemplateColumns: 'minmax(0,1.25fr) minmax(0,.85fr)', gridTemplateAreas: '"art info" "art picker"', columnGap: 64, minHeight: 660, padding: '24px 0 48px', '@media(max-width:1023px)': { columnGap: 40, minHeight: 570 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gridTemplateAreas: '"art" "info" "picker"', minHeight: 0, gap: 28, padding: '8px 0 24px' } });
-const CardInfo = styled.section({ gridArea: 'info', alignSelf: 'end', minWidth: 0, '& h1': { fontSize: 'clamp(42px,5.5vw,72px)', fontWeight: 550, letterSpacing: '-.055em', overflowWrap: 'anywhere' }, '@media(max-width:767px)': { '& h1': { fontSize: 36 } } });
-const OriginalName = styled.p(({ theme }) => ({ fontSize: 18, color: theme.color.muted, marginTop: 6 }));
-const CardFacts = styled.dl(({ theme }) => ({ margin: '28px 0 0', display: 'grid', gap: 8, fontSize: 14, '& > div': { display: 'flex', gap: 24 }, '& dt': { width: 72, flexShrink: 0, color: theme.color.muted }, '& dd': { margin: 0 }, '@media(max-width:767px)': { marginTop: 20 } }));
-const Actions = styled.div({ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px 24px', marginTop: 32 });
-const SearchLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 48, padding: '10px 30px', borderRadius: 6, color: theme.color.surface, background: theme.color.primary, textDecoration: 'none', fontSize: 15, fontWeight: 600, '&:hover': { background: theme.color.primaryHover } }));
-const BrowseLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 48, color: theme.color.ink, fontSize: 14 }));
-const MainArtwork = styled(Link)({ gridArea: 'art', alignSelf: 'center', display: 'block', minWidth: 0, padding: '8px 0', '@media(max-width:767px)': { maxWidth: 300, width: '100%', margin: '0 auto' } });
-const CardPicker = styled.div({ gridArea: 'picker', alignSelf: 'start', display: 'flex', flexWrap: 'wrap', gap: 20, marginTop: 48, '@media(max-width:767px)': { marginTop: 4, gap: 16 } });
-const CardChoice = styled.button(({ theme }) => ({ width: 84, padding: '0 4px 12px', border: 0, borderBottom: '2px solid transparent', background: theme.color.surface, color: theme.color.muted, '& > span': { display: 'block', marginTop: 10, fontSize: 13 }, '&[aria-pressed=true]': { borderBottomColor: theme.color.ink, color: theme.color.ink }, '&:hover > span': { textDecoration: 'underline' } }));
-const Unavailable = styled.section(({ theme }) => ({ padding: '64px 0', '& p': { color: theme.color.muted, margin: '16px 0 24px' } }));
+const DiscoveryHero = styled.section({ display: 'grid', gridTemplateColumns: 'minmax(0,.8fr) minmax(0,1.4fr)', alignItems: 'center', gap: 64, padding: '16px 0 64px', '@media(max-width:1023px)': { gap: 32 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 32, padding: '8px 0 48px' } });
+const Introduction = styled.div(({ theme }) => ({ minWidth: 0, '& h1': { maxWidth: 360, fontSize: 'clamp(36px,4.2vw,56px)', fontWeight: 600, letterSpacing: '-.045em', textWrap: 'balance' }, '& p': { maxWidth: 330, color: theme.color.muted, fontSize: 15, margin: '24px 0 28px', lineHeight: 1.9 }, '@media(max-width:767px)': { '& h1': { maxWidth: 'none', fontSize: 34 }, '& p': { maxWidth: 440, margin: '16px 0 20px' } } }));
+const SearchLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 48, padding: '10px 24px', borderRadius: 6, color: theme.color.surface, background: theme.color.primary, textDecoration: 'none', fontSize: 14, fontWeight: 600, '&:hover': { background: theme.color.primaryHover } }));
+const BrowseLink = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 48, marginLeft: 20, fontSize: 14, color: theme.color.ink }));
+const FeaturedCards = styled.div({ display: 'grid', gridTemplateColumns: 'minmax(0,1.13fr) minmax(0,1fr)', alignItems: 'start', gap: 36, padding: '12px 8px 0', '@media(max-width:1023px)': { gap: 24, paddingInline: 0 }, '@media(max-width:639px)': { gap: 20 } });
+const FeaturedCard = styled.article({ minWidth: 0, maxWidth: 270, marginInline: 'auto', width: '100%', '&[data-secondary]': { maxWidth: 230, paddingTop: 88 }, '@media(max-width:639px)': { '&[data-secondary]': { paddingTop: 48 } } });
+const ArtworkLink = styled(Link)({ display: 'block', minWidth: 0 });
+const CardCaption = styled.div(({ theme }) => ({ paddingTop: 18, '& h2': { fontSize: 17, fontWeight: 550 }, '& > span': { display: 'block', color: theme.color.muted, fontSize: 12, marginTop: 4 }, '& p': { fontSize: 12, color: theme.color.muted, marginTop: 12 }, '& strong': { display: 'block', color: theme.color.ink, fontSize: 16, fontWeight: 600, marginTop: 2 }, '@media(max-width:639px)': { '& h2': { fontSize: 15 }, '& strong': { fontSize: 14 } } }));
+const PriceDetail = styled(Link)(({ theme }) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 44, fontSize: 12, color: theme.color.ink }));
+const Empty = styled.div(({ theme }) => ({ gridColumn: '1 / -1', padding: '80px 0', color: theme.color.muted, fontSize: 14, '& a': { display: 'block', paddingBlock: 12 } }));
+const CollectionSection = styled.section(({ theme }) => ({ borderTop: `1px solid ${theme.color.line}`, padding: '36px 0 48px' }));
+const SectionHeading = styled.div(({ theme }) => ({ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'baseline', gap: 16, marginBottom: 32, '& h2': { fontSize: 26, fontWeight: 550, letterSpacing: '-.025em' }, '& p': { fontSize: 14, color: theme.color.muted, marginTop: 10 }, '& > a': { display: 'inline-flex', alignItems: 'center', minHeight: 44, fontSize: 14, color: theme.color.ink } }));
+const FamilyGrid = styled.div({ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 40, '@media(max-width:767px)': { gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: '32px 24px' } });
+const FamilyCard = styled.article(({ theme }) => ({ minWidth: 0, width: '100%', maxWidth: 216, marginInline: 'auto', '& h3': { fontSize: 18, fontWeight: 550, marginTop: 18 }, '& h3 a': { display: 'inline-flex', alignItems: 'center', minHeight: 44, color: theme.color.ink }, '& p': { fontSize: 12, color: theme.color.muted } }));
+const SectionNote = styled.p(({ theme }) => ({ marginTop: 20, fontSize: 14, color: theme.color.muted }));
+const PriceNote = styled.section(({ theme }) => ({ display: 'grid', gridTemplateColumns: '240px minmax(0,1fr)', gap: 32, borderTop: `1px solid ${theme.color.line}`, padding: '32px 0 8px', '& h2': { fontSize: 16, fontWeight: 550 }, '& p': { fontSize: 13, color: theme.color.muted, maxWidth: 640, lineHeight: 1.8 }, '@media(max-width:767px)': { gridTemplateColumns: 'minmax(0,1fr)', gap: 12 } }));

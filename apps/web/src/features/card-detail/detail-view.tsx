@@ -8,9 +8,10 @@ import { ValuationDetails } from '../../components/valuation-details';
 import { MarketPrices } from '../../components/market-prices';
 import { RequestState } from '../../components/request-state';
 import { Badge } from '../../components/ui';
+import { RelatedCards } from '../../components/related-cards';
 import { getCardDisplayName, formatSet, formatAttribute, formatUsdc, getReferencePrice, formatProvider, formatVariant, formatUtc, eligibilityLabels } from '../../lib/formatters';
 
-export function DetailView({ card, valuation, prices, query }: { card: CardVariant; valuation: Valuation | null; prices: MarketPricesResponse | null; query: string }) {
+export function DetailView({ card, valuation, prices, query, related = [], relatedFailed = false }: { card: CardVariant; valuation: Valuation | null; prices: MarketPricesResponse | null; query: string; related?: CardVariant[]; relatedFailed?: boolean }) {
   const backHref = query ? `/cards?${new URLSearchParams({ q: query })}` : '/cards';
   const reference = getReferencePrice(prices);
   const available = valuation?.status === 'AVAILABLE';
@@ -27,6 +28,7 @@ export function DetailView({ card, valuation, prices, query }: { card: CardVaria
         <Facts><div><dt>인쇄 언어</dt><dd>{card.language}</dd></div><div><dt>카드 번호</dt><dd>{card.cardNumber}</dd></div><div><dt>에디션</dt><dd>{formatAttribute(card.edition)}</dd></div><div><dt>보존 상태</dt><dd>{formatAttribute(card.condition)}</dd></div></Facts>
       </Info>
     </DetailLayout>
+    <RelatedCards card={card} cards={related} query={query} failed={relatedFailed} />
     <SectionNav aria-label="카드 상세 정보"><a href="#market-data">참고 시세</a><a href="#valuation-details">평가 근거</a><a href="#card-notes">카드 정보</a></SectionNav>
     <MarketSection id="market-data">{prices ? <MarketPrices prices={prices} /> : <RequestState compact title="참고 시세를 불러오지 못했습니다." message="가격 자료의 유무를 확인하지 못했습니다. 잠시 후 다시 시도하세요." />}</MarketSection>
     <Evaluation id="valuation-details"><summary>USDC 평가와 근거 확인</summary><EvaluationContent>{valuation ? <ValuationDetails valuation={valuation} /> : <RequestState compact title="평가 정보를 불러오지 못했습니다." message="카드 정보는 확인할 수 있습니다. 잠시 후 다시 시도하세요." />}</EvaluationContent></Evaluation>

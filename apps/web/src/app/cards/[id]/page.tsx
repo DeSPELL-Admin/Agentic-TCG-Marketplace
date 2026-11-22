@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { idSchema } from '@tcg/contracts';
-import { CoreApiError, getCardVariant, getValuation, getMarketPrices } from '../../../server/api';
+import { CoreApiError, getCardVariant, getValuation, getMarketPrices, searchCards } from '../../../server/api';
+import { sameNameCards } from '../../../lib/discovery';
 import { DetailView } from '../../../features/card-detail/detail-view';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,8 @@ export default async function CardDetail({ params, searchParams }: { params: Pro
   let card;
   try { card = await getCardVariant(id); }
   catch (error) { if (error instanceof CoreApiError && error.status === 404) notFound(); throw error; }
-  const [valuation, prices] = await Promise.allSettled([getValuation(id), getMarketPrices(id)]);
-  return <DetailView card={card} query={query} valuation={valuation.status === 'fulfilled' ? valuation.value : null} prices={prices.status === 'fulfilled' ? prices.value : null} />;
+  const [valuation, prices, related] = await Promise.allSettled([getValuation(id), getMarketPrices(id), searchCards(card.name)]);
+  const candidates = related.status === 'fulfilled' ? sameNameCards(related.value.items, card.name, card.id) : [];
+  const illustrated = candidates.filter(item => item.imageUrl);
+  return <DetailView card={card} query={query} valuation={valuation.status === 'fulfilled' ? valuation.value : null} prices={prices.status === 'fulfilled' ? prices.value : null} related={(illustrated.length ? illustrated : candidates).slice(0, 3)} relatedFailed={related.status === 'rejected'} />;
 }
