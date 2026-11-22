@@ -1,4 +1,4 @@
-import { cardSearchResponseSchema, cardVariantSchema, valuationSchema, type CardVariant } from '@tcg/contracts';
+import { cardSearchResponseSchema, cardVariantSchema, valuationSchema, marketPricesResponseSchema, type CardVariant } from '@tcg/contracts';
 
 export function getCardDisplayName(card: CardVariant): string {
   return card.localizedNames?.find(name => name.locale === 'ko')?.name ?? card.name;
@@ -22,6 +22,9 @@ export async function searchCards(query: string) {
 }
 export async function getValuation(id: string) {
   return valuationSchema.parse(await get(`/api/cards/${encodeURIComponent(id)}/valuation`));
+}
+export async function getMarketPrices(id: string) {
+  return marketPricesResponseSchema.parse(await get(`/api/cards/${encodeURIComponent(id)}/prices`));
 }
 export function formatUsdc(amount: string): string {
   const value = BigInt(amount);

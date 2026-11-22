@@ -4,7 +4,7 @@ import { AppError, type AggregatorService, type AuthContext, type ValuationServi
 import { parseApiEnv, type ApiEnv } from '@tcg/config';
 import { createPrismaClient, type PrismaClient } from '@tcg/db';
 import { createAggregatorPlugin, createAggregatorService, createMockCardAdapter, createPrismaCardAdapter } from '@tcg/aggregator';
-import { createMockPriceAdapter, createPrismaMockPriceAdapter, createValuationPlugin, createValuationService } from '@tcg/valuation';
+import { createMarketPriceServices, createMockPriceAdapter, createPrismaMockPriceAdapter, createValuationPlugin, createValuationService } from '@tcg/valuation';
 
 declare module 'fastify' { interface FastifyRequest { auth: AuthContext | null } }
 export interface IntegrationDependencies {
@@ -44,11 +44,16 @@ export async function buildApp(options: AppOptions = {}) {
     if (prisma) await prisma.$connect();
     const useDatabase = env.CARD_DATA_SOURCE === 'database';
     const aggregatorService = createAggregatorService({ adapter: useDatabase ? createPrismaCardAdapter(prisma!) : createMockCardAdapter() });
-    const valuationService = createValuationService({ aggregatorService, adapter: useDatabase ? createPrismaMockPriceAdapter(prisma!) : createMockPriceAdapter() });
+    const market = useDatabase ? createMarketPriceServices({ prisma: prisma! }) : null;
+    const valuationService = createValuationService({ aggregatorService, adapter: env.PRICE_DATA_SOURCE === 'market' ? market!.adapter : useDatabase ? createPrismaMockPriceAdapter(prisma!) : createMockPriceAdapter() });
+    const marketPriceService = market?.marketPriceService ?? { async getPrices(id: string) {
+      if (!await aggregatorService.getCardVariant(id)) throw new AppError('CARD_NOT_FOUND', '카드를 찾을 수 없습니다.', 404);
+      return { cardVariantId: id, dataSource: 'MARKET' as const, items: [], maxAgeHours: 72, evaluatedAt: new Date().toISOString() };
+    } };
     const plugins = await options.createIntegrationPlugins?.({ prisma, aggregatorService, valuationService }) ?? [];
-    app.get('/health', async () => ({ status: 'ok', dataMode: env.DATA_MODE, cardDataSource: env.CARD_DATA_SOURCE, database: prisma ? 'connected' : 'disabled' }));
+    app.get('/health', async () => ({ status: 'ok', dataMode: env.DATA_MODE, cardDataSource: env.CARD_DATA_SOURCE, priceDataSource: env.PRICE_DATA_SOURCE, database: prisma ? 'connected' : 'disabled' }));
     await app.register(createAggregatorPlugin({ aggregatorService }), { prefix: '/api' });
-    await app.register(createValuationPlugin({ valuationService }), { prefix: '/api' });
+    await app.register(createValuationPlugin({ valuationService, marketPriceService }), { prefix: '/api' });
     for (const plugin of plugins) await app.register(plugin);
     await app.ready();
     return app;

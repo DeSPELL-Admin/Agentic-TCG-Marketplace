@@ -62,7 +62,7 @@ API에서도 연결하려면 루트 `.env`의 `DATABASE_ENABLED=true`로 변경�
 
 카드·가격 표본의 저장 위치는 `CARD_DATA_SOURCE=mock|database`로 선택합니다. `mock`은 메모리 어댑터이며 DB가 필요 없습니다. `database`는 DB 연결을 요구하며 PostgreSQL에서 검색·상세·가격 표본을 조회합니다. DB 장애 시 메모리 Mock으로 조용히 대체하지 않습니다. `/health`의 `cardDataSource`로 활성 어댑터를 확인할 수 있습니다.
 
-`pnpm db:seed`는 고정 UUID의 시연 카드 3개와 `MOCK` 가격 표본 6개를 트랜잭션으로 upsert합니다. 반복 실행해도 중복되지 않으며 다른 ID의 데이터는 삭제하지 않습니다. `DATA_MODE=mock`은 두 저장 방식 모두 합성 가격을 사용한다는 의미입니다. DB에서 읽었다고 실제 시장가격이 되지 않습니다. 실제 외부 카드·시세 수집은 후속 범위입니다.
+`pnpm db:seed`는 고정 UUID의 시연 카드 3개와 `MOCK` 가격 표본 6개를 트랜잭션으로 upsert합니다. 반복 실행해도 중복되지 않으며 다른 ID의 데이터는 삭제하지 않습니다. 가격 출처는 `PRICE_DATA_SOURCE=mock|market`로 별도 선택하며 기본값은 mock입니다. DB에서 읽었다고 실제 시장가격이 되지 않습니다. `DATA_MODE=mock`은 기존 데모 실행 환경 구분으로 유지합니다.
 
 목록에서 카드 이름을 선택하면 `/cards/:id` 상세 화면으로 이동합니다. 카드 속성과 가격·표본 수·신뢰 수준·출처·평가 시각을 확인할 수 있습니다.
 
@@ -85,6 +85,14 @@ pnpm cards:collect --query 피카츄 --limit 5
 ```
 
 Migration 적용 후 실행합니다. TCGdex 영어 카탈로그에서 최대 5개를 조회하고, 영구 매핑된 내부 UUID로 DB에 저장한 뒤 조회까지 확인합니다. 기본 limit는 5, 허용 범위는 1~100이며 첫 페이지만 수집합니다. 재실행해도 중복 카드가 생성되지 않습니다. API가 `CARD_DATA_SOURCE=database`이면 기존 `/api/cards`, `/api/cards/:id`에서 저장된 외부 카드도 조회됩니다. 일반 조회는 외부 API를 호출하지 않습니다. 수집 카드의 상태·에디션은 UNSPECIFIED이며, 가격 표본은 별도로 수집해야 합니다. 상세 규칙은 [Aggregator 가이드](packages/aggregator/README.md)를 확인하세요.
+
+## 외부 참고 시세 수집
+
+```powershell
+pnpm prices:collect --limit 20
+```
+
+저장된 외부 카드의 EUR/USD 가격을 수집하고 `/api/cards/:id/prices`에서 원본 통화·유형·검증 상태로 제공합니다. 현재 수집 카드의 에디션·상태는 미확정이므로 참고 가격으로만 표시합니다. 판본과 환율 근거를 확인한 표본만 USDC 평가에 반영할 수 있습니다. `.env`의 `PRICE_DATA_SOURCE=market`으로 평가 출처를 전환하며 기본 Mock 모드는 유지합니다. [Valuation 가이드](packages/valuation/README.md)에 검증 JSON과 사용 조건을 정리했습니다.
 
 ```powershell
 pnpm infra:down
@@ -112,6 +120,6 @@ pnpm --filter @tcg/aggregator test
 
 ## 현재 범위
 
-카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. [TCGdex 외부 카드 수집·영구 UUID 매핑·DB 저장](packages/aggregator/README.md) 후 기존 REST 경로에서 조회할 수 있습니다. 전체 카탈로그 동기화, 실제 시세 수집, 거래 가능한 카드 변형·상태 확정, 상용 인증, 매물·주문·정책 API, MCP, Agent Runtime, x402 결제 및 전체 거래 E2E는 아직 구현하지 않았습니다. 기존 DB/Mock 모드는 유지합니다.
+카드 검색·상세 화면·Mock 적정가, API 오류 처리, 인증 컨텍스트 주입 지점, PostgreSQL 조회 어댑터·시연 seed·실제 DB 통합 테스트를 구현했습니다. [TCGdex 외부 카드 수집·영구 UUID 매핑·DB 저장](packages/aggregator/README.md) 후 기존 REST 경로에서 조회할 수 있습니다. [외부 참고 시세 수집과 검증 표본 평가](packages/valuation/README.md)도 지원합니다. 전체 카탈로그 동기화, 거래 가능한 카드 변형·상태 확정, 자동 환율 수집, 상용 인증, 매물·주문·정책 API, MCP, Agent Runtime, x402 결제 및 전체 거래 E2E는 아직 구현하지 않았습니다. 기존 DB/Mock 모드는 유지합니다.
 
 가격은 USDC 최소 단위 정수 문자열입니다. UUID 및 UTC ISO 8601을 사용합니다. Mock 가격은 `dataSource: "MOCK"`로 구분하고, 표본이 없으면 `status: "INSUFFICIENT_DATA"`, `estimatedPrice: null`을 반환합니다. 이 확장은 초안 계약의 미정 부분을 구체화한 **팀 검토 대상**입니다. [계약 결정 사항](docs/contracts.md), [통합 가이드](docs/integration.md)를 확인하세요.

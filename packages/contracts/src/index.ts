@@ -30,6 +30,35 @@ export const priceObservationSchema = z.object({
 });
 export type PriceObservation = z.infer<typeof priceObservationSchema>;
 
+export const marketPriceSchema = z.object({
+  id: idSchema,
+  provider: z.enum(['CARDMARKET', 'TCGPLAYER']),
+  providerVariant: z.string().min(1),
+  priceType: z.enum(['ASKING_LOW', 'PROVIDER_MARKET', 'PROVIDER_AVERAGE', 'PROVIDER_TREND']),
+  originalCurrency: z.enum(['EUR', 'USD']),
+  originalAmount: z.string().regex(/^(0|[1-9]\d*)(\.\d{1,6})?$/),
+  sourceUrl: z.url({ protocol: /^https$/ }),
+  observedAt: timestampSchema,
+  collectedAt: timestampSchema,
+  eligibility: z.enum(['ELIGIBLE', 'UNVERIFIED_VARIANT', 'STALE_PRICE', 'STALE_FX', 'VARIANT_MISMATCH', 'UNSUPPORTED_PRICE_TYPE']),
+  assessment: z.object({
+    language: z.string(), edition: z.string(), condition: z.string(),
+    matchEvidenceUrl: z.url({ protocol: /^https$/ }),
+    usdcAmount: amountSchema,
+    fxRate: z.string(), fxSourceUrl: z.url({ protocol: /^https$/ }),
+    fxObservedAt: timestampSchema, assessedAt: timestampSchema,
+  }).optional(),
+});
+export const marketPricesResponseSchema = z.object({
+  cardVariantId: idSchema,
+  dataSource: z.literal('MARKET'),
+  items: z.array(marketPriceSchema),
+  maxAgeHours: z.number().positive(),
+  evaluatedAt: timestampSchema,
+});
+export type MarketPrice = z.infer<typeof marketPriceSchema>;
+export type MarketPricesResponse = z.infer<typeof marketPricesResponseSchema>;
+
 // v2.0에서 미정이던 가격 부재 및 Mock 구분의 초기 제안. 팀 합의 전 거래 판단에 사용하지 않는다.
 const valuationBaseSchema = z.object({
   cardVariantId: idSchema,
@@ -39,6 +68,9 @@ const valuationBaseSchema = z.object({
   evaluatedAt: timestampSchema,
   sourceSummary: z.array(z.string()).optional(),
   dataSource: z.enum(['MOCK', 'MARKET']),
+  oldestObservedAt: timestampSchema.optional(),
+  latestObservedAt: timestampSchema.optional(),
+  methodology: z.enum(['MEDIAN_OF_PROVIDER_AGGREGATES', 'MEDIAN_OF_MOCK_SAMPLES']).optional(),
 });
 export const valuationSchema = z.discriminatedUnion('status', [
   valuationBaseSchema.extend({ status: z.literal('AVAILABLE'), estimatedPrice: amountSchema, sampleSize: z.number().int().positive(), sourceSummary: z.array(z.string().trim().min(1)).min(1) }),

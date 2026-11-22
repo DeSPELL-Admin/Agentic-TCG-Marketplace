@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { idSchema } from '@tcg/contracts';
-import { CoreApiError, getCardDisplayName, getCardVariant, getValuation } from '../../../lib/api';
+import { CoreApiError, getCardDisplayName, getCardVariant, getValuation, getMarketPrices } from '../../../lib/api';
 import { ValuationDetails } from '../../../components/valuation-details';
+import { MarketPrices } from '../../../components/market-prices';
 
 export const dynamic = 'force-dynamic';
 export default async function CardDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -31,7 +32,13 @@ export default async function CardDetail({ params }: { params: Promise<{ id: str
       </section>
       <CardValuation id={id} />
     </div>
+    <CardMarketPrices id={id} />
   </main>;
+}
+
+async function CardMarketPrices({ id }: { id: string }) {
+  try { return <MarketPrices prices={await getMarketPrices(id)} />; }
+  catch { return <section><h2>외부 참고 시세</h2><p>참고 시세를 불러오지 못했습니다. 잠시 후 다시 시도하세요.</p></section>; }
 }
 
 async function CardValuation({ id }: { id: string }) {

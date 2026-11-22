@@ -19,6 +19,8 @@
     "db:seed": "pnpm --filter @tcg/db db:seed",
     "cards:collect": "pnpm --filter @tcg/aggregator collect",
     "cards:localize": "pnpm --filter @tcg/aggregator localize",
+    "prices:collect": "pnpm --filter @tcg/valuation prices:collect",
+    "prices:assess": "pnpm --filter @tcg/valuation prices:assess",
     "infra:up": "docker compose --env-file .env -f infra/compose.yaml up -d --wait",
     "infra:down": "docker compose --env-file .env -f infra/compose.yaml down"
   },

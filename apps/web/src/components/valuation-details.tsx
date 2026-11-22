@@ -11,10 +11,12 @@ export function ValuationDetails({ valuation }: { valuation: Valuation }) {
     <dl>
       <dt>데이터 구분</dt><dd>{isMock ? 'Mock / 합성 데이터' : '시장 데이터'}</dd>
       <dt>가격 표본 수</dt><dd>{valuation.sampleSize}개</dd>
+      {valuation.latestObservedAt && <><dt>최근 표본 시각 (UTC)</dt><dd><time dateTime={valuation.latestObservedAt}>{valuation.latestObservedAt}</time></dd></>}
       <dt>신뢰 수준</dt><dd>{{ LOW: '낮음', MEDIUM: '보통', HIGH: '높음' }[valuation.confidence]}</dd>
       <dt>평가 시각 (UTC)</dt><dd><time dateTime={valuation.evaluatedAt}>{valuation.evaluatedAt}</time></dd>
       <dt>출처</dt><dd>{valuation.sourceSummary?.length ? <ul>{valuation.sourceSummary.map(source => <li key={source}>{source}</li>)}</ul> : '제공된 출처 없음'}</dd>
     </dl>
     <p>평가 시각은 계산 시점입니다. 가격 표본의 최신성이나 실제 거래 가능 가격을 보장하지 않습니다.</p>
+    {!isMock && <p>표본 수는 검증된 제공자 집계 가격의 수이며 실제 체결 건수가 아닙니다. 제공자별 최신 표본을 최대 한 개씩 사용하며 신뢰 수준은 낮음으로 유지합니다.</p>}
   </section>;
 }
