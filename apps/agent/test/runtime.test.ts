@@ -73,6 +73,8 @@ it('빈 한국어 검색 후 영문 이름으로 찾은 카드의 Mock 적정가
     },
   );
 
+  // 한국어 검색도 지원하는 현재 Mock과 별개로, 빈 응답의 대체 검색 경로를 재현한다.
+  searchCards.mockResolvedValueOnce([]);
   await expect(runtime.runAgentTurn('피카츄 적정가 알려줘')).resolves.toBe(answer);
   expect(searchCards.mock.calls).toEqual([
     [{ query: '피카츄', limit: 10 }],

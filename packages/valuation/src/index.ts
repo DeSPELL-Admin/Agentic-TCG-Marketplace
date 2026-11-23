@@ -1,7 +1,12 @@
 import type { FastifyPluginAsync } from 'fastify';
 import type { PrismaClient } from '@tcg/db';
 import { demoPriceObservations, demoPriceSource } from '@tcg/contracts/fixtures';
-import { AppError, cardParamsSchema, priceObservationSchema, valuationSchema, type AggregatorService, type ValuationService, type PriceObservation } from '@tcg/contracts';
+import { AppError, cardParamsSchema, priceObservationSchema, valuationSchema, marketPricesResponseSchema, type AggregatorService, type ValuationService, type PriceObservation } from '@tcg/contracts';
+import type { MarketPriceService } from './market-types.js';
+export { createTcgdexPriceProvider, MarketPriceError } from './tcgdex-prices.js';
+export { createMarketPriceServices } from './market-prices.js';
+export { assessmentInputSchema } from './market-types.js';
+export type { MarketPriceService, MarketPriceProvider, SnapshotInput, AssessmentInput } from './market-types.js';
 
 export type { ValuationService } from '@tcg/contracts';
 export type { PriceObservation } from '@tcg/contracts';
@@ -28,7 +33,11 @@ export function createValuationService({ aggregatorService, adapter, now = () =>
         return result.data;
       });
       const sourceSummary = [...new Set([...adapter.sourceSummary, ...samples.map(sample => sample.source)])];
-      const base = { cardVariantId, currency: 'USDC' as const, sampleSize: samples.length, confidence: 'LOW' as const, evaluatedAt, dataSource: adapter.dataSource, sourceSummary };
+      const times = samples.map(sample => sample.observedAt).sort((a, b) => Date.parse(a) - Date.parse(b));
+      const base = { cardVariantId, currency: 'USDC' as const, sampleSize: samples.length, confidence: 'LOW' as const, evaluatedAt, dataSource: adapter.dataSource, sourceSummary,
+        methodology: adapter.dataSource === 'MOCK' ? 'MEDIAN_OF_MOCK_SAMPLES' as const : 'MEDIAN_OF_PROVIDER_AGGREGATES' as const,
+        ...(times.length ? { oldestObservedAt: times[0], latestObservedAt: times[times.length - 1] } : {}),
+      };
       if (samples.length === 0) return valuationSchema.parse({ ...base, status: 'INSUFFICIENT_DATA', estimatedPrice: null });
       // 초기 추정기는 정수 단위 중앙값만 사용한다. 통계적 신뢰 수준은 후속 평가 모델에서 확정.
       const amounts = samples.map(sample => BigInt(sample.amount)).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
@@ -60,12 +69,16 @@ export function createPrismaMockPriceAdapter(prisma: PrismaClient): PriceDataAda
     },
   };
 }
-export interface ValuationPluginDependencies { valuationService: ValuationService }
-export function createValuationPlugin({ valuationService }: ValuationPluginDependencies): FastifyPluginAsync {
+export interface ValuationPluginDependencies { valuationService: ValuationService; marketPriceService?: MarketPriceService }
+export function createValuationPlugin({ valuationService, marketPriceService }: ValuationPluginDependencies): FastifyPluginAsync {
   return async app => {
     app.get('/cards/:id/valuation', async request => {
       const { id } = cardParamsSchema.parse(request.params);
       return valuationSchema.parse(await valuationService.getValuation(id));
+    });
+    if (marketPriceService) app.get('/cards/:id/prices', async request => {
+      const { id } = cardParamsSchema.parse(request.params);
+      return marketPricesResponseSchema.parse(await marketPriceService.getPrices(id));
     });
   };
 }

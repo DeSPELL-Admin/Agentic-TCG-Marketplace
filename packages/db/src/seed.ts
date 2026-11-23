@@ -5,7 +5,8 @@ import type { PrismaClient } from './generated/prisma/client.js';
 export async function seedDemoCatalog(prisma: PrismaClient): Promise<void> {
   await prisma.$transaction(async tx => {
     for (const card of demoCards) {
-      await tx.cardVariant.upsert({ where: { id: card.id }, create: card, update: card });
+      const { localizedNames: _displayNames, ...data } = card;
+      await tx.cardVariant.upsert({ where: { id: card.id }, create: data, update: data });
     }
     for (const observation of demoPriceObservations) {
       const data = { ...observation, observedAt: new Date(observation.observedAt) };
